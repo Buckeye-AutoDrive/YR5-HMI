@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Add Multimedia for RTSP playback
-find_package(Qt6 6.5 REQUIRED COMPONENTS Quick QuickControls2 Multimedia)
+find_package(Qt6 REQUIRED COMPONENTS Quick QuickControls2 Quick3D Multimedia)
 qt_standard_project_setup()
 
 qt_add_executable(appHMI_Mk1
@@ -33,6 +33,7 @@ target_link_libraries(appHMI_Mk1
     PRIVATE
         Qt6::Quick
         Qt6::QuickControls2
+        Qt6::Quick3D
         Qt6::Multimedia
 )
 
