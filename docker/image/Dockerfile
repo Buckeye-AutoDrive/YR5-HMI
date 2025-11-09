@@ -19,5 +19,3 @@ RUN useradd -ms /bin/bash apprunner
 USER apprunner
 
 ENV PATH="/opt/Qt-6.10.0/bin:${PATH}"
-
-WORKDIR /hmi
