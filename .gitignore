@@ -30,6 +30,7 @@ CMakeUserPresets.json
 *.so.*
 *.dll
 *.dylib
+*.tar
 
 # Qt-es
 object_script.*.Release

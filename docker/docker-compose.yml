@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  hmi:
+    image: hmi
+    network_mode: "host"
+    environment:
+      - DISPLAY=$DISPLAY
+    runtime: nvidia
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    command: >
+      bash -c "git clone https://github.com/Buckeye-AutoDrive/YR5-HMI.git && cd YR5-HMI && cmake . && make && ./appHMI_Mk1"
