@@ -27,6 +27,9 @@ ApplicationWindow {
     property real  mem: 41
     property real  rand: 0
 
+    // (Optional) expose center panel width if you need it anywhere else
+    property alias panelWidth: centerPanel.width
+
     // ListModel drives the data table so it doesn't reset scroll
     ListModel { id: telemetryModel }
 
@@ -90,6 +93,7 @@ ApplicationWindow {
             onActivated: function(i) {
                 if (i === 0)        stack.currentIndex = 0;   // Cameras
                 else if (i === 2)   stack.currentIndex = 1;   // Map
+                else if (i === 4)   stack.currentIndex = 2;   // AV Actions
                 else                stack.currentIndex = 0;   // default
             }
         }
@@ -101,6 +105,7 @@ ApplicationWindow {
             Layout.preferredWidth: app.width * 0.56
 
             Rectangle {
+                id: centerPanel
                 anchors.fill: parent
                 radius: HMI.Theme.radius
                 color: "#181818"           // darker middle section
@@ -116,6 +121,7 @@ ApplicationWindow {
                     id: pageTitle
                     text: stack.currentIndex === 0 ? "Cameras"
                          : stack.currentIndex === 1 ? "Map"
+                         : stack.currentIndex === 2 ? "AV Actions"
                          : "Cameras"
                     color: HMI.Theme.text
                     font.pixelSize: HMI.Theme.px(34)
@@ -135,6 +141,9 @@ ApplicationWindow {
                     HMI.CamerasPage {}
                     // index 1
                     HMI.MapPage {}
+                    // index 2
+                    // NOTE: no anchors inside AVActionsPage's root, use Layout.* there.
+                    HMI.AVActionsPage { }
                 }
             }
         }

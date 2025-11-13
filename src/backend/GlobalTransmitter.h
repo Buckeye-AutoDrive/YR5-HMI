@@ -1,0 +1,4 @@
+#ifndef TCPTRANSMITTER_H
+#define TCPTRANSMITTER_H
+
+#endif // TCPTRANSMITTER_H

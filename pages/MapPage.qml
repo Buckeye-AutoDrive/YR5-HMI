@@ -33,6 +33,32 @@ Item {
             mapView.center = vehicleCoord
     }
 
+    Connections {
+        target: NavigationBackend
+
+        // Called 10Hz
+        function onUpdated() {
+            // Update chevron position
+            updateVehicleFix(
+                NavigationBackend.currentLat,
+                NavigationBackend.currentLon
+            )
+
+            // (Optional) update rotation later when we add heading)
+            carMarker.rotation = NavigationBackend.headingDeg
+        }
+
+        // Called 1Hz (or whenever new waypoint batch arrives)
+        function onWaypointsUpdated() {
+            console.log("Waypoints updated!")
+
+            // NavigationBackend.waypointPath()
+            // returns list of QGeoCoordinate items
+            routeLine.path = NavigationBackend.waypointPath()
+        }
+    }
+
+
 
     // ---------- OSM plugin (OFFLINE MBTiles) ----------
     Plugin {
@@ -110,6 +136,14 @@ Item {
         }
 
 
+        MapPolyline {
+            id: routeLine
+            line.width: 6
+            line.color: "#0081ff"
+            opacity: 0.9
+            z: 5000
+            path: []
+        }
 
 
         // Kinetic panning (Qt 6.9: no MapGestureArea)
