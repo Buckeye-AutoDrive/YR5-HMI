@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   hmi:
-    image: hmi
+    image: raleighslack/jetson-qt
     network_mode: "host"
     environment:
       - DISPLAY=$DISPLAY
