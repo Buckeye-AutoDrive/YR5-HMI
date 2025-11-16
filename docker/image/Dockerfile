@@ -12,8 +12,13 @@ build-essential cmake git libgl1-mesa-glx libxkbcommon-x11-0 \
 libx11-xcb1 libxcb1 libxext6 libxcb-icccm4 libxcb-image0 \
 libxcb-keysyms1 libxcb-render-util0 libxcb-render0 libxcb-shape0 \
 libxcb-shm0 libxcb-sync1 libxcb-util1 libxcb-xfixes0 \
-x11-apps libgl1-mesa-dev libglu1-mesa-dev libicu-dev libpcre2-dev libxcb-cursor-dev && \
+x11-apps libgl1-mesa-dev libglu1-mesa-dev libicu-dev libpcre2-dev libxcb-cursor-dev bison gperf flex python2 libasound2-dev libcups2-dev \
+libdrm-dev libegl1-mesa-dev libnss3-dev libpci-dev libpulse-dev libudev-dev libxtst-dev gyp ninja-build \
+libssl-dev libxcursor-dev libxcomposite-dev libxdamage-dev libxrandr-dev libfontconfig1-dev libxss-dev libwebp-dev libjsoncpp-dev libopus-dev libminizip-dev \
+libavutil-dev libavformat-dev libavcodec-dev libevent-dev libvpx-dev libsnappy-dev libre2-dev libprotobuf-dev protobuf-compiler \
+&& \
 rm -rf /var/lib/apt/lists/*
+
 
 RUN useradd -ms /bin/bash apprunner
 USER apprunner
