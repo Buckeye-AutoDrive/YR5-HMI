@@ -24,3 +24,21 @@ RUN useradd -ms /bin/bash apprunner
 USER apprunner
 
 ENV PATH="/opt/Qt-6.10.0/bin:${PATH}"
+
+WORKDIR /home/apprunner
+
+RUN git clone https://github.com/abseil/abseil-cpp.git
+
+WORKDIR ./abseil-cpp
+
+RUN mkdir build
+
+WORKDIR ./build
+
+RUN cmake -GNinja ..
+RUN ninja
+USER root
+RUN ninja install
+USER apprunner
+
+WORKDIR /home/apprunner
