@@ -34,6 +34,7 @@ USER root
 RUN ninja install
 USER hmi
 WORKDIR /home/hmi
+RUN rm -rf ./abseil-cpp
 
 RUN git clone --recursive --branch v3.21.12 https://github.com/protocolbuffers/protobuf.git
 WORKDIR ./protobuf
@@ -47,6 +48,7 @@ RUN ninja install
 RUN ldconfig
 USER hmi
 WORKDIR /home/hmi
+RUN rm -rf ./protobuf
 
 RUN wget https://download.qt.io/archive/qt/6.10/6.10.1/single/qt-everywhere-src-6.10.1.tar.xz
 RUN tar xf qt-everywhere-src-6.10.1.tar.xz
