@@ -62,4 +62,4 @@ RUN ninja install
 USER hmi
 WORKDIR /home/hmi
 RUN rm -rf ./qt-everywhere-src-6.10.1
-ENV PATH="/usr/local/Qt-6.10.0/bin:${PATH}"
+ENV PATH="/usr/local/Qt-6.10.1/bin:${PATH}"
