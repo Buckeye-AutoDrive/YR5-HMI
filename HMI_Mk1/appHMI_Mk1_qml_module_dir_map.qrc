@@ -1,6 +1,0 @@
-<RCC>
-  <qresource prefix="/">
-    <file alias="/HMI_Mk1">/YR5-HMI/HMI_Mk1</file>
-
-  </qresource>
-</RCC>
