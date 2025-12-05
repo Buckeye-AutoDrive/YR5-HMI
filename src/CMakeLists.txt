@@ -7,6 +7,7 @@ add_library(HMI_Backend
     backend/GlobalReceiver.cpp
     backend/GlobalTransmitter.cpp
     proto/HMI_RX_CONTROLS.pb.cc
+    proto/HMI_TX_CONTROLS.pb.cc
 )
 
 target_include_directories(HMI_Backend PUBLIC

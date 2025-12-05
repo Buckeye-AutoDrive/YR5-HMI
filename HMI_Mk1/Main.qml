@@ -10,14 +10,14 @@ ApplicationWindow {
     width: 1920
     height: 720
     visible: true
-    visibility: Window.FullScreen
     title: "CAR HMI Mk1"
 
+    // Dark theme + OSU scarlet accent
     Material.theme: Material.Dark
     Material.accent: "#ba0c2f"
     color: HMI.Theme.bg
 
-    // demo telemetry (unchanged) ...
+    // ---- demo telemetry (global) ----
     property real  spd: 34
     property real  yaw: -4.7
     property real  latAcc: 0.12
@@ -27,14 +27,18 @@ ApplicationWindow {
     property real  mem: 41
     property real  rand: 0
 
+    // (Optional) expose center panel width if you need it anywhere else
     property alias panelWidth: centerPanel.width
 
+    // ListModel drives the data table so it doesn't reset scroll
     ListModel { id: telemetryModel }
 
+    // ---- global scaling for 12.3" 1920x720 ----
     function recomputeDp() { HMI.Theme.dp = (height / 720) * 1.25; }
     Component.onCompleted: {
         recomputeDp()
 
+        // seed table rows ONCE — keep ALL 'value' roles as STRINGS
         telemetryModel.append({source:"HS CAN", id:"$1E", value: rand.toFixed(2)})
         telemetryModel.append({source:"CE CAN", id:"$C2", value: rand.toFixed(2)})
         telemetryModel.append({source:"Speed",  id:"-",   value: String(Math.round(spd)),   unit:"km/h"})
@@ -48,6 +52,7 @@ ApplicationWindow {
     onWidthChanged:  recomputeDp()
     onHeightChanged: recomputeDp()
 
+    // demo updates — keep ALL 'value' roles as STRINGS
     Timer {
         interval: 250; running: true; repeat: true
         onTriggered: {
@@ -76,23 +81,24 @@ ApplicationWindow {
         anchors.margins: HMI.Theme.px(12)
         spacing: HMI.Theme.px(12)
 
-        // LEFT NAV
+        // LEFT NAV — narrower (proportional)
         HMI.SideNav {
             id: side
             Layout.fillHeight: true
             Layout.fillWidth: true
             Layout.preferredWidth: app.width * 0.22
-            model: ["Cameras", "Map", "AV Actions", "Data Logger", "System Settings"]
+            model: ["Cameras", "Sensors", "Map", "Destination", "AV Actions", "System Settings"]
 
+            // use formal parameter; map only existing pages
             onActivated: function(i) {
                 if (i === 0)        stack.currentIndex = 0;   // Cameras
-                else if (i === 1)   stack.currentIndex = 1;   // Map
-                else if (i === 2)   stack.currentIndex = 2;   // AV Actions
-                else                stack.currentIndex = 1;   // default
+                else if (i === 2)   stack.currentIndex = 1;   // Map
+                else if (i === 4)   stack.currentIndex = 2;   // AV Actions
+                else                stack.currentIndex = 0;   // default
             }
         }
 
-        // CENTER PANEL
+        // CENTER PANEL — wider (proportional)
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -102,7 +108,7 @@ ApplicationWindow {
                 id: centerPanel
                 anchors.fill: parent
                 radius: HMI.Theme.radius
-                color: "#181818"
+                color: "#181818"           // darker middle section
                 border.color: HMI.Theme.outline
             }
 
@@ -124,20 +130,25 @@ ApplicationWindow {
                     Layout.fillWidth: true
                 }
 
+                // The actual page content — make it visible
                 StackLayout {
                     id: stack
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     currentIndex: 0
 
+                    // index 0
                     HMI.CamerasPage {}
+                    // index 1
                     HMI.MapPage {}
-                    HMI.AVActionsPage {}
+                    // index 2
+                    // NOTE: no anchors inside AVActionsPage's root, use Layout.* there.
+                    HMI.AVActionsPage { }
                 }
             }
         }
 
-        // RIGHT: DATA MONITOR / DESTINATIONS — narrower (proportional)
+        // RIGHT: DATA MONITOR — narrower (proportional)
         Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
@@ -156,8 +167,7 @@ ApplicationWindow {
                 spacing: HMI.Theme.px(12)
 
                 Label {
-                    text: stack.currentIndex === 1 ? "Destinations"
-                                                   : "Data monitor"
+                    text: "Data monitor"
                     color: HMI.Theme.text
                     font.pixelSize: HMI.Theme.px(32)
                     font.bold: true
@@ -165,43 +175,13 @@ ApplicationWindow {
                     Layout.fillWidth: true
                 }
 
-                StackLayout {
-                    id: rightStack
+                HMI.DataTable {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-
-                    // Cameras / AV Actions -> show telemetry
-                    // Map page (index 1)    -> show destinations
-                    currentIndex: stack.currentIndex === 1 ? 1 : 0
-
-                    // index 0 — telemetry table
-                    HMI.DataTable {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        rows: telemetryModel
-                    }
-
-                    // index 1 — destination list
-                    HMI.DestList {
-                        id: destList
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-
-                        onDestinationSelected: function(label) {
-                            // Open full-screen warning page
-                            avWarnPage.openForDestination(label)
-
-                        }
-                    }
+                    rows: telemetryModel
                 }
             }
         }
-    }
-
-    // Full-screen engage warning / AV state warning
-    HMI.AVWarnPage {
-        id: avWarnPage
-        anchors.fill: parent
     }
 
     Shortcut { sequence: "Ctrl+Q"; onActivated: Qt.quit() }

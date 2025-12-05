@@ -26,9 +26,11 @@ qt_add_qml_module(appHMI_Mk1
         ui/Theme.qml
         ui/SideNav.qml
         ui/DataTable.qml
+        ui/DestList.qml
         pages/MapPage.qml
         pages/AVActionsPage.qml
         pages/CamerasPage.qml
+        pages/AVWarnPage.qml
 )
 
 # Protobuf

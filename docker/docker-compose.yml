@@ -2,12 +2,19 @@ version: '3.8'
 
 services:
   hmi:
-    image: hmi
-    network_mode: "host"
+    image: yr5-hmi-img:latest
+    container_name: hmi
+    network_mode: host
+    runtime: nvidia
+
     environment:
       - DISPLAY=$DISPLAY
-    runtime: nvidia
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix
-    command: >
-      bash -c "git clone https://github.com/Buckeye-AutoDrive/YR5-HMI.git && cd YR5-HMI && cmake . && make && ./appHMI_Mk1"
+      - /home/hmi/YR5-HMI:/home/hmi/YR5-HMI
+      - /home/hmi/docker/start_and_update.sh:/home/hmi/start_and_update.sh:ro
+      # - /home/hmi/Videos:/home/hmi/Videos
+
+    working_dir: /home/hmi
+    command: bash /home/hmi/start_and_update.sh
+

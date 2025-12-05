@@ -20,6 +20,9 @@ Item {
     property real vehicleHeading: 0.0            // keep north-up for now
     property bool followVehicle: true
 
+    // Perception objects
+    property var  perceptionObjects: []
+
     // Dynamic marker size vs zoom (~28 px at z18)
     property real carSize: Math.max(22, Math.min(56, 24 + (mapView.zoomLevel - 16) * 6))
 
@@ -55,6 +58,13 @@ Item {
             // NavigationBackend.waypointPath()
             // returns list of QGeoCoordinate items
             routeLine.path = NavigationBackend.waypointPath()
+        }
+
+        // Called whenever perception objects are updated
+        function onPerceptionUpdated() {
+            console.log("Perception updated!")
+            perceptionObjects = NavigationBackend.perceptionObjects()
+            objectRepeater.model = perceptionObjects.length
         }
     }
 
@@ -143,6 +153,80 @@ Item {
             opacity: 0.9
             z: 5000
             path: []
+        }
+
+        // Perception CAN signals display (bottom-left corner)
+        Rectangle {
+            id: perceptionPanel
+            width: 300
+            height: Math.min(perceptionObjects.length * 35 + 40, 400)
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            anchors.margins: 16
+            color: "#1A1A2E"
+            border.color: "#16C784"
+            border.width: 2
+            radius: 8
+            visible: perceptionObjects.length > 0
+            z: 7000
+
+            Column {
+                anchors.fill: parent
+                anchors.margins: 12
+                spacing: 8
+
+                Text {
+                    text: "CAN Signals (" + perceptionObjects.length + ")"
+                    color: "#16C784"
+                    font.pixelSize: 14
+                    font.weight: Font.Bold
+                }
+
+                Flickable {
+                    width: parent.width
+                    height: parent.height - 40
+                    contentHeight: signalColumn.height
+                    clip: true
+
+                    Column {
+                        id: signalColumn
+                        width: parent.width
+                        spacing: 6
+
+                        Repeater {
+                            model: perceptionObjects
+
+                            Rectangle {
+                                width: signalColumn.width
+                                height: 28
+                                color: "#0F3460"
+                                border.color: "#16C784"
+                                border.width: 1
+                                radius: 4
+
+                                Column {
+                                    anchors.fill: parent
+                                    anchors.margins: 4
+                                    spacing: 1
+
+                                    Text {
+                                        text: modelData.name + ": " + modelData.value
+                                        color: "#16C784"
+                                        font.pixelSize: 9
+                                        font.family: "Courier"
+                                    }
+
+                                    Text {
+                                        text: "CAN ID: " + modelData.canId + " | " + modelData.messageName
+                                        color: "#A0A0A0"
+                                        font.pixelSize: 7
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
 

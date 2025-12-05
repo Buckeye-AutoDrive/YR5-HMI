@@ -1,0 +1,12 @@
+module HMI_Mk1
+typeinfo appHMI_Mk1.qmltypes
+prefer :/HMI_Mk1/
+Main 1.0 Main.qml
+singleton Theme 1.0 ui/Theme.qml
+SideNav 1.0 ui/SideNav.qml
+DataTable 1.0 ui/DataTable.qml
+MapPage 1.0 pages/MapPage.qml
+AVActionsPage 1.0 pages/AVActionsPage.qml
+CamerasPage 1.0 pages/CamerasPage.qml
+depends QtQuick
+
