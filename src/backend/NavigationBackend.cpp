@@ -18,26 +18,33 @@ NavigationBackend::NavigationBackend(QObject* parent)
 
 void NavigationBackend::onControlsMessage(const Navigation& msg)
 {
-    // Update current fix
+    // ---- Vehicle pose (always update) ----
     m_currentLat  = msg.current_lat();
     m_currentLon  = msg.current_lon();
     m_headingDeg  = msg.heading_deg();
 
+    // ---- FSM / safety state ----
+    const int newSafety = msg.safety_states();
+    if (newSafety != m_safetyStates) {
+        m_safetyStates = newSafety;
+        emit safetyStatesChanged();
+    }
+
+    // Notify pose/UI update (10 Hz etc.)
     emit updated();
 
-    // Update waypoint list
-    if (msg.waypoints_size() > 0)
-    {
-        m_waypoints.clear();
-        m_waypoints.reserve(msg.waypoints_size());
+    // ---- Waypoints (ALWAYS refresh) ----
+    m_waypoints.clear();
+    m_waypoints.reserve(msg.waypoints_size());
 
-        for (const auto& wp : msg.waypoints()) {
-            m_waypoints.push_back(QPointF(wp.lat(), wp.lon()));
-        }
-
-        emit waypointsUpdated();
+    for (const auto& wp : msg.waypoints()) {
+        m_waypoints.push_back(QPointF(wp.lat(), wp.lon()));
     }
+
+    // Always notify QML, even if unchanged or empty
+    emit waypointsUpdated();
 }
+
 
 QVariantList NavigationBackend::waypointPath() const
 {
@@ -48,4 +55,22 @@ QVariantList NavigationBackend::waypointPath() const
         out.push_back(QVariant::fromValue(QGeoCoordinate(p.x(), p.y())));
     }
     return out;
+}
+
+QString NavigationBackend::fsmStateText() const
+{
+    switch (m_safetyStates) {
+        case 0:  return "STATE_0";
+        case 1:  return "STATE_STARTUP";
+        case 2:  return "STATE_PASSIVE_MODE";
+        case 3:  return "STATE_ACTIVATION_CONDITION";
+        case 4:  return "STATE_BRAKE_ACTIVATION";
+        case 5:  return "STATE_WAIT_BRAKE_RELEASE";
+        case 6:  return "STATE_STEER_ACTIVATION";
+        case 7:  return "STATE_PROPULSION_ACTIVATION";
+        case 8:  return "STATE_AV";
+        case 9:  return "STATE_DEACTIVATION";
+        case 10: return "STATE_ACTIVATION_FAILURE";
+        default: return QString("STATE_%1").arg(m_safetyStates);
+    }
 }

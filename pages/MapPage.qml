@@ -10,13 +10,15 @@ Item {
     id: root
     // If you inject the maps dir from C++:  property url mapDir: HMIMapsDirUrl
     // TEMP absolute for dev on Windows; change to HMIMapsDirUrl for deploy.
-    property url mapDir: "file:///home/hmi/HMI/maps/"
+    property url mapDir: HMIMapsDirUrl
     property real   defaultZoom: 19
     property string currentRegion: ""
     property bool   initialFixApplied: false
 
     // Vehicle state
     property var  vehicleCoord: QtPositioning.coordinate(39.9984648, -83.0323994)
+    // property var  vehicleCoord: QtPositioning.coordinate(40.1918700, -83.3336600)
+
     property real vehicleHeading: 0.0            // keep north-up for now
     property bool followVehicle: true
 
@@ -284,18 +286,22 @@ Item {
 
     function detectRegion(lat, lon) {
         var region = ""
-        if (lat > 42.285 && lat < 42.315 && lon > -83.730 && lon < -83.700) {
+        if (lat >= 42.2981 && lat <= 42.3033 &&
+            lon >= -83.7018 && lon <= -83.6933) {
             region = "mcity"
-        } else if (lat > 39.97 && lat < 40.06 && lon > -83.08 && lon < -82.98) {
+        } else if (lat >= 39.9904 && lat <= 40.0232 &&
+                   lon >= -83.0533 && lon <= -83.0058) {
             region = "osu"
-        } else if (lat > 40.25 && lat < 40.38 && lon > -83.40 && lon < -83.28) {
+        } else if (lat >= 40.2764 && lat <= 40.3304 &&
+                   lon >= -83.5829 && lon <= -83.5162) {
             region = "trc"
         } else {
-            console.warn("No region match; defaulting to mcity")
+            console.warn("No region match; defaulting to mcity. lat/lon:", lat, lon)
             region = "mcity"
         }
         loadRegion(region, lat, lon)
     }
+
 
     // Call this ONCE with the first GPS fix
     function applyInitialGps(lat, lon, heading) {

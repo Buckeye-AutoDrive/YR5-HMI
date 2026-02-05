@@ -10,7 +10,7 @@ GlobalTransmitter::GlobalTransmitter(QObject* parent)
     : QObject(parent)
 {
     // Set up default HMI TX channel: localhost:6001
-    m_hmi.host = QStringLiteral("10.42.0.1");
+    m_hmi.host = QStringLiteral("192.168.1.231");
     m_hmi.port = 6001;
 
     m_hmi.reconnectTimer = new QTimer(this);

@@ -10,7 +10,6 @@ ApplicationWindow {
     width: 1920
     height: 720
     visible: true
-    visibility: Window.FullScreen
     title: "CAR HMI Mk1"
 
     Material.theme: Material.Dark
@@ -26,12 +25,22 @@ ApplicationWindow {
     property real  cpu: 23
     property real  mem: 41
     property real  rand: 0
+    property int fsmRow: -1
 
     property alias panelWidth: centerPanel.width
 
     ListModel { id: telemetryModel }
 
     function recomputeDp() { HMI.Theme.dp = (height / 720) * 1.25; }
+
+    Connections {
+        target: NavigationBackend
+        function onSafetyStatesChanged() {
+            if (fsmRow >= 0)
+                telemetryModel.setProperty(fsmRow, "value", NavigationBackend.fsmStateText)
+        }
+    }
+
     Component.onCompleted: {
         recomputeDp()
 
@@ -41,7 +50,10 @@ ApplicationWindow {
         telemetryModel.append({source:"Yaw",    id:"-",   value: yaw.toFixed(1),            unit:"°"})
         telemetryModel.append({source:"Lat Acc",id:"-",   value: latAcc.toFixed(2),         unit:"m/s²"})
         telemetryModel.append({source:"Steer",  id:"-",   value: steer.toFixed(1),          unit:"°"})
-        telemetryModel.append({source:"Mode",   id:"-",   value: mode})
+
+        fsmRow = telemetryModel.count
+        telemetryModel.append({source:"FSM State",   id:"-",   value: NavigationBackend.fsmStateText})
+
         telemetryModel.append({source:"CPU",    id:"SoC", value: cpu.toFixed(0),            unit:"%"})
         telemetryModel.append({source:"Mem",    id:"Used",value: mem.toFixed(0),            unit:"%"})
     }
@@ -65,7 +77,7 @@ ApplicationWindow {
             telemetryModel.setProperty(3, "value", app.yaw.toFixed(1));
             telemetryModel.setProperty(4, "value", app.latAcc.toFixed(2));
             telemetryModel.setProperty(5, "value", app.steer.toFixed(1));
-            telemetryModel.setProperty(6, "value", app.mode);
+            // telemetryModel.setProperty(6, "value", app.mode);
             telemetryModel.setProperty(7, "value", app.cpu.toFixed(0));
             telemetryModel.setProperty(8, "value", app.mem.toFixed(0));
         }
@@ -82,13 +94,13 @@ ApplicationWindow {
             Layout.fillHeight: true
             Layout.fillWidth: true
             Layout.preferredWidth: app.width * 0.22
-            model: ["Cameras", "Map", "AV Actions", "Data Logger", "System Settings"]
+            model: ["Cameras", "Sensors", "Map", "Destination", "AV Actions", "System Settings"]
 
             onActivated: function(i) {
                 if (i === 0)        stack.currentIndex = 0;   // Cameras
-                else if (i === 1)   stack.currentIndex = 1;   // Map
-                else if (i === 2)   stack.currentIndex = 2;   // AV Actions
-                else                stack.currentIndex = 1;   // default
+                else if (i === 2)   stack.currentIndex = 1;   // Map
+                else if (i === 4)   stack.currentIndex = 2;   // AV Actions
+                else                stack.currentIndex = 0;   // default
             }
         }
 

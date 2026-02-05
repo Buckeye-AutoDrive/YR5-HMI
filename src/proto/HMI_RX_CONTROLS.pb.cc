@@ -40,6 +40,7 @@ PROTOBUF_CONSTEXPR Navigation::Navigation(
   , /*decltype(_impl_.current_lat_)*/0
   , /*decltype(_impl_.current_lon_)*/0
   , /*decltype(_impl_.heading_deg_)*/0
+  , /*decltype(_impl_.safety_states_)*/0
   , /*decltype(_impl_._cached_size_)*/{}} {}
 struct NavigationDefaultTypeInternal {
   PROTOBUF_CONSTEXPR NavigationDefaultTypeInternal()
@@ -73,6 +74,7 @@ const uint32_t TableStruct_HMI_5fRX_5fCONTROLS_2eproto::offsets[] PROTOBUF_SECTI
   PROTOBUF_FIELD_OFFSET(::Navigation, _impl_.current_lon_),
   PROTOBUF_FIELD_OFFSET(::Navigation, _impl_.heading_deg_),
   PROTOBUF_FIELD_OFFSET(::Navigation, _impl_.waypoints_),
+  PROTOBUF_FIELD_OFFSET(::Navigation, _impl_.safety_states_),
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::Waypoint)},
@@ -86,14 +88,14 @@ static const ::_pb::Message* const file_default_instances[] = {
 
 const char descriptor_table_protodef_HMI_5fRX_5fCONTROLS_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
   "\n\025HMI_RX_CONTROLS.proto\"$\n\010Waypoint\022\013\n\003l"
-  "at\030\001 \001(\002\022\013\n\003lon\030\002 \001(\002\"i\n\nNavigation\022\023\n\013c"
-  "urrent_lat\030\001 \001(\002\022\023\n\013current_lon\030\002 \001(\002\022\023\n"
-  "\013heading_deg\030\003 \001(\002\022\034\n\twaypoints\030\004 \003(\0132\t."
-  "Waypointb\006proto3"
+  "at\030\001 \001(\002\022\013\n\003lon\030\002 \001(\002\"\200\001\n\nNavigation\022\023\n\013"
+  "current_lat\030\001 \001(\002\022\023\n\013current_lon\030\002 \001(\002\022\023"
+  "\n\013heading_deg\030\003 \001(\002\022\034\n\twaypoints\030\004 \003(\0132\t"
+  ".Waypoint\022\025\n\rsafety_states\030\005 \001(\005b\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_HMI_5fRX_5fCONTROLS_2eproto = {
-    false, false, 176, descriptor_table_protodef_HMI_5fRX_5fCONTROLS_2eproto,
+    false, false, 200, descriptor_table_protodef_HMI_5fRX_5fCONTROLS_2eproto,
     "HMI_RX_CONTROLS.proto",
     &descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_once, nullptr, 0, 2,
     schemas, file_default_instances, TableStruct_HMI_5fRX_5fCONTROLS_2eproto::offsets,
@@ -362,12 +364,13 @@ Navigation::Navigation(const Navigation& from)
     , decltype(_impl_.current_lat_){}
     , decltype(_impl_.current_lon_){}
     , decltype(_impl_.heading_deg_){}
+    , decltype(_impl_.safety_states_){}
     , /*decltype(_impl_._cached_size_)*/{}};
 
   _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
   ::memcpy(&_impl_.current_lat_, &from._impl_.current_lat_,
-    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.heading_deg_) -
-    reinterpret_cast<char*>(&_impl_.current_lat_)) + sizeof(_impl_.heading_deg_));
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.safety_states_) -
+    reinterpret_cast<char*>(&_impl_.current_lat_)) + sizeof(_impl_.safety_states_));
   // @@protoc_insertion_point(copy_constructor:Navigation)
 }
 
@@ -380,6 +383,7 @@ inline void Navigation::SharedCtor(
     , decltype(_impl_.current_lat_){0}
     , decltype(_impl_.current_lon_){0}
     , decltype(_impl_.heading_deg_){0}
+    , decltype(_impl_.safety_states_){0}
     , /*decltype(_impl_._cached_size_)*/{}
   };
 }
@@ -410,8 +414,8 @@ void Navigation::Clear() {
 
   _impl_.waypoints_.Clear();
   ::memset(&_impl_.current_lat_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&_impl_.heading_deg_) -
-      reinterpret_cast<char*>(&_impl_.current_lat_)) + sizeof(_impl_.heading_deg_));
+      reinterpret_cast<char*>(&_impl_.safety_states_) -
+      reinterpret_cast<char*>(&_impl_.current_lat_)) + sizeof(_impl_.safety_states_));
   _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
 }
 
@@ -455,6 +459,14 @@ const char* Navigation::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
             CHK_(ptr);
             if (!ctx->DataAvailable(ptr)) break;
           } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<34>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // int32 safety_states = 5;
+      case 5:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 40)) {
+          _impl_.safety_states_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
         } else
           goto handle_unusual;
         continue;
@@ -525,6 +537,12 @@ uint8_t* Navigation::_InternalSerialize(
         InternalWriteMessage(4, repfield, repfield.GetCachedSize(), target, stream);
   }
 
+  // int32 safety_states = 5;
+  if (this->_internal_safety_states() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(5, this->_internal_safety_states(), target);
+  }
+
   if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
@@ -575,6 +593,11 @@ size_t Navigation::ByteSizeLong() const {
     total_size += 1 + 4;
   }
 
+  // int32 safety_states = 5;
+  if (this->_internal_safety_states() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_safety_states());
+  }
+
   return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
 }
 
@@ -615,6 +638,9 @@ void Navigation::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PRO
   if (raw_heading_deg != 0) {
     _this->_internal_set_heading_deg(from._internal_heading_deg());
   }
+  if (from._internal_safety_states() != 0) {
+    _this->_internal_set_safety_states(from._internal_safety_states());
+  }
   _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
 }
 
@@ -634,8 +660,8 @@ void Navigation::InternalSwap(Navigation* other) {
   _internal_metadata_.InternalSwap(&other->_internal_metadata_);
   _impl_.waypoints_.InternalSwap(&other->_impl_.waypoints_);
   ::PROTOBUF_NAMESPACE_ID::internal::memswap<
-      PROTOBUF_FIELD_OFFSET(Navigation, _impl_.heading_deg_)
-      + sizeof(Navigation::_impl_.heading_deg_)
+      PROTOBUF_FIELD_OFFSET(Navigation, _impl_.safety_states_)
+      + sizeof(Navigation::_impl_.safety_states_)
       - PROTOBUF_FIELD_OFFSET(Navigation, _impl_.current_lat_)>(
           reinterpret_cast<char*>(&_impl_.current_lat_),
           reinterpret_cast<char*>(&other->_impl_.current_lat_));

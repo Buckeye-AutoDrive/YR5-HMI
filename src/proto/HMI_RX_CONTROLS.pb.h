@@ -341,6 +341,7 @@ class Navigation final :
     kCurrentLatFieldNumber = 1,
     kCurrentLonFieldNumber = 2,
     kHeadingDegFieldNumber = 3,
+    kSafetyStatesFieldNumber = 5,
   };
   // repeated .Waypoint waypoints = 4;
   int waypoints_size() const;
@@ -387,6 +388,15 @@ class Navigation final :
   void _internal_set_heading_deg(float value);
   public:
 
+  // int32 safety_states = 5;
+  void clear_safety_states();
+  int32_t safety_states() const;
+  void set_safety_states(int32_t value);
+  private:
+  int32_t _internal_safety_states() const;
+  void _internal_set_safety_states(int32_t value);
+  public:
+
   // @@protoc_insertion_point(class_scope:Navigation)
  private:
   class _Internal;
@@ -399,6 +409,7 @@ class Navigation final :
     float current_lat_;
     float current_lon_;
     float heading_deg_;
+    int32_t safety_states_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -557,6 +568,26 @@ inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Waypoint >&
 Navigation::waypoints() const {
   // @@protoc_insertion_point(field_list:Navigation.waypoints)
   return _impl_.waypoints_;
+}
+
+// int32 safety_states = 5;
+inline void Navigation::clear_safety_states() {
+  _impl_.safety_states_ = 0;
+}
+inline int32_t Navigation::_internal_safety_states() const {
+  return _impl_.safety_states_;
+}
+inline int32_t Navigation::safety_states() const {
+  // @@protoc_insertion_point(field_get:Navigation.safety_states)
+  return _internal_safety_states();
+}
+inline void Navigation::_internal_set_safety_states(int32_t value) {
+  
+  _impl_.safety_states_ = value;
+}
+inline void Navigation::set_safety_states(int32_t value) {
+  _internal_set_safety_states(value);
+  // @@protoc_insertion_point(field_set:Navigation.safety_states)
 }
 
 #ifdef __GNUC__

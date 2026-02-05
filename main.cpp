@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
 
     engine.rootContext()->setContextProperty("NavigationBackend", navBackend);
     engine.rootContext()->setContextProperty("GlobalTx", txBackend);
+    engine.rootContext()->setContextProperty("HMIMapsDirUrl", QUrl::fromLocalFile("/home/hmi/HMI/maps/"));
 
     QObject::connect(
         &engine,
