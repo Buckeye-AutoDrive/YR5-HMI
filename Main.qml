@@ -11,7 +11,7 @@ ApplicationWindow {
     height: 720
     visible: true
     title: "CAR HMI Mk1"
-    // visibility: Window.FullScreen
+    visibility: Window.FullScreen
 
     Material.theme: Material.Dark
     Material.accent: "#ba0c2f"
@@ -28,10 +28,10 @@ ApplicationWindow {
     property real  rand: 0
     property int fsmRow: -1
 
-    property bool lanOn: false
+    property bool lanOn: true
     property bool gnssOn: false
     property bool sensorsOn: false
-    property bool autoOn: false
+    property bool autoOn: true
 
     property alias panelWidth: centerPanel.width
 
