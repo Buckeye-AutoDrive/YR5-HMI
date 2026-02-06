@@ -1,187 +1,260 @@
 // ui/DestList.qml
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import QtQuick.Layouts 1.15
 import HMI_Mk1 1.0 as HMI
 
 Item {
     id: root
-
-    // Emitted when a destination row is clicked
     signal destinationSelected(string pointLabel)
 
-    // Column width helper (same as DataTable)
-    function colW(totalWidth, ratio) {
-        const m = HMI.Theme.px(12), s = HMI.Theme.px(8);
-        const avail = Math.max(0, totalWidth - 2*m - 2*s);
-        return avail * ratio;
-    }
-
-    // Static route data
     ListModel {
         id: routeModel
 
+        // DYO Challenge
+        ListElement { kind: "section"; title: "DYO Challenge" }
+        ListElement { kind: "point";  point: "A"}
+        ListElement { kind: "point";  point: "B"}
+        ListElement { kind: "point";  point: "C"}
+        ListElement { kind: "point";  point: "D"}
+
         // Intersection Challenge
-        ListElement { kind: "section"; title: "Intersection Challenge Route" }
-        ListElement { kind: "point";  point: "K";   lat: "42.301455"; lon: "-83.698911" }
-        ListElement { kind: "point";  point: "i6";  lat: "42.300951"; lon: "-83.699103" }
-        ListElement { kind: "point";  point: "i7";  lat: "42.300394"; lon: "-83.699174" }
-        ListElement { kind: "point";  point: "i1";  lat: "42.300377"; lon: "-83.698655" }
-        ListElement { kind: "point";  point: "i2";  lat: "42.300383"; lon: "-83.697938" }
-        ListElement { kind: "point";  point: "u1";  lat: "42.299777"; lon: "-83.698670" }
-        ListElement { kind: "point";  point: "i10"; lat: "42.299331"; lon: "-83.699073" }
+        ListElement { kind: "section"; title: "Intersection Challenge" }
+        ListElement { kind: "point";  point: "K"}
+        ListElement { kind: "point";  point: "i6"}
+        ListElement { kind: "point";  point: "i7"}
+        ListElement { kind: "point";  point: "i1"}
+        ListElement { kind: "point";  point: "i2"}
+        ListElement { kind: "point";  point: "u1"}
+        ListElement { kind: "point";  point: "i10"}
 
         // Construction Challenge
-        ListElement { kind: "section"; title: "Construction Challenge Route" }
-        ListElement { kind: "point";  point: "A";   lat: "42.299886"; lon: "-83.697457" }
-        ListElement { kind: "point";  point: "D";   lat: "42.300926"; lon: "-83.698318" }
+        ListElement { kind: "section"; title: "Construction Challenge" }
+        ListElement { kind: "point";  point: "A"}
+        ListElement { kind: "point";  point: "D"}
     }
 
-    // ----- Header with buttons -----
-    Rectangle {
-        id: header
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-        height: HMI.Theme.px(44)
-        radius: HMI.Theme.radius
-        color: "#1A1A1A"
-        border.color: HMI.Theme.outline
+    // Flatten into rows:
+    // - sectionHeader rows (header-look)
+    // - tileRow rows (3 tiles)
+    ListModel { id: gridRows }
 
-        Row {
-            anchors.fill: parent
-            anchors.margins: HMI.Theme.px(12)
-            spacing: HMI.Theme.px(8)
+    function rebuildGridRows() {
+        gridRows.clear();
 
-            Button {
-                id: pointHeader
-                text: "Point"
-                width: colW(root.width, HMI.Theme.colSource)
-                flat: true
-                background: Rectangle { color: "transparent" }
-                contentItem: Text {
-                    text: pointHeader.text
-                    color: HMI.Theme.sub
-                    font.pixelSize: HMI.Theme.px(18)
-                    horizontalAlignment: Text.AlignLeft
-                    verticalAlignment: Text.AlignVCenter
-                    elide: Text.ElideRight
-                }
-                // Hook sorting etc. here later if needed
-            }
+        var rowPoints = [];
 
-            Button {
-                id: latHeader
-                text: "Lat."
-                width: colW(root.width, HMI.Theme.colId)
-                flat: true
-                background: Rectangle { color: "transparent" }
-                contentItem: Text {
-                    text: latHeader.text
-                    color: HMI.Theme.sub
-                    font.pixelSize: HMI.Theme.px(18)
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-            }
+        function flushRow() {
+            if (rowPoints.length === 0) return;
+            gridRows.append({
+                kind: "tileRow",
+                p0: rowPoints.length > 0 ? rowPoints[0] : "",
+                p1: rowPoints.length > 1 ? rowPoints[1] : "",
+                p2: rowPoints.length > 2 ? rowPoints[2] : ""
+            });
+            rowPoints = [];
+        }
 
-            Button {
-                id: lonHeader
-                text: "Long."
-                width: colW(root.width, HMI.Theme.colValue)
-                flat: true
-                background: Rectangle { color: "transparent" }
-                contentItem: Text {
-                    text: lonHeader.text
-                    color: HMI.Theme.sub
-                    font.pixelSize: HMI.Theme.px(18)
-                    horizontalAlignment: Text.AlignRight
-                    verticalAlignment: Text.AlignVCenter
-                }
+        for (var i = 0; i < routeModel.count; i++) {
+            var e = routeModel.get(i);
+
+            if (e.kind === "section") {
+                flushRow();
+                // same data, but rendered with the "header" look
+                gridRows.append({ kind: "sectionHeader", title: e.title });
+            } else {
+                rowPoints.push(e.point);
+                if (rowPoints.length === 3) flushRow();
             }
         }
+        flushRow();
     }
 
-    // ----- Body (same scroll behavior as DataTable) -----
-    ListView {
-        id: table
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: header.bottom
-        anchors.bottom: parent.bottom
+    Component.onCompleted: rebuildGridRows()
 
-        model: routeModel
+    // ----- Body -----
+    ListView {
+        id: view
+        anchors.fill: parent
+
+        model: gridRows
         spacing: HMI.Theme.px(6)
         clip: true
         boundsBehavior: Flickable.DragAndOvershootBounds
         ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff }
 
-        delegate: Rectangle {
-            width: table.width
-            height: kind === "section" ? HMI.Theme.px(40) : HMI.Theme.px(52)
-            radius: HMI.Theme.radius
-            color: kind === "section" ? "#151515" : "#171717"
-            border.color: kind === "section" ? "transparent" : HMI.Theme.outline
+        delegate: Item {
+            width: view.width
 
-            // Two row layouts: one for section headers, one for actual points
-            Row {
-                id: sectionRow
-                anchors.fill: parent
-                anchors.margins: HMI.Theme.px(12)
-                spacing: HMI.Theme.px(8)
-                visible: kind === "section"
+            // geometry for tile rows
+            readonly property int m: HMI.Theme.px(2)
+            readonly property int gap: HMI.Theme.px(8)
+            readonly property real tileSize: Math.floor((view.width - 2*m - 2*gap) / 3)
 
-                Label {
+            height: (kind === "sectionHeader")
+                    ? HMI.Theme.px(44)
+                    : (tileSize + 2*m)
+
+            // --- Section header, same look as your header Rectangle ---
+            Rectangle {
+                visible: kind === "sectionHeader"
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                height: HMI.Theme.px(44)
+
+                radius: HMI.Theme.radius
+                color: "#1A1A1A"
+                border.color: HMI.Theme.outline
+
+                Text {
+                    anchors.fill: parent
+                    anchors.margins: HMI.Theme.px(12)
                     text: title
-                    color: HMI.Theme.accent
+                    color: HMI.Theme.text
                     font.pixelSize: HMI.Theme.px(18)
-                    font.bold: true
-                    width: table.width - 2 * HMI.Theme.px(12)
+                    font.bold: false
+                    verticalAlignment: Text.AlignVCenter
                     elide: Text.ElideRight
                 }
+
             }
 
-            Row {
-                id: pointRow
+            // --- 3 tiles row ---
+            Item {
+                visible: kind === "tileRow"
                 anchors.fill: parent
-                anchors.margins: HMI.Theme.px(12)
-                spacing: HMI.Theme.px(8)
-                visible: kind === "point"
 
-                Label {
-                    text: point
-                    color: HMI.Theme.text
-                    font.pixelSize: HMI.Theme.px(18)
-                    elide: Text.ElideRight
-                    width: colW(table.width, HMI.Theme.colSource)
-                }
+                Row {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.verticalCenter: parent.verticalCenter
 
-                Label {
-                    text: lat
-                    color: HMI.Theme.text
-                    font.pixelSize: HMI.Theme.px(18)
-                    width: colW(table.width, HMI.Theme.colId)
-                    horizontalAlignment: Text.AlignHCenter
-                    font.family: "monospace"
-                }
+                    // use margins for spacing around the 3 tiles
+                    anchors.leftMargin: m
+                    anchors.rightMargin: m
+                    spacing: gap
 
-                Label {
-                    text: lon
-                    color: HMI.Theme.text
-                    font.pixelSize: HMI.Theme.px(18)
-                    width: colW(table.width, HMI.Theme.colValue)
-                    horizontalAlignment: Text.AlignRight
-                    font.family: "monospace"
-                }
-            }
+                    // helper component (keeps code DRY for p0/p1/p2)
+                    component TileButton: Rectangle {
+                        id: tile
+                        property string labelText: ""
+                        signal clicked(string label)
 
-            // Click to open the AVWarnPage overlay
-            MouseArea {
-                anchors.fill: parent
-                enabled: kind === "point"
-                cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-                onClicked: {
-                    if (kind === "point")
-                        root.destinationSelected(point);
+                        width: tileSize
+                        height: tileSize
+                        radius: HMI.Theme.radius
+
+                        readonly property bool hasLabel: labelText && labelText.length
+                        color: hasLabel ? "#171717" : "transparent"
+                        border.color: hasLabel ? HMI.Theme.outline : "transparent"
+
+                        // subtle press "wave" overlay
+                        Rectangle {
+                            id: ripple
+                            anchors.centerIn: parent
+                            width: 0
+                            height: 0
+                            radius: HMI.Theme.radius
+                            color: HMI.Theme.text
+                            opacity: 0.0
+                            visible: tile.hasLabel
+                        }
+
+                        // label
+                        Text {
+                            anchors.centerIn: parent
+                            text: tile.labelText
+                            color: mouse.pressed ? HMI.Theme.sub : HMI.Theme.text
+                            font.pixelSize: HMI.Theme.px(28)
+                            font.bold: true
+                            visible: tile.hasLabel
+                        }
+
+                        MouseArea {
+                            id: mouse
+                            anchors.fill: parent
+                            enabled: tile.hasLabel
+                            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+
+                            onPressed: {
+                                // quick "wave" expand + fade (built-in animations)
+                                ripple.width = 0
+                                ripple.height = 0
+                                ripple.opacity = 0.0
+                                rippleAnim.stop()
+                                rippleAnim.start()
+                            }
+
+                            onClicked: tile.clicked(tile.labelText)
+                        }
+
+                        ParallelAnimation {
+                            id: rippleAnim
+
+                            // expand the circle
+                            NumberAnimation {
+                                target: ripple
+                                property: "width"
+                                from: 0
+                                to: tile.width
+                                duration: 220
+                                easing.type: Easing.OutCubic
+                            }
+                            NumberAnimation {
+                                target: ripple
+                                property: "height"
+                                from: 0
+                                to: tile.height
+                                duration: 220
+                                easing.type: Easing.OutCubic
+                            }
+
+                            // fade in then fade out
+                            SequentialAnimation {
+                                NumberAnimation {
+                                    target: ripple
+                                    property: "opacity"
+                                    from: 0.0
+                                    to: 0.10
+                                    duration: 90
+                                    easing.type: Easing.OutQuad
+                                }
+                                NumberAnimation {
+                                    target: ripple
+                                    property: "opacity"
+                                    from: 0.10
+                                    to: 0.0
+                                    duration: 160
+                                    easing.type: Easing.OutQuad
+                                }
+                            }
+                        }
+
+                        // optional: tiny press scale (feels like a button)
+                        scale: mouse.pressed ? 0.98 : 1.0
+                        Behavior on scale {
+                            NumberAnimation { duration: 90; easing.type: Easing.OutQuad }
+                        }
+                    }
+
+                    // Tile 0
+                    TileButton {
+                        labelText: p0
+                        onClicked: root.destinationSelected(label)
+                    }
+
+                    // Tile 1
+                    TileButton {
+                        labelText: p1
+                        onClicked: root.destinationSelected(label)
+                    }
+
+                    // Tile 2
+                    TileButton {
+                        labelText: p2
+                        onClicked: root.destinationSelected(label)
+                    }
                 }
             }
         }

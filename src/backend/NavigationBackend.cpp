@@ -60,17 +60,17 @@ QVariantList NavigationBackend::waypointPath() const
 QString NavigationBackend::fsmStateText() const
 {
     switch (m_safetyStates) {
-        case 0:  return "STATE_0";
-        case 1:  return "STATE_STARTUP";
-        case 2:  return "STATE_PASSIVE_MODE";
-        case 3:  return "STATE_ACTIVATION_CONDITION";
-        case 4:  return "STATE_BRAKE_ACTIVATION";
-        case 5:  return "STATE_WAIT_BRAKE_RELEASE";
-        case 6:  return "STATE_STEER_ACTIVATION";
-        case 7:  return "STATE_PROPULSION_ACTIVATION";
-        case 8:  return "STATE_AV";
-        case 9:  return "STATE_DEACTIVATION";
-        case 10: return "STATE_ACTIVATION_FAILURE";
+        case 0:  return "DEFAULT";
+        case 1:  return "STARTUP";
+        case 2:  return "PASSIVE MODE";
+        case 3:  return "ACTIVATION CONDITION";
+        case 4:  return "BRAKE ACTIVATION";
+        case 5:  return "WAIT BRAKE RELEASE";
+        case 6:  return "STEER ACTIVATION";
+        case 7:  return "PROPULSION ACTIVATION";
+        case 8:  return "AV ACTIVE";
+        case 9:  return "DEACTIVATION";
+        case 10: return "ACTIVATION FAILURE";
         default: return QString("STATE_%1").arg(m_safetyStates);
     }
 }

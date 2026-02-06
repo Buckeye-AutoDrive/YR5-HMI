@@ -31,6 +31,18 @@ qt_add_qml_module(appHMI_Mk1
         pages/AVActionsPage.qml
         pages/CamerasPage.qml
         pages/AVWarnPage.qml
+
+    RESOURCES
+        src/fonts/UniversalSans.ttf
+        src/fonts/UniversalSansDisplay.ttf
+        src/icons/auto_on.svg
+        src/icons/auto_off.svg
+        src/icons/gnss_on.svg
+        src/icons/gnss_off.svg
+        src/icons/lan_on.svg
+        src/icons/lan_off.svg
+        src/icons/sensors_on.svg
+        src/icons/sensors_off.svg
 )
 
 # Protobuf
