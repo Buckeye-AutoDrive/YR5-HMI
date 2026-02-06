@@ -14,6 +14,18 @@ NavigationBackend::NavigationBackend(QObject* parent)
 
     connect(m_rx, &GlobalReceiver::controlsMessage,
             this, &NavigationBackend::onControlsMessage);
+
+    // LAN icon follows GlobalReceiver connection state
+    connect(m_rx, &GlobalReceiver::lanConnectedChanged, this, [this](bool on){
+        setLanOn(on);
+    });
+
+    // GNSS: go OFF if we stop receiving pose updates for a short time
+    m_gnssTimeoutTimer.setInterval(m_gnssTimeout);
+    m_gnssTimeoutTimer.setSingleShot(true);
+    connect(&m_gnssTimeoutTimer, &QTimer::timeout, this, [this](){
+        setGnssOn(false);
+    });
 }
 
 void NavigationBackend::onControlsMessage(const Navigation& msg)
@@ -23,12 +35,19 @@ void NavigationBackend::onControlsMessage(const Navigation& msg)
     m_currentLon  = msg.current_lon();
     m_headingDeg  = msg.heading_deg();
 
+    // GNSS ON while messages keep arriving
+    setGnssOn(true);
+    m_gnssTimeoutTimer.start();
+
     // ---- FSM / safety state ----
     const int newSafety = msg.safety_states();
     if (newSafety != m_safetyStates) {
         m_safetyStates = newSafety;
         emit safetyStatesChanged();
     }
+
+    // AUTO ON when AV ACTIVE (state 8)
+    setAutoOn(m_safetyStates == 8);
 
     // Notify pose/UI update (10 Hz etc.)
     emit updated();
@@ -73,4 +92,14 @@ QString NavigationBackend::fsmStateText() const
         case 10: return "ACTIVATION FAILURE";
         default: return QString("STATE_%1").arg(m_safetyStates);
     }
+}
+
+void NavigationBackend::setGnssTimeout(int timeout)
+{
+    if (m_gnssTimeout == timeout) return;
+    if (timeout < 100 || timeout > 10000) return; // Validate range
+    
+    m_gnssTimeout = timeout;
+    m_gnssTimeoutTimer.setInterval(timeout);
+    emit gnssTimeoutChanged();
 }

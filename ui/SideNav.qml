@@ -50,7 +50,7 @@ Item {
                 width: list.width
                 implicitHeight: HMI.Theme.px(72)
                 radius: HMI.Theme.px(14)
-                color: list.currentIndex === index ? "#1E1E1E" : "#161616"
+                color: list.currentIndex === index ? HMI.Theme.center : HMI.Theme.surface
                 border.color: list.currentIndex === index ? HMI.Theme.accent : HMI.Theme.outline
                 border.width: list.currentIndex === index ? 2 : 1
 

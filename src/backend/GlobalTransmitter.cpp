@@ -259,4 +259,3 @@ void GlobalTransmitter::onReconnectTimeout()
 
     connectChannel(m_hmi);
 }
-

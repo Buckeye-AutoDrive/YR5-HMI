@@ -6,6 +6,7 @@ add_library(HMI_Backend
     backend/NavigationBackend.cpp
     backend/GlobalReceiver.cpp
     backend/GlobalTransmitter.cpp
+    backend/SettingsBackend.cpp
     proto/HMI_RX_CONTROLS.pb.cc
     proto/HMI_TX_CONTROLS.pb.cc
 )

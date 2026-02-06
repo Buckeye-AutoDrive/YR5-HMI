@@ -13,9 +13,15 @@ ApplicationWindow {
     title: "CAR HMI Mk1"
     visibility: Window.FullScreen
 
+    font.family: HMI.Theme.fontBody
+    font.pixelSize: 16
+
     Material.theme: Material.Dark
     Material.accent: "#ba0c2f"
     color: HMI.Theme.bg
+
+    // Keep Theme in sync with Settings (map and camera feeds do not use Theme, so they stay unchanged)
+    Binding { target: HMI.Theme; property: "themeDark"; value: SettingsBackend.themeDark }
 
     // demo telemetry (unchanged) ...
     property real  spd: 34
@@ -103,8 +109,9 @@ ApplicationWindow {
             Layout.fillHeight: true
             Layout.fillWidth: true
             Layout.preferredWidth: app.width * 0.22
+            currentIndex: 0
 
-            model: ["Cameras", "Sensors", "Map", "Destination", "AV Actions", "System Settings", "Quit"]
+            model: ["Map", "Cameras", "Data Logger", "AV Actions", "System Settings", "Quit"]
 
             onActivated: function(i) {
                 if (i === model.length - 1) {
@@ -114,9 +121,11 @@ ApplicationWindow {
                 }
 
                 // normal navigation
-                if (i === 0)        stack.currentIndex = 0   // Cameras
-                else if (i === 2)   stack.currentIndex = 1   // Map
-                else if (i === 4)   stack.currentIndex = 2   // AV Actions
+                if (i === 0)        stack.currentIndex = 0   // Map
+                else if (i === 1)   stack.currentIndex = 1   // Cameras
+                else if (i === 2)   stack.currentIndex = 4   // Data Logger
+                else if (i === 3)   stack.currentIndex = 2   // AV Actions
+                else if (i === 4)   stack.currentIndex = 3   // System Settings
                 else                stack.currentIndex = 0
             }
         }
@@ -132,7 +141,7 @@ ApplicationWindow {
                 id: centerPanel
                 anchors.fill: parent
                 radius: HMI.Theme.radius
-                color: "#181818"
+                color: HMI.Theme.surface
                 border.color: HMI.Theme.outline
             }
 
@@ -152,10 +161,10 @@ ApplicationWindow {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: HMI.Theme.px(10)
 
-                        StatusIcon { kind: "lan";     on: lanOn }
-                        StatusIcon { kind: "gnss";    on: gnssOn }
-                        StatusIcon { kind: "sensors"; on: sensorsOn }
-                        StatusIcon { kind: "auto";    on: autoOn }
+                        StatusIcon { kind: "lan";     on: NavigationBackend.lanOn }
+                        StatusIcon { kind: "gnss";    on: NavigationBackend.gnssOn }
+                        StatusIcon { kind: "sensors"; on: false }
+                        StatusIcon { kind: "auto";    on: NavigationBackend.autoOn }
                     }
 
                     // CENTER: title (stays centered)
@@ -163,10 +172,12 @@ ApplicationWindow {
                         id: pageTitle
                         anchors.centerIn: parent
 
-                        text: stack.currentIndex === 0 ? "Cameras"
-                             : stack.currentIndex === 1 ? "Map"
+                        text: stack.currentIndex === 0 ? "Map"
+                             : stack.currentIndex === 1 ? "Cameras"
                              : stack.currentIndex === 2 ? "AV Actions"
-                             : "Cameras"
+                             : stack.currentIndex === 3 ? "System Settings"
+                             : stack.currentIndex === 4 ? "Data Logger"
+                             : "Map"
 
                         color: HMI.Theme.text
                         font.pixelSize: HMI.Theme.px(34)
@@ -191,9 +202,11 @@ ApplicationWindow {
                     Layout.fillHeight: true
                     currentIndex: 0
 
-                    HMI.CamerasPage {}
                     HMI.MapPage {}
+                    HMI.CamerasPage {}
                     HMI.AVActionsPage {}
+                    HMI.SettingsPage {}
+                    HMI.LoggerPage {}
                 }
             }
         }
@@ -217,7 +230,7 @@ ApplicationWindow {
                 spacing: HMI.Theme.px(12)
 
                 Label {
-                    text: stack.currentIndex === 1 ? "Destinations"
+                    text: stack.currentIndex === 0 ? "Destinations"
                                                    : "Data monitor"
                     color: HMI.Theme.text
                     font.pixelSize: HMI.Theme.px(32)
@@ -234,7 +247,7 @@ ApplicationWindow {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
 
-                    currentIndex: stack.currentIndex === 1 ? 1 : 0
+                    currentIndex: stack.currentIndex === 0 ? 1 : 0
 
                     // index 0 — telemetry table
                     HMI.DataTable {
@@ -270,7 +283,7 @@ ApplicationWindow {
         Rectangle {
             anchors.fill: parent
             radius: HMI.Theme.px(10)
-            color: "#161616"
+            color: HMI.Theme.surface
             border.color: HMI.Theme.outline
         }
 
@@ -308,8 +321,8 @@ ApplicationWindow {
             if (s === 8)  return "#12301F"   // AV
             if (s === 10) return "#3A1212"   // FAIL
             if (s === 9)  return "#2A1F10"   // OFF
-            if (s === 1)  return "#1A1A1A"   // STARTUP
-            return "#161616"
+            if (s === 1)  return HMI.Theme.center   // STARTUP
+            return HMI.Theme.surface   // DEFAULT and others
         }
 
         function fgFor(s) {

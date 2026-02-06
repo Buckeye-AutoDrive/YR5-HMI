@@ -18,9 +18,13 @@ set_source_files_properties(ui/Theme.qml PROPERTIES
     QT_QML_SINGLETON_TYPE TRUE
 )
 
+# Generate qmldir for ui/ and pages/ so subdirectory QML components import correctly (Qt 6.8+)
+qt_policy(SET QTP0004 NEW)
+
 qt_add_qml_module(appHMI_Mk1
     URI HMI_Mk1
     VERSION 1.0
+    RESOURCE_PREFIX "/qt/qml"
     QML_FILES
         Main.qml
         ui/Theme.qml
@@ -31,6 +35,8 @@ qt_add_qml_module(appHMI_Mk1
         pages/AVActionsPage.qml
         pages/CamerasPage.qml
         pages/AVWarnPage.qml
+        pages/SettingsPage.qml
+        pages/LoggerPage.qml
 
     RESOURCES
         src/fonts/UniversalSans.ttf
@@ -43,6 +49,10 @@ qt_add_qml_module(appHMI_Mk1
         src/icons/lan_off.svg
         src/icons/sensors_on.svg
         src/icons/sensors_off.svg
+        src/icons/record.svg
+        src/icons/pause.svg
+        src/icons/resume.svg
+        src/icons/discard.svg
 )
 
 # Protobuf

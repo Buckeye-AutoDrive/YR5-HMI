@@ -55,6 +55,9 @@ void GlobalReceiver::onNewConnection()
         connect(s, &QTcpSocket::readyRead, this, &GlobalReceiver::onReadyRead);
         connect(s, &QTcpSocket::disconnected, this, &GlobalReceiver::onDisconnected);
 
+        // LAN ON when a connection is accepted
+        setLanConnected(true);
+
         qInfo() << "[GlobalReceiver] Accepted connection on port" << port
                 << "from" << s->peerAddress().toString() << ":" << s->peerPort();
     }
@@ -84,6 +87,11 @@ void GlobalReceiver::onDisconnected()
     if (m_conns.contains(s)) {
         delete m_conns.take(s);
     }
+
+    // LAN OFF when no active sockets remain
+    if (m_conns.isEmpty())
+        setLanConnected(false);
+
     s->deleteLater();
 }
 

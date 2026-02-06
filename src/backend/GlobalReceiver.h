@@ -29,6 +29,8 @@ signals:
     // Typed message
     void controlsMessage(const Navigation& msg);
 
+    void lanConnectedChanged(bool connected);
+
     // Future:
     // void perceptionRaw(const QByteArray& payload);
     // void perceptionMessage(const Perception& msg);
@@ -57,4 +59,12 @@ private:
     QHash<quint16, StreamKind> m_portKinds;
 
     void processFrame(quint16 port, const QByteArray& payload);
+
+    bool m_lanConnected = false;
+
+    void setLanConnected(bool v) {
+        if (m_lanConnected == v) return;
+        m_lanConnected = v;
+        emit lanConnectedChanged(m_lanConnected);
+    }
 };

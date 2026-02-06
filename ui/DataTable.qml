@@ -17,7 +17,7 @@ Item {
         id: header
         anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top
         height: HMI.Theme.px(44); radius: HMI.Theme.radius
-        color: "#1A1A1A"; border.color: HMI.Theme.outline
+        color: HMI.Theme.center; border.color: HMI.Theme.outline
         Row {
             anchors.fill: parent; anchors.margins: HMI.Theme.px(12); spacing: HMI.Theme.px(8)
             Label { text: "Source"; color: HMI.Theme.sub; font.pixelSize: HMI.Theme.px(18); width: colW(root.width, HMI.Theme.colSource) }
@@ -39,7 +39,7 @@ Item {
 
         delegate: Rectangle {
             width: table.width; height: HMI.Theme.px(52)
-            radius: HMI.Theme.radius; color: "#171717"; border.color: HMI.Theme.outline
+            radius: HMI.Theme.radius; color: HMI.Theme.surface; border.color: HMI.Theme.outline
             readonly property bool lm: typeof modelData === "undefined" // true if ListModel
 
             Row {

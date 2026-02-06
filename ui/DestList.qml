@@ -104,7 +104,7 @@ Item {
                 height: HMI.Theme.px(44)
 
                 radius: HMI.Theme.radius
-                color: "#1A1A1A"
+                color: HMI.Theme.center
                 border.color: HMI.Theme.outline
 
                 Text {
@@ -146,7 +146,7 @@ Item {
                         radius: HMI.Theme.radius
 
                         readonly property bool hasLabel: labelText && labelText.length
-                        color: hasLabel ? "#171717" : "transparent"
+                        color: hasLabel ? HMI.Theme.surface : "transparent"
                         border.color: hasLabel ? HMI.Theme.outline : "transparent"
 
                         // subtle press "wave" overlay
