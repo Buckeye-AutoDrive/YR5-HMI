@@ -9,6 +9,13 @@ Item {
     Layout.fillHeight: true
 
     property var settings: SettingsBackend  // Context property from main.cpp
+    property string backupOutcome: ""
+    property string backupButtonDisplayText: {
+        if (LogBackupBackend && LogBackupBackend.backupInProgress) return "Uploading..."
+        if (backupOutcome === "success") return "Uploaded!"
+        if (backupOutcome === "failure") return "Failed."
+        return "Backup"
+    }
 
     Flickable {
         anchors.fill: parent
@@ -50,7 +57,7 @@ Item {
                     }
 
                     SettingRow {
-                        label: "TX Host"
+                        label: "Intel IP"
                         value: settings.txHost
                         onValueEdited: (value) => { settings.txHost = value }
                     }
@@ -77,7 +84,33 @@ Item {
                         inputType: "number"
                         minValue: 1
                         maxValue: 65535
-                        note: "Requires app restart to take effect"
+                        note: "Controls stream. Save and restart to apply."
+                    }
+
+                    SettingRow {
+                        label: "RX Port (Perception)"
+                        value: String(settings.rxPortPerception)
+                        onValueEdited: (value) => {
+                            var port = parseInt(value)
+                            if (!isNaN(port)) settings.rxPortPerception = port
+                        }
+                        inputType: "number"
+                        minValue: 1
+                        maxValue: 65535
+                        note: "TX not ready; not started by default"
+                    }
+
+                    SettingRow {
+                        label: "RX Port (Logger)"
+                        value: String(settings.rxPortLogger)
+                        onValueEdited: (value) => {
+                            var port = parseInt(value)
+                            if (!isNaN(port)) settings.rxPortLogger = port
+                        }
+                        inputType: "number"
+                        minValue: 1
+                        maxValue: 65535
+                        note: "CAN batch stream. Save and restart to apply."
                     }
 
                     SettingRow {
@@ -171,6 +204,202 @@ Item {
                 }
             }
 
+            // Data Logger Settings (WebDAV backup)
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: dataLoggerColumn.implicitHeight + HMI.Theme.px(32)
+                radius: HMI.Theme.px(18)
+                color: HMI.Theme.center
+                border.color: HMI.Theme.outline
+                border.width: 1
+
+                ColumnLayout {
+                    id: dataLoggerColumn
+                    anchors.fill: parent
+                    anchors.margins: HMI.Theme.px(16)
+                    spacing: HMI.Theme.px(10)
+
+                    Label {
+                        text: "Data Logger Settings"
+                        color: HMI.Theme.text
+                        font.pixelSize: HMI.Theme.px(24)
+                        font.bold: true
+                        Layout.fillWidth: true
+                    }
+
+                    SettingRow {
+                        label: "Auto backup logs"
+                        value: settings.autoBackupLogs ? "true" : "false"
+                        onValueEdited: (value) => { settings.autoBackupLogs = (value === "true") }
+                        inputType: "toggle"
+                        note: "Automatically back up logs to the server when enabled"
+                    }
+
+                    SettingRow {
+                        label: "WebDAV server"
+                        value: settings.webdavServerUrl
+                        onValueEdited: (value) => { settings.webdavServerUrl = value }
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: HMI.Theme.px(44)
+                        spacing: HMI.Theme.px(12)
+                        Label {
+                            Layout.preferredWidth: HMI.Theme.px(200)
+                            Layout.minimumWidth: HMI.Theme.px(160)
+                            text: "WebDAV credentials"
+                            color: HMI.Theme.text
+                            font.pixelSize: HMI.Theme.px(18)
+                            verticalAlignment: Text.AlignVCenter
+                            elide: Text.ElideRight
+                        }
+                        Item {
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: HMI.Theme.px(42)
+                            Layout.minimumWidth: HMI.Theme.px(100)
+                            Layout.leftMargin: HMI.Theme.px(8)
+                            RowLayout {
+                                anchors.fill: parent
+                                spacing: HMI.Theme.px(8)
+                                TextField {
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: HMI.Theme.px(42)
+                                    text: settings.webdavUsername
+                                    placeholderText: "Username"
+                                    placeholderTextColor: HMI.Theme.sub
+                                    color: HMI.Theme.text
+                                    font.pixelSize: HMI.Theme.px(19)
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: HMI.Theme.px(12)
+                                    rightPadding: HMI.Theme.px(12)
+                                    topPadding: HMI.Theme.px(8)
+                                    bottomPadding: HMI.Theme.px(8)
+                                    background: Rectangle {
+                                        radius: HMI.Theme.px(10)
+                                        color: HMI.Theme.surface
+                                        border.color: parent.activeFocus ? HMI.Theme.accent : HMI.Theme.outline
+                                        border.width: parent.activeFocus ? 2 : 1
+                                    }
+                                    onEditingFinished: settings.webdavUsername = text
+                                }
+                                TextField {
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: HMI.Theme.px(42)
+                                    text: settings.webdavPassword
+                                    placeholderText: "Password"
+                                    placeholderTextColor: HMI.Theme.sub
+                                    echoMode: TextInput.Password
+                                    color: HMI.Theme.text
+                                    font.pixelSize: HMI.Theme.px(19)
+                                    verticalAlignment: Text.AlignVCenter
+                                    leftPadding: HMI.Theme.px(12)
+                                    rightPadding: HMI.Theme.px(12)
+                                    topPadding: HMI.Theme.px(8)
+                                    bottomPadding: HMI.Theme.px(8)
+                                    background: Rectangle {
+                                        radius: HMI.Theme.px(10)
+                                        color: HMI.Theme.surface
+                                        border.color: parent.activeFocus ? HMI.Theme.accent : HMI.Theme.outline
+                                        border.width: parent.activeFocus ? 2 : 1
+                                    }
+                                    onEditingFinished: settings.webdavPassword = text
+                                }
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: HMI.Theme.px(44)
+                        spacing: HMI.Theme.px(10)
+                        Label {
+                            text: "Back up logs now"
+                            color: HMI.Theme.text
+                            font.pixelSize: HMI.Theme.px(18)
+                            Layout.alignment: Qt.AlignVCenter
+                        }
+                        Item { Layout.fillWidth: true }
+                        SettingsButton {
+                            id: backupLogsButton
+                            Layout.preferredHeight: HMI.Theme.px(50)
+                            Layout.preferredWidth: HMI.Theme.px(140)
+                            label: backupButtonDisplayText
+                            isAccent: false
+                            enabled: !(LogBackupBackend && LogBackupBackend.backupInProgress)
+                            onClicked: {
+                                root.backupOutcome = ""
+                                if (LogBackupBackend)
+                                    LogBackupBackend.startBackup()
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Terminal Buttons (first 4 customizable: label + command)
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: terminalColumn.implicitHeight + HMI.Theme.px(32)
+                radius: HMI.Theme.px(18)
+                color: HMI.Theme.center
+                border.color: HMI.Theme.outline
+                border.width: 1
+
+                ColumnLayout {
+                    id: terminalColumn
+                    anchors.fill: parent
+                    anchors.margins: HMI.Theme.px(16)
+                    spacing: HMI.Theme.px(10)
+
+                    Label {
+                        text: "Terminal Buttons"
+                        color: HMI.Theme.text
+                        font.pixelSize: HMI.Theme.px(24)
+                        font.bold: true
+                        Layout.fillWidth: true
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: HMI.Theme.px(36)
+                        spacing: HMI.Theme.px(8)
+                        Label { text: ""; Layout.preferredWidth: HMI.Theme.px(32); color: HMI.Theme.sub; font.pixelSize: HMI.Theme.px(16) }
+                        Label { text: "Label"; Layout.preferredWidth: HMI.Theme.px(140); color: HMI.Theme.sub; font.pixelSize: HMI.Theme.px(16) }
+                        Label { text: "Command"; Layout.fillWidth: true; color: HMI.Theme.sub; font.pixelSize: HMI.Theme.px(16) }
+                    }
+
+                    TerminalButtonRow {
+                        rowLabel: "1"
+                        labelValue: settings.terminalButton1Label
+                        commandValue: settings.terminalButton1Command
+                        onLabelEdited: (v) => settings.terminalButton1Label = v
+                        onCommandEdited: (v) => settings.terminalButton1Command = v
+                    }
+                    TerminalButtonRow {
+                        rowLabel: "2"
+                        labelValue: settings.terminalButton2Label
+                        commandValue: settings.terminalButton2Command
+                        onLabelEdited: (v) => settings.terminalButton2Label = v
+                        onCommandEdited: (v) => settings.terminalButton2Command = v
+                    }
+                    TerminalButtonRow {
+                        rowLabel: "3"
+                        labelValue: settings.terminalButton3Label
+                        commandValue: settings.terminalButton3Command
+                        onLabelEdited: (v) => settings.terminalButton3Label = v
+                        onCommandEdited: (v) => settings.terminalButton3Command = v
+                    }
+                    TerminalButtonRow {
+                        rowLabel: "4"
+                        labelValue: settings.terminalButton4Label
+                        commandValue: settings.terminalButton4Command
+                        onLabelEdited: (v) => settings.terminalButton4Label = v
+                        onCommandEdited: (v) => settings.terminalButton4Command = v
+                    }
+                }
+            }
+
             // Camera Settings Section
             Rectangle {
                 Layout.fillWidth: true
@@ -195,24 +424,35 @@ Item {
                     }
 
                     SettingRow {
+                        label: "Use RTSP Stream"
+                        value: settings.useRtspStream ? "true" : "false"
+                        onValueEdited: (value) => { settings.useRtspStream = (value === "true") }
+                        inputType: "toggle"
+                    }
+
+                    SettingRow {
+                        visible: settings.useRtspStream
                         label: "Left Camera URL"
                         value: settings.leftCameraUrl
                         onValueEdited: (value) => { settings.leftCameraUrl = value }
                     }
 
                     SettingRow {
+                        visible: settings.useRtspStream
                         label: "Center Camera URL"
                         value: settings.centerCameraUrl
                         onValueEdited: (value) => { settings.centerCameraUrl = value }
                     }
 
                     SettingRow {
+                        visible: settings.useRtspStream
                         label: "Bumper Camera URL"
                         value: settings.bumperCameraUrl
                         onValueEdited: (value) => { settings.bumperCameraUrl = value }
                     }
 
                     SettingRow {
+                        visible: settings.useRtspStream
                         label: "Right Camera URL"
                         value: settings.rightCameraUrl
                         onValueEdited: (value) => { settings.rightCameraUrl = value }
@@ -280,6 +520,35 @@ Item {
                 visible: text !== ""
             }
         }
+
+        // Tap outside inputs to drop focus (clear highlight); event propagates so tapping a field still focuses it
+        MouseArea {
+            anchors.fill: parent
+            z: 1
+            propagateComposedEvents: true
+            onPressed: (mouse) => { mouse.accepted = false }
+            onClicked: (mouse) => {
+                root.forceActiveFocus()
+                if (typeof Qt.inputMethod !== "undefined" && Qt.inputMethod.hide)
+                    Qt.inputMethod.hide()
+                mouse.accepted = false
+            }
+        }
+    }
+
+    Connections {
+        target: LogBackupBackend
+        function onBackupFinished(success, message) {
+            root.backupOutcome = success ? "success" : "failure"
+            backupOutcomeResetTimer.start()
+        }
+    }
+
+    Timer {
+        id: backupOutcomeResetTimer
+        interval: 5000
+        repeat: false
+        onTriggered: root.backupOutcome = ""
     }
 
     // Button without default hover (avoids solid white box on hover)
@@ -301,7 +570,7 @@ Item {
         Label {
             anchors.centerIn: parent
             text: btn.label
-            color: HMI.Theme.text
+            color: btn.isAccent ? HMI.Theme.textOnAccent : HMI.Theme.text
             font.pixelSize: HMI.Theme.px(20)
             font.bold: true
         }
@@ -316,6 +585,66 @@ Item {
         }
     }
 
+    component TerminalButtonRow : RowLayout {
+        id: terminalRow
+        Layout.fillWidth: true
+        Layout.preferredHeight: HMI.Theme.px(44)
+        spacing: HMI.Theme.px(8)
+
+        property string rowLabel: "1"
+        property string labelValue: ""
+        property string commandValue: ""
+        signal labelEdited(string value)
+        signal commandEdited(string value)
+
+        Label {
+            Layout.preferredWidth: HMI.Theme.px(32)
+            text: terminalRow.rowLabel
+            color: HMI.Theme.sub
+            font.pixelSize: HMI.Theme.px(18)
+            verticalAlignment: Text.AlignVCenter
+        }
+
+        TextField {
+            id: labelField
+            Layout.preferredWidth: HMI.Theme.px(140)
+            Layout.minimumWidth: HMI.Theme.px(100)
+            Layout.preferredHeight: HMI.Theme.px(42)
+            text: terminalRow.labelValue
+            color: HMI.Theme.text
+            font.pixelSize: HMI.Theme.px(18)
+            verticalAlignment: Text.AlignVCenter
+            leftPadding: HMI.Theme.px(10)
+            rightPadding: HMI.Theme.px(10)
+            background: Rectangle {
+                radius: HMI.Theme.px(10)
+                color: HMI.Theme.surface
+                border.color: labelField.activeFocus ? HMI.Theme.accent : HMI.Theme.outline
+                border.width: labelField.activeFocus ? 2 : 1
+            }
+            onEditingFinished: terminalRow.labelEdited(text)
+        }
+
+        TextField {
+            id: commandField
+            Layout.fillWidth: true
+            Layout.preferredHeight: HMI.Theme.px(42)
+            text: terminalRow.commandValue
+            color: HMI.Theme.text
+            font.pixelSize: HMI.Theme.px(18)
+            verticalAlignment: Text.AlignVCenter
+            leftPadding: HMI.Theme.px(10)
+            rightPadding: HMI.Theme.px(10)
+            background: Rectangle {
+                radius: HMI.Theme.px(10)
+                color: HMI.Theme.surface
+                border.color: commandField.activeFocus ? HMI.Theme.accent : HMI.Theme.outline
+                border.width: commandField.activeFocus ? 2 : 1
+            }
+            onEditingFinished: terminalRow.commandEdited(text)
+        }
+    }
+
     // Reusable SettingRow component
     component SettingRow : RowLayout {
         id: settingRow
@@ -326,6 +655,7 @@ Item {
         property string label: ""
         property string value: ""
         property string inputType: "text"
+        property string placeholder: ""
         property int minValue: 0
         property int maxValue: 100
         property string note: ""
@@ -352,7 +682,7 @@ Item {
             TextField {
                 id: textInput
                 anchors.fill: parent
-                visible: settingRow.inputType === "text" || settingRow.inputType === "number"
+                visible: settingRow.inputType === "text" || settingRow.inputType === "number" || settingRow.inputType === "password"
                 text: settingRow.value
                 color: HMI.Theme.text
                 font.pixelSize: HMI.Theme.px(19)
@@ -361,6 +691,9 @@ Item {
                 rightPadding: HMI.Theme.px(12)
                 topPadding: HMI.Theme.px(8)
                 bottomPadding: HMI.Theme.px(8)
+                placeholderText: settingRow.placeholder
+                placeholderTextColor: HMI.Theme.sub
+                echoMode: settingRow.inputType === "password" ? TextInput.Password : TextInput.Normal
                 background: Rectangle {
                     radius: HMI.Theme.px(10)
                     color: HMI.Theme.surface

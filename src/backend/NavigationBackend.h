@@ -21,6 +21,7 @@ class NavigationBackend : public QObject {
     Q_PROPERTY(QString fsmStateText  READ fsmStateText  NOTIFY safetyStatesChanged)
     Q_PROPERTY(bool    gnssOn        READ gnssOn         NOTIFY gnssOnChanged)
     Q_PROPERTY(bool    lanOn         READ lanOn          NOTIFY lanOnChanged)
+    Q_PROPERTY(bool    canLoggerOn   READ canLoggerOn    NOTIFY canLoggerOnChanged)
     Q_PROPERTY(bool    autoOn        READ autoOn         NOTIFY autoOnChanged)
     Q_PROPERTY(int     gnssTimeout   READ gnssTimeout    WRITE setGnssTimeout NOTIFY gnssTimeoutChanged)
 
@@ -36,11 +37,16 @@ public:
 
     bool gnssOn() const { return m_gnssOn; }
     bool lanOn()  const { return m_lanOn; }
+    bool canLoggerOn() const { return m_canLoggerOn; }
     bool autoOn() const { return m_autoOn; }
     int gnssTimeout() const { return m_gnssTimeout; }
     void setGnssTimeout(int timeout);
 
     Q_INVOKABLE QVariantList waypointPath() const;
+
+    // So that main can connect canBatchReceived and settings can apply RX ports
+    GlobalReceiver* globalReceiver() const { return m_rx; }
+    void applyRxPorts(int controlsPort, int loggerPort);
 
 signals:
     void updated();
@@ -48,11 +54,15 @@ signals:
     void safetyStatesChanged();
     void gnssOnChanged();
     void lanOnChanged();
+    void canLoggerOnChanged();
     void autoOnChanged();
     void gnssTimeoutChanged();
 
 public slots:
-    void onControlsMessage(const Navigation& msg);
+    void onControlsMessage(const vehicle_msgs::Navigation& msg);
+
+private slots:
+    void onCanLoggerActiveChanged(bool active);
 
 private:
     void setGnssOn(bool v) { if (m_gnssOn==v) return; m_gnssOn=v; emit gnssOnChanged(); }
@@ -71,6 +81,7 @@ private:
 
     bool m_gnssOn = false;
     bool m_lanOn  = false;
+    bool m_canLoggerOn = false;
     bool m_autoOn = false;
 
     int m_gnssTimeout = 1200;

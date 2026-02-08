@@ -6,8 +6,13 @@
 #include <QQuickStyle>
 
 #include "src/backend/NavigationBackend.h"
+#include "src/backend/GlobalReceiver.h"
 #include "src/backend/GlobalTransmitter.h"
 #include "src/backend/SettingsBackend.h"
+#include "src/backend/LoggerBackend.h"
+#include "src/backend/TerminalBackend.h"
+#include "src/backend/CameraFramesBackend.h"
+#include "src/backend/LogBackupBackend.h"
 
 static void loadAppFonts()
 {
@@ -56,6 +61,26 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("NavigationBackend", navBackend);
     engine.rootContext()->setContextProperty("GlobalTx", txBackend);
     engine.rootContext()->setContextProperty("SettingsBackend", settingsBackend);
+    auto* loggerBackend = new LoggerBackend(&engine);
+    engine.rootContext()->setContextProperty("LoggerBackend", loggerBackend);
+    auto* logBackupBackend = new LogBackupBackend(&engine);
+    logBackupBackend->setLoggerBackend(loggerBackend);
+    logBackupBackend->setSettingsBackend(settingsBackend);
+    engine.rootContext()->setContextProperty("LogBackupBackend", logBackupBackend);
+    QObject::connect(loggerBackend, &LoggerBackend::recordingSaved, &engine, [logBackupBackend, settingsBackend]() {
+        if (settingsBackend->autoBackupLogs())
+            logBackupBackend->startBackup();
+    });
+    engine.rootContext()->setContextProperty("TerminalBackend", new TerminalBackend(&engine));
+
+    QObject::connect(navBackend->globalReceiver(), &GlobalReceiver::canBatchReceived,
+                     loggerBackend, &LoggerBackend::onCanBatch);
+
+    auto* cameraFramesBackend = new CameraFramesBackend(&engine);
+    cameraFramesBackend->addImageProviderTo(&engine);
+    engine.rootContext()->setContextProperty("CameraFramesBackend", cameraFramesBackend);
+    QObject::connect(navBackend->globalReceiver(), &GlobalReceiver::cameraBatchReceived,
+                     cameraFramesBackend, &CameraFramesBackend::onCameraBatch);
 
     // Cross-platform maps directory:
     // On Linux you used /home/hmi/HMI/maps/. On Windows, use a local "maps" folder next to the exe.

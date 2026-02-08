@@ -16,14 +16,19 @@ Item {
     // Same logic as in AVActionsPage
     property bool txConnected: GlobalTx && GlobalTx.hmiConnected
 
-    // If true we only show the error message + OK
+    // If true we only show the error message + OK (and Back)
     property bool errorMode: false
+    // When set, used instead of default title/message in error mode
+    property string customTitle: ""
+    property string customMessage: ""
 
     signal accepted()
     signal dismissed()
 
     function openForDestination(point) {
         pointLabel = point
+        customTitle = ""
+        customMessage = ""
         errorMode = !(GlobalTx && GlobalTx.hmiConnected)
         resetSlider()
         visible = true
@@ -31,6 +36,18 @@ Item {
 
     // For AVActions etc.
     function openConnectionError() {
+        pointLabel = ""
+        customTitle = ""
+        customMessage = ""
+        errorMode = true
+        resetSlider()
+        visible = true
+    }
+
+    // Custom warning: title + message, OK and Back only (e.g. CAN bus disabled)
+    function openCustomWarning(title, message) {
+        customTitle = title
+        customMessage = message
         pointLabel = ""
         errorMode = true
         resetSlider()
@@ -67,7 +84,7 @@ Item {
         id: scrim
         anchors.fill: parent
         color: "#000000"
-        opacity: 0.8    // darker
+        opacity: 0.65
     }
 
     // Eats all input so the HMI behind is not interactable
@@ -88,7 +105,7 @@ Item {
     Text {
         id: backLabel
         text: "\u2039 Back"
-        color: "#ffffff"
+        color: "#FFFFFF"
         font.pixelSize: HMI.Theme.px(26)
         anchors.left: parent.left
         anchors.top: parent.top
@@ -115,7 +132,7 @@ Item {
         width: Math.min(parent.width * 0.45, 680)
         height: Math.min(parent.height * 0.60, 720)
         radius: HMI.Theme.radius * 2
-        color: "#181818"
+        color: HMI.Theme.surface
         border.color: HMI.Theme.outline
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
@@ -135,7 +152,7 @@ Item {
                 font.bold: true
                 color: HMI.Theme.text
                 text: errorMode
-                      ? "Connection not established"
+                      ? (root.customTitle !== "" ? root.customTitle : "Connection not established")
                       : "Are you sure you want to engage autonomy\nand proceed to point:"
             }
 
@@ -158,8 +175,8 @@ Item {
                 horizontalAlignment: Text.AlignHCenter
                 font.pixelSize: HMI.Theme.px(22)
                 color: HMI.Theme.sub
-                text: "Intel connection is not established,\n" +
-                      "cannot change AV state."
+                text: root.customMessage !== "" ? root.customMessage : ("Intel connection is not established,\n" +
+                      "cannot change AV state.")
             }
 
             Item { Layout.preferredHeight: HMI.Theme.px(20) }
@@ -176,7 +193,7 @@ Item {
                     id: sliderTrack
                     anchors.fill: parent
                     radius: height / 2
-                    border.color: "#4a4a4a"
+                    border.color: HMI.Theme.outline
                     border.width: 1
 
                     // Scarlet gradient
@@ -195,7 +212,7 @@ Item {
                         anchors.centerIn: parent
                         text: "slide to engage"
                         font.pixelSize: HMI.Theme.px(22)
-                        color: "#FFFFFFDD"
+                        color: HMI.Theme.themeDark ? "#FFFFFFDD" : "#80000000"
                         opacity: 0.4 + 0.6 * (1.0 - sliderTrack.progress)
                     }
 
@@ -206,8 +223,8 @@ Item {
                         radius: width / 2
                         anchors.verticalCenter: parent.verticalCenter
                         x: sliderTrack.knobMinX
-                        color: "#ffffff"
-                        border.color: "#dddddd"
+                        color: HMI.Theme.surface
+                        border.color: HMI.Theme.outline
                         antialiasing: true
 
                         Behavior on x {
@@ -220,7 +237,7 @@ Item {
                         Text {
                             anchors.centerIn: parent
                             text: "\u27A4"
-                            color: "#BB0000"
+                            color: HMI.Theme.accent
                             font.pixelSize: HMI.Theme.px(26)
                         }
 
@@ -266,7 +283,7 @@ Item {
                 contentItem: Text {
                     text: okButton.text
                     font: okButton.font
-                    color: "white"
+                    color: "#FFFFFF"
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                 }

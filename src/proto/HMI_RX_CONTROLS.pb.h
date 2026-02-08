@@ -44,21 +44,369 @@ struct TableStruct_HMI_5fRX_5fCONTROLS_2eproto {
   static const uint32_t offsets[];
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_HMI_5fRX_5fCONTROLS_2eproto;
+namespace vehicle_msgs {
+class CameraBatch;
+struct CameraBatchDefaultTypeInternal;
+extern CameraBatchDefaultTypeInternal _CameraBatch_default_instance_;
+class CameraFrame;
+struct CameraFrameDefaultTypeInternal;
+extern CameraFrameDefaultTypeInternal _CameraFrame_default_instance_;
 class Navigation;
 struct NavigationDefaultTypeInternal;
 extern NavigationDefaultTypeInternal _Navigation_default_instance_;
 class Waypoint;
 struct WaypointDefaultTypeInternal;
 extern WaypointDefaultTypeInternal _Waypoint_default_instance_;
+}  // namespace vehicle_msgs
 PROTOBUF_NAMESPACE_OPEN
-template<> ::Navigation* Arena::CreateMaybeMessage<::Navigation>(Arena*);
-template<> ::Waypoint* Arena::CreateMaybeMessage<::Waypoint>(Arena*);
+template<> ::vehicle_msgs::CameraBatch* Arena::CreateMaybeMessage<::vehicle_msgs::CameraBatch>(Arena*);
+template<> ::vehicle_msgs::CameraFrame* Arena::CreateMaybeMessage<::vehicle_msgs::CameraFrame>(Arena*);
+template<> ::vehicle_msgs::Navigation* Arena::CreateMaybeMessage<::vehicle_msgs::Navigation>(Arena*);
+template<> ::vehicle_msgs::Waypoint* Arena::CreateMaybeMessage<::vehicle_msgs::Waypoint>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
+namespace vehicle_msgs {
 
 // ===================================================================
 
+class CameraFrame final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:vehicle_msgs.CameraFrame) */ {
+ public:
+  inline CameraFrame() : CameraFrame(nullptr) {}
+  ~CameraFrame() override;
+  explicit PROTOBUF_CONSTEXPR CameraFrame(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  CameraFrame(const CameraFrame& from);
+  CameraFrame(CameraFrame&& from) noexcept
+    : CameraFrame() {
+    *this = ::std::move(from);
+  }
+
+  inline CameraFrame& operator=(const CameraFrame& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CameraFrame& operator=(CameraFrame&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CameraFrame& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CameraFrame* internal_default_instance() {
+    return reinterpret_cast<const CameraFrame*>(
+               &_CameraFrame_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    0;
+
+  friend void swap(CameraFrame& a, CameraFrame& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(CameraFrame* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CameraFrame* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CameraFrame* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<CameraFrame>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const CameraFrame& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const CameraFrame& from) {
+    CameraFrame::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(CameraFrame* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "vehicle_msgs.CameraFrame";
+  }
+  protected:
+  explicit CameraFrame(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kCameraIdFieldNumber = 1,
+    kJpegDataFieldNumber = 2,
+  };
+  // string camera_id = 1;
+  void clear_camera_id();
+  const std::string& camera_id() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_camera_id(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_camera_id();
+  PROTOBUF_NODISCARD std::string* release_camera_id();
+  void set_allocated_camera_id(std::string* camera_id);
+  private:
+  const std::string& _internal_camera_id() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_camera_id(const std::string& value);
+  std::string* _internal_mutable_camera_id();
+  public:
+
+  // bytes jpeg_data = 2;
+  void clear_jpeg_data();
+  const std::string& jpeg_data() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_jpeg_data(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_jpeg_data();
+  PROTOBUF_NODISCARD std::string* release_jpeg_data();
+  void set_allocated_jpeg_data(std::string* jpeg_data);
+  private:
+  const std::string& _internal_jpeg_data() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_jpeg_data(const std::string& value);
+  std::string* _internal_mutable_jpeg_data();
+  public:
+
+  // @@protoc_insertion_point(class_scope:vehicle_msgs.CameraFrame)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr camera_id_;
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr jpeg_data_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_HMI_5fRX_5fCONTROLS_2eproto;
+};
+// -------------------------------------------------------------------
+
+class CameraBatch final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:vehicle_msgs.CameraBatch) */ {
+ public:
+  inline CameraBatch() : CameraBatch(nullptr) {}
+  ~CameraBatch() override;
+  explicit PROTOBUF_CONSTEXPR CameraBatch(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  CameraBatch(const CameraBatch& from);
+  CameraBatch(CameraBatch&& from) noexcept
+    : CameraBatch() {
+    *this = ::std::move(from);
+  }
+
+  inline CameraBatch& operator=(const CameraBatch& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline CameraBatch& operator=(CameraBatch&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const CameraBatch& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const CameraBatch* internal_default_instance() {
+    return reinterpret_cast<const CameraBatch*>(
+               &_CameraBatch_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    1;
+
+  friend void swap(CameraBatch& a, CameraBatch& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(CameraBatch* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(CameraBatch* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  CameraBatch* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<CameraBatch>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const CameraBatch& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const CameraBatch& from) {
+    CameraBatch::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(CameraBatch* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "vehicle_msgs.CameraBatch";
+  }
+  protected:
+  explicit CameraBatch(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kFramesFieldNumber = 1,
+    kTimestampFieldNumber = 2,
+  };
+  // repeated .vehicle_msgs.CameraFrame frames = 1;
+  int frames_size() const;
+  private:
+  int _internal_frames_size() const;
+  public:
+  void clear_frames();
+  ::vehicle_msgs::CameraFrame* mutable_frames(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::vehicle_msgs::CameraFrame >*
+      mutable_frames();
+  private:
+  const ::vehicle_msgs::CameraFrame& _internal_frames(int index) const;
+  ::vehicle_msgs::CameraFrame* _internal_add_frames();
+  public:
+  const ::vehicle_msgs::CameraFrame& frames(int index) const;
+  ::vehicle_msgs::CameraFrame* add_frames();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::vehicle_msgs::CameraFrame >&
+      frames() const;
+
+  // int64 timestamp = 2;
+  void clear_timestamp();
+  int64_t timestamp() const;
+  void set_timestamp(int64_t value);
+  private:
+  int64_t _internal_timestamp() const;
+  void _internal_set_timestamp(int64_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:vehicle_msgs.CameraBatch)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::vehicle_msgs::CameraFrame > frames_;
+    int64_t timestamp_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_HMI_5fRX_5fCONTROLS_2eproto;
+};
+// -------------------------------------------------------------------
+
 class Waypoint final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Waypoint) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:vehicle_msgs.Waypoint) */ {
  public:
   inline Waypoint() : Waypoint(nullptr) {}
   ~Waypoint() override;
@@ -105,7 +453,7 @@ class Waypoint final :
                &_Waypoint_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    0;
+    2;
 
   friend void swap(Waypoint& a, Waypoint& b) {
     a.Swap(&b);
@@ -161,7 +509,7 @@ class Waypoint final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "Waypoint";
+    return "vehicle_msgs.Waypoint";
   }
   protected:
   explicit Waypoint(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -199,7 +547,7 @@ class Waypoint final :
   void _internal_set_lon(float value);
   public:
 
-  // @@protoc_insertion_point(class_scope:Waypoint)
+  // @@protoc_insertion_point(class_scope:vehicle_msgs.Waypoint)
  private:
   class _Internal;
 
@@ -217,7 +565,7 @@ class Waypoint final :
 // -------------------------------------------------------------------
 
 class Navigation final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:Navigation) */ {
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:vehicle_msgs.Navigation) */ {
  public:
   inline Navigation() : Navigation(nullptr) {}
   ~Navigation() override;
@@ -264,7 +612,7 @@ class Navigation final :
                &_Navigation_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
-    1;
+    3;
 
   friend void swap(Navigation& a, Navigation& b) {
     a.Swap(&b);
@@ -320,7 +668,7 @@ class Navigation final :
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "Navigation";
+    return "vehicle_msgs.Navigation";
   }
   protected:
   explicit Navigation(::PROTOBUF_NAMESPACE_ID::Arena* arena,
@@ -343,22 +691,22 @@ class Navigation final :
     kHeadingDegFieldNumber = 3,
     kSafetyStatesFieldNumber = 5,
   };
-  // repeated .Waypoint waypoints = 4;
+  // repeated .vehicle_msgs.Waypoint waypoints = 4;
   int waypoints_size() const;
   private:
   int _internal_waypoints_size() const;
   public:
   void clear_waypoints();
-  ::Waypoint* mutable_waypoints(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Waypoint >*
+  ::vehicle_msgs::Waypoint* mutable_waypoints(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::vehicle_msgs::Waypoint >*
       mutable_waypoints();
   private:
-  const ::Waypoint& _internal_waypoints(int index) const;
-  ::Waypoint* _internal_add_waypoints();
+  const ::vehicle_msgs::Waypoint& _internal_waypoints(int index) const;
+  ::vehicle_msgs::Waypoint* _internal_add_waypoints();
   public:
-  const ::Waypoint& waypoints(int index) const;
-  ::Waypoint* add_waypoints();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Waypoint >&
+  const ::vehicle_msgs::Waypoint& waypoints(int index) const;
+  ::vehicle_msgs::Waypoint* add_waypoints();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::vehicle_msgs::Waypoint >&
       waypoints() const;
 
   // float current_lat = 1;
@@ -397,7 +745,7 @@ class Navigation final :
   void _internal_set_safety_states(int32_t value);
   public:
 
-  // @@protoc_insertion_point(class_scope:Navigation)
+  // @@protoc_insertion_point(class_scope:vehicle_msgs.Navigation)
  private:
   class _Internal;
 
@@ -405,7 +753,7 @@ class Navigation final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Waypoint > waypoints_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::vehicle_msgs::Waypoint > waypoints_;
     float current_lat_;
     float current_lon_;
     float heading_deg_;
@@ -424,6 +772,174 @@ class Navigation final :
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
+// CameraFrame
+
+// string camera_id = 1;
+inline void CameraFrame::clear_camera_id() {
+  _impl_.camera_id_.ClearToEmpty();
+}
+inline const std::string& CameraFrame::camera_id() const {
+  // @@protoc_insertion_point(field_get:vehicle_msgs.CameraFrame.camera_id)
+  return _internal_camera_id();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void CameraFrame::set_camera_id(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.camera_id_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:vehicle_msgs.CameraFrame.camera_id)
+}
+inline std::string* CameraFrame::mutable_camera_id() {
+  std::string* _s = _internal_mutable_camera_id();
+  // @@protoc_insertion_point(field_mutable:vehicle_msgs.CameraFrame.camera_id)
+  return _s;
+}
+inline const std::string& CameraFrame::_internal_camera_id() const {
+  return _impl_.camera_id_.Get();
+}
+inline void CameraFrame::_internal_set_camera_id(const std::string& value) {
+  
+  _impl_.camera_id_.Set(value, GetArenaForAllocation());
+}
+inline std::string* CameraFrame::_internal_mutable_camera_id() {
+  
+  return _impl_.camera_id_.Mutable(GetArenaForAllocation());
+}
+inline std::string* CameraFrame::release_camera_id() {
+  // @@protoc_insertion_point(field_release:vehicle_msgs.CameraFrame.camera_id)
+  return _impl_.camera_id_.Release();
+}
+inline void CameraFrame::set_allocated_camera_id(std::string* camera_id) {
+  if (camera_id != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.camera_id_.SetAllocated(camera_id, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.camera_id_.IsDefault()) {
+    _impl_.camera_id_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:vehicle_msgs.CameraFrame.camera_id)
+}
+
+// bytes jpeg_data = 2;
+inline void CameraFrame::clear_jpeg_data() {
+  _impl_.jpeg_data_.ClearToEmpty();
+}
+inline const std::string& CameraFrame::jpeg_data() const {
+  // @@protoc_insertion_point(field_get:vehicle_msgs.CameraFrame.jpeg_data)
+  return _internal_jpeg_data();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void CameraFrame::set_jpeg_data(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.jpeg_data_.SetBytes(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:vehicle_msgs.CameraFrame.jpeg_data)
+}
+inline std::string* CameraFrame::mutable_jpeg_data() {
+  std::string* _s = _internal_mutable_jpeg_data();
+  // @@protoc_insertion_point(field_mutable:vehicle_msgs.CameraFrame.jpeg_data)
+  return _s;
+}
+inline const std::string& CameraFrame::_internal_jpeg_data() const {
+  return _impl_.jpeg_data_.Get();
+}
+inline void CameraFrame::_internal_set_jpeg_data(const std::string& value) {
+  
+  _impl_.jpeg_data_.Set(value, GetArenaForAllocation());
+}
+inline std::string* CameraFrame::_internal_mutable_jpeg_data() {
+  
+  return _impl_.jpeg_data_.Mutable(GetArenaForAllocation());
+}
+inline std::string* CameraFrame::release_jpeg_data() {
+  // @@protoc_insertion_point(field_release:vehicle_msgs.CameraFrame.jpeg_data)
+  return _impl_.jpeg_data_.Release();
+}
+inline void CameraFrame::set_allocated_jpeg_data(std::string* jpeg_data) {
+  if (jpeg_data != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.jpeg_data_.SetAllocated(jpeg_data, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.jpeg_data_.IsDefault()) {
+    _impl_.jpeg_data_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:vehicle_msgs.CameraFrame.jpeg_data)
+}
+
+// -------------------------------------------------------------------
+
+// CameraBatch
+
+// repeated .vehicle_msgs.CameraFrame frames = 1;
+inline int CameraBatch::_internal_frames_size() const {
+  return _impl_.frames_.size();
+}
+inline int CameraBatch::frames_size() const {
+  return _internal_frames_size();
+}
+inline void CameraBatch::clear_frames() {
+  _impl_.frames_.Clear();
+}
+inline ::vehicle_msgs::CameraFrame* CameraBatch::mutable_frames(int index) {
+  // @@protoc_insertion_point(field_mutable:vehicle_msgs.CameraBatch.frames)
+  return _impl_.frames_.Mutable(index);
+}
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::vehicle_msgs::CameraFrame >*
+CameraBatch::mutable_frames() {
+  // @@protoc_insertion_point(field_mutable_list:vehicle_msgs.CameraBatch.frames)
+  return &_impl_.frames_;
+}
+inline const ::vehicle_msgs::CameraFrame& CameraBatch::_internal_frames(int index) const {
+  return _impl_.frames_.Get(index);
+}
+inline const ::vehicle_msgs::CameraFrame& CameraBatch::frames(int index) const {
+  // @@protoc_insertion_point(field_get:vehicle_msgs.CameraBatch.frames)
+  return _internal_frames(index);
+}
+inline ::vehicle_msgs::CameraFrame* CameraBatch::_internal_add_frames() {
+  return _impl_.frames_.Add();
+}
+inline ::vehicle_msgs::CameraFrame* CameraBatch::add_frames() {
+  ::vehicle_msgs::CameraFrame* _add = _internal_add_frames();
+  // @@protoc_insertion_point(field_add:vehicle_msgs.CameraBatch.frames)
+  return _add;
+}
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::vehicle_msgs::CameraFrame >&
+CameraBatch::frames() const {
+  // @@protoc_insertion_point(field_list:vehicle_msgs.CameraBatch.frames)
+  return _impl_.frames_;
+}
+
+// int64 timestamp = 2;
+inline void CameraBatch::clear_timestamp() {
+  _impl_.timestamp_ = int64_t{0};
+}
+inline int64_t CameraBatch::_internal_timestamp() const {
+  return _impl_.timestamp_;
+}
+inline int64_t CameraBatch::timestamp() const {
+  // @@protoc_insertion_point(field_get:vehicle_msgs.CameraBatch.timestamp)
+  return _internal_timestamp();
+}
+inline void CameraBatch::_internal_set_timestamp(int64_t value) {
+  
+  _impl_.timestamp_ = value;
+}
+inline void CameraBatch::set_timestamp(int64_t value) {
+  _internal_set_timestamp(value);
+  // @@protoc_insertion_point(field_set:vehicle_msgs.CameraBatch.timestamp)
+}
+
+// -------------------------------------------------------------------
+
 // Waypoint
 
 // float lat = 1;
@@ -434,7 +950,7 @@ inline float Waypoint::_internal_lat() const {
   return _impl_.lat_;
 }
 inline float Waypoint::lat() const {
-  // @@protoc_insertion_point(field_get:Waypoint.lat)
+  // @@protoc_insertion_point(field_get:vehicle_msgs.Waypoint.lat)
   return _internal_lat();
 }
 inline void Waypoint::_internal_set_lat(float value) {
@@ -443,7 +959,7 @@ inline void Waypoint::_internal_set_lat(float value) {
 }
 inline void Waypoint::set_lat(float value) {
   _internal_set_lat(value);
-  // @@protoc_insertion_point(field_set:Waypoint.lat)
+  // @@protoc_insertion_point(field_set:vehicle_msgs.Waypoint.lat)
 }
 
 // float lon = 2;
@@ -454,7 +970,7 @@ inline float Waypoint::_internal_lon() const {
   return _impl_.lon_;
 }
 inline float Waypoint::lon() const {
-  // @@protoc_insertion_point(field_get:Waypoint.lon)
+  // @@protoc_insertion_point(field_get:vehicle_msgs.Waypoint.lon)
   return _internal_lon();
 }
 inline void Waypoint::_internal_set_lon(float value) {
@@ -463,7 +979,7 @@ inline void Waypoint::_internal_set_lon(float value) {
 }
 inline void Waypoint::set_lon(float value) {
   _internal_set_lon(value);
-  // @@protoc_insertion_point(field_set:Waypoint.lon)
+  // @@protoc_insertion_point(field_set:vehicle_msgs.Waypoint.lon)
 }
 
 // -------------------------------------------------------------------
@@ -478,7 +994,7 @@ inline float Navigation::_internal_current_lat() const {
   return _impl_.current_lat_;
 }
 inline float Navigation::current_lat() const {
-  // @@protoc_insertion_point(field_get:Navigation.current_lat)
+  // @@protoc_insertion_point(field_get:vehicle_msgs.Navigation.current_lat)
   return _internal_current_lat();
 }
 inline void Navigation::_internal_set_current_lat(float value) {
@@ -487,7 +1003,7 @@ inline void Navigation::_internal_set_current_lat(float value) {
 }
 inline void Navigation::set_current_lat(float value) {
   _internal_set_current_lat(value);
-  // @@protoc_insertion_point(field_set:Navigation.current_lat)
+  // @@protoc_insertion_point(field_set:vehicle_msgs.Navigation.current_lat)
 }
 
 // float current_lon = 2;
@@ -498,7 +1014,7 @@ inline float Navigation::_internal_current_lon() const {
   return _impl_.current_lon_;
 }
 inline float Navigation::current_lon() const {
-  // @@protoc_insertion_point(field_get:Navigation.current_lon)
+  // @@protoc_insertion_point(field_get:vehicle_msgs.Navigation.current_lon)
   return _internal_current_lon();
 }
 inline void Navigation::_internal_set_current_lon(float value) {
@@ -507,7 +1023,7 @@ inline void Navigation::_internal_set_current_lon(float value) {
 }
 inline void Navigation::set_current_lon(float value) {
   _internal_set_current_lon(value);
-  // @@protoc_insertion_point(field_set:Navigation.current_lon)
+  // @@protoc_insertion_point(field_set:vehicle_msgs.Navigation.current_lon)
 }
 
 // float heading_deg = 3;
@@ -518,7 +1034,7 @@ inline float Navigation::_internal_heading_deg() const {
   return _impl_.heading_deg_;
 }
 inline float Navigation::heading_deg() const {
-  // @@protoc_insertion_point(field_get:Navigation.heading_deg)
+  // @@protoc_insertion_point(field_get:vehicle_msgs.Navigation.heading_deg)
   return _internal_heading_deg();
 }
 inline void Navigation::_internal_set_heading_deg(float value) {
@@ -527,10 +1043,10 @@ inline void Navigation::_internal_set_heading_deg(float value) {
 }
 inline void Navigation::set_heading_deg(float value) {
   _internal_set_heading_deg(value);
-  // @@protoc_insertion_point(field_set:Navigation.heading_deg)
+  // @@protoc_insertion_point(field_set:vehicle_msgs.Navigation.heading_deg)
 }
 
-// repeated .Waypoint waypoints = 4;
+// repeated .vehicle_msgs.Waypoint waypoints = 4;
 inline int Navigation::_internal_waypoints_size() const {
   return _impl_.waypoints_.size();
 }
@@ -540,33 +1056,33 @@ inline int Navigation::waypoints_size() const {
 inline void Navigation::clear_waypoints() {
   _impl_.waypoints_.Clear();
 }
-inline ::Waypoint* Navigation::mutable_waypoints(int index) {
-  // @@protoc_insertion_point(field_mutable:Navigation.waypoints)
+inline ::vehicle_msgs::Waypoint* Navigation::mutable_waypoints(int index) {
+  // @@protoc_insertion_point(field_mutable:vehicle_msgs.Navigation.waypoints)
   return _impl_.waypoints_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Waypoint >*
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::vehicle_msgs::Waypoint >*
 Navigation::mutable_waypoints() {
-  // @@protoc_insertion_point(field_mutable_list:Navigation.waypoints)
+  // @@protoc_insertion_point(field_mutable_list:vehicle_msgs.Navigation.waypoints)
   return &_impl_.waypoints_;
 }
-inline const ::Waypoint& Navigation::_internal_waypoints(int index) const {
+inline const ::vehicle_msgs::Waypoint& Navigation::_internal_waypoints(int index) const {
   return _impl_.waypoints_.Get(index);
 }
-inline const ::Waypoint& Navigation::waypoints(int index) const {
-  // @@protoc_insertion_point(field_get:Navigation.waypoints)
+inline const ::vehicle_msgs::Waypoint& Navigation::waypoints(int index) const {
+  // @@protoc_insertion_point(field_get:vehicle_msgs.Navigation.waypoints)
   return _internal_waypoints(index);
 }
-inline ::Waypoint* Navigation::_internal_add_waypoints() {
+inline ::vehicle_msgs::Waypoint* Navigation::_internal_add_waypoints() {
   return _impl_.waypoints_.Add();
 }
-inline ::Waypoint* Navigation::add_waypoints() {
-  ::Waypoint* _add = _internal_add_waypoints();
-  // @@protoc_insertion_point(field_add:Navigation.waypoints)
+inline ::vehicle_msgs::Waypoint* Navigation::add_waypoints() {
+  ::vehicle_msgs::Waypoint* _add = _internal_add_waypoints();
+  // @@protoc_insertion_point(field_add:vehicle_msgs.Navigation.waypoints)
   return _add;
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::Waypoint >&
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::vehicle_msgs::Waypoint >&
 Navigation::waypoints() const {
-  // @@protoc_insertion_point(field_list:Navigation.waypoints)
+  // @@protoc_insertion_point(field_list:vehicle_msgs.Navigation.waypoints)
   return _impl_.waypoints_;
 }
 
@@ -578,7 +1094,7 @@ inline int32_t Navigation::_internal_safety_states() const {
   return _impl_.safety_states_;
 }
 inline int32_t Navigation::safety_states() const {
-  // @@protoc_insertion_point(field_get:Navigation.safety_states)
+  // @@protoc_insertion_point(field_get:vehicle_msgs.Navigation.safety_states)
   return _internal_safety_states();
 }
 inline void Navigation::_internal_set_safety_states(int32_t value) {
@@ -587,7 +1103,7 @@ inline void Navigation::_internal_set_safety_states(int32_t value) {
 }
 inline void Navigation::set_safety_states(int32_t value) {
   _internal_set_safety_states(value);
-  // @@protoc_insertion_point(field_set:Navigation.safety_states)
+  // @@protoc_insertion_point(field_set:vehicle_msgs.Navigation.safety_states)
 }
 
 #ifdef __GNUC__
@@ -595,9 +1111,14 @@ inline void Navigation::set_safety_states(int32_t value) {
 #endif  // __GNUC__
 // -------------------------------------------------------------------
 
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 
 // @@protoc_insertion_point(namespace_scope)
 
+}  // namespace vehicle_msgs
 
 // @@protoc_insertion_point(global_scope)
 

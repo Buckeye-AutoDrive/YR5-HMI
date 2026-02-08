@@ -8,9 +8,7 @@ NavigationBackend::NavigationBackend(QObject* parent)
     : QObject(parent)
 {
     m_rx = new GlobalReceiver(this);
-
-    // Listen for HMI_RX_CONTROLS on port 5001
-    m_rx->listenControls(5001);
+    // Listeners started via applyRxPorts() from SettingsBackend::applyNetworkSettings()
 
     connect(m_rx, &GlobalReceiver::controlsMessage,
             this, &NavigationBackend::onControlsMessage);
@@ -20,6 +18,10 @@ NavigationBackend::NavigationBackend(QObject* parent)
         setLanOn(on);
     });
 
+    // CAN icon: on when logger port (6003) has connection and has received data
+    connect(m_rx, &GlobalReceiver::canLoggerActiveChanged,
+            this, &NavigationBackend::onCanLoggerActiveChanged);
+
     // GNSS: go OFF if we stop receiving pose updates for a short time
     m_gnssTimeoutTimer.setInterval(m_gnssTimeout);
     m_gnssTimeoutTimer.setSingleShot(true);
@@ -28,7 +30,7 @@ NavigationBackend::NavigationBackend(QObject* parent)
     });
 }
 
-void NavigationBackend::onControlsMessage(const Navigation& msg)
+void NavigationBackend::onControlsMessage(const vehicle_msgs::Navigation& msg)
 {
     // ---- Vehicle pose (always update) ----
     m_currentLat  = msg.current_lat();
@@ -64,6 +66,20 @@ void NavigationBackend::onControlsMessage(const Navigation& msg)
     emit waypointsUpdated();
 }
 
+void NavigationBackend::applyRxPorts(int controlsPort, int loggerPort)
+{
+    if (m_rx) {
+        m_rx->listenControls(static_cast<quint16>(controlsPort));
+        m_rx->listenLogger(static_cast<quint16>(loggerPort));
+    }
+}
+
+void NavigationBackend::onCanLoggerActiveChanged(bool active)
+{
+    if (m_canLoggerOn == active) return;
+    m_canLoggerOn = active;
+    emit canLoggerOnChanged();
+}
 
 QVariantList NavigationBackend::waypointPath() const
 {

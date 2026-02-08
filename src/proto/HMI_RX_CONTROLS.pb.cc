@@ -20,6 +20,35 @@ PROTOBUF_PRAGMA_INIT_SEG
 namespace _pb = ::PROTOBUF_NAMESPACE_ID;
 namespace _pbi = _pb::internal;
 
+namespace vehicle_msgs {
+PROTOBUF_CONSTEXPR CameraFrame::CameraFrame(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.camera_id_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.jpeg_data_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct CameraFrameDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR CameraFrameDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~CameraFrameDefaultTypeInternal() {}
+  union {
+    CameraFrame _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CameraFrameDefaultTypeInternal _CameraFrame_default_instance_;
+PROTOBUF_CONSTEXPR CameraBatch::CameraBatch(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.frames_)*/{}
+  , /*decltype(_impl_.timestamp_)*/int64_t{0}
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct CameraBatchDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR CameraBatchDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~CameraBatchDefaultTypeInternal() {}
+  union {
+    CameraBatch _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 CameraBatchDefaultTypeInternal _CameraBatch_default_instance_;
 PROTOBUF_CONSTEXPR Waypoint::Waypoint(
     ::_pbi::ConstantInitialized): _impl_{
     /*decltype(_impl_.lat_)*/0
@@ -51,53 +80,78 @@ struct NavigationDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 NavigationDefaultTypeInternal _Navigation_default_instance_;
-static ::_pb::Metadata file_level_metadata_HMI_5fRX_5fCONTROLS_2eproto[2];
+}  // namespace vehicle_msgs
+static ::_pb::Metadata file_level_metadata_HMI_5fRX_5fCONTROLS_2eproto[4];
 static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_HMI_5fRX_5fCONTROLS_2eproto = nullptr;
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_HMI_5fRX_5fCONTROLS_2eproto = nullptr;
 
 const uint32_t TableStruct_HMI_5fRX_5fCONTROLS_2eproto::offsets[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::Waypoint, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::CameraFrame, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::Waypoint, _impl_.lat_),
-  PROTOBUF_FIELD_OFFSET(::Waypoint, _impl_.lon_),
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::CameraFrame, _impl_.camera_id_),
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::CameraFrame, _impl_.jpeg_data_),
   ~0u,  // no _has_bits_
-  PROTOBUF_FIELD_OFFSET(::Navigation, _internal_metadata_),
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::CameraBatch, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   ~0u,  // no _inlined_string_donated_
-  PROTOBUF_FIELD_OFFSET(::Navigation, _impl_.current_lat_),
-  PROTOBUF_FIELD_OFFSET(::Navigation, _impl_.current_lon_),
-  PROTOBUF_FIELD_OFFSET(::Navigation, _impl_.heading_deg_),
-  PROTOBUF_FIELD_OFFSET(::Navigation, _impl_.waypoints_),
-  PROTOBUF_FIELD_OFFSET(::Navigation, _impl_.safety_states_),
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::CameraBatch, _impl_.frames_),
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::CameraBatch, _impl_.timestamp_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::Waypoint, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::Waypoint, _impl_.lat_),
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::Waypoint, _impl_.lon_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::Navigation, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::Navigation, _impl_.current_lat_),
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::Navigation, _impl_.current_lon_),
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::Navigation, _impl_.heading_deg_),
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::Navigation, _impl_.waypoints_),
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::Navigation, _impl_.safety_states_),
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, -1, sizeof(::Waypoint)},
-  { 8, -1, -1, sizeof(::Navigation)},
+  { 0, -1, -1, sizeof(::vehicle_msgs::CameraFrame)},
+  { 8, -1, -1, sizeof(::vehicle_msgs::CameraBatch)},
+  { 16, -1, -1, sizeof(::vehicle_msgs::Waypoint)},
+  { 24, -1, -1, sizeof(::vehicle_msgs::Navigation)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
-  &::_Waypoint_default_instance_._instance,
-  &::_Navigation_default_instance_._instance,
+  &::vehicle_msgs::_CameraFrame_default_instance_._instance,
+  &::vehicle_msgs::_CameraBatch_default_instance_._instance,
+  &::vehicle_msgs::_Waypoint_default_instance_._instance,
+  &::vehicle_msgs::_Navigation_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_HMI_5fRX_5fCONTROLS_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
-  "\n\025HMI_RX_CONTROLS.proto\"$\n\010Waypoint\022\013\n\003l"
-  "at\030\001 \001(\002\022\013\n\003lon\030\002 \001(\002\"\200\001\n\nNavigation\022\023\n\013"
-  "current_lat\030\001 \001(\002\022\023\n\013current_lon\030\002 \001(\002\022\023"
-  "\n\013heading_deg\030\003 \001(\002\022\034\n\twaypoints\030\004 \003(\0132\t"
-  ".Waypoint\022\025\n\rsafety_states\030\005 \001(\005b\006proto3"
+  "\n\025HMI_RX_CONTROLS.proto\022\014vehicle_msgs\"3\n"
+  "\013CameraFrame\022\021\n\tcamera_id\030\001 \001(\t\022\021\n\tjpeg_"
+  "data\030\002 \001(\014\"K\n\013CameraBatch\022)\n\006frames\030\001 \003("
+  "\0132\031.vehicle_msgs.CameraFrame\022\021\n\ttimestam"
+  "p\030\002 \001(\003\"$\n\010Waypoint\022\013\n\003lat\030\001 \001(\002\022\013\n\003lon\030"
+  "\002 \001(\002\"\215\001\n\nNavigation\022\023\n\013current_lat\030\001 \001("
+  "\002\022\023\n\013current_lon\030\002 \001(\002\022\023\n\013heading_deg\030\003 "
+  "\001(\002\022)\n\twaypoints\030\004 \003(\0132\026.vehicle_msgs.Wa"
+  "ypoint\022\025\n\rsafety_states\030\005 \001(\005b\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_HMI_5fRX_5fCONTROLS_2eproto = {
-    false, false, 200, descriptor_table_protodef_HMI_5fRX_5fCONTROLS_2eproto,
+    false, false, 357, descriptor_table_protodef_HMI_5fRX_5fCONTROLS_2eproto,
     "HMI_RX_CONTROLS.proto",
-    &descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_once, nullptr, 0, 2,
+    &descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_once, nullptr, 0, 4,
     schemas, file_default_instances, TableStruct_HMI_5fRX_5fCONTROLS_2eproto::offsets,
     file_level_metadata_HMI_5fRX_5fCONTROLS_2eproto, file_level_enum_descriptors_HMI_5fRX_5fCONTROLS_2eproto,
     file_level_service_descriptors_HMI_5fRX_5fCONTROLS_2eproto,
@@ -108,6 +162,467 @@ PROTOBUF_ATTRIBUTE_WEAK const ::_pbi::DescriptorTable* descriptor_table_HMI_5fRX
 
 // Force running AddDescriptors() at dynamic initialization time.
 PROTOBUF_ATTRIBUTE_INIT_PRIORITY2 static ::_pbi::AddDescriptorsRunner dynamic_init_dummy_HMI_5fRX_5fCONTROLS_2eproto(&descriptor_table_HMI_5fRX_5fCONTROLS_2eproto);
+namespace vehicle_msgs {
+
+// ===================================================================
+
+class CameraFrame::_Internal {
+ public:
+};
+
+CameraFrame::CameraFrame(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:vehicle_msgs.CameraFrame)
+}
+CameraFrame::CameraFrame(const CameraFrame& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  CameraFrame* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.camera_id_){}
+    , decltype(_impl_.jpeg_data_){}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.camera_id_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.camera_id_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_camera_id().empty()) {
+    _this->_impl_.camera_id_.Set(from._internal_camera_id(), 
+      _this->GetArenaForAllocation());
+  }
+  _impl_.jpeg_data_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.jpeg_data_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_jpeg_data().empty()) {
+    _this->_impl_.jpeg_data_.Set(from._internal_jpeg_data(), 
+      _this->GetArenaForAllocation());
+  }
+  // @@protoc_insertion_point(copy_constructor:vehicle_msgs.CameraFrame)
+}
+
+inline void CameraFrame::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.camera_id_){}
+    , decltype(_impl_.jpeg_data_){}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+  _impl_.camera_id_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.camera_id_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  _impl_.jpeg_data_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.jpeg_data_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+CameraFrame::~CameraFrame() {
+  // @@protoc_insertion_point(destructor:vehicle_msgs.CameraFrame)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void CameraFrame::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.camera_id_.Destroy();
+  _impl_.jpeg_data_.Destroy();
+}
+
+void CameraFrame::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void CameraFrame::Clear() {
+// @@protoc_insertion_point(message_clear_start:vehicle_msgs.CameraFrame)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.camera_id_.ClearToEmpty();
+  _impl_.jpeg_data_.ClearToEmpty();
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* CameraFrame::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // string camera_id = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          auto str = _internal_mutable_camera_id();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "vehicle_msgs.CameraFrame.camera_id"));
+        } else
+          goto handle_unusual;
+        continue;
+      // bytes jpeg_data = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          auto str = _internal_mutable_jpeg_data();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* CameraFrame::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:vehicle_msgs.CameraFrame)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // string camera_id = 1;
+  if (!this->_internal_camera_id().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_camera_id().data(), static_cast<int>(this->_internal_camera_id().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "vehicle_msgs.CameraFrame.camera_id");
+    target = stream->WriteStringMaybeAliased(
+        1, this->_internal_camera_id(), target);
+  }
+
+  // bytes jpeg_data = 2;
+  if (!this->_internal_jpeg_data().empty()) {
+    target = stream->WriteBytesMaybeAliased(
+        2, this->_internal_jpeg_data(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:vehicle_msgs.CameraFrame)
+  return target;
+}
+
+size_t CameraFrame::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:vehicle_msgs.CameraFrame)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // string camera_id = 1;
+  if (!this->_internal_camera_id().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_camera_id());
+  }
+
+  // bytes jpeg_data = 2;
+  if (!this->_internal_jpeg_data().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::BytesSize(
+        this->_internal_jpeg_data());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData CameraFrame::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    CameraFrame::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CameraFrame::GetClassData() const { return &_class_data_; }
+
+
+void CameraFrame::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<CameraFrame*>(&to_msg);
+  auto& from = static_cast<const CameraFrame&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:vehicle_msgs.CameraFrame)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (!from._internal_camera_id().empty()) {
+    _this->_internal_set_camera_id(from._internal_camera_id());
+  }
+  if (!from._internal_jpeg_data().empty()) {
+    _this->_internal_set_jpeg_data(from._internal_jpeg_data());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void CameraFrame::CopyFrom(const CameraFrame& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:vehicle_msgs.CameraFrame)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool CameraFrame::IsInitialized() const {
+  return true;
+}
+
+void CameraFrame::InternalSwap(CameraFrame* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.camera_id_, lhs_arena,
+      &other->_impl_.camera_id_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.jpeg_data_, lhs_arena,
+      &other->_impl_.jpeg_data_, rhs_arena
+  );
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata CameraFrame::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_getter, &descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_once,
+      file_level_metadata_HMI_5fRX_5fCONTROLS_2eproto[0]);
+}
+
+// ===================================================================
+
+class CameraBatch::_Internal {
+ public:
+};
+
+CameraBatch::CameraBatch(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:vehicle_msgs.CameraBatch)
+}
+CameraBatch::CameraBatch(const CameraBatch& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  CameraBatch* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.frames_){from._impl_.frames_}
+    , decltype(_impl_.timestamp_){}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _this->_impl_.timestamp_ = from._impl_.timestamp_;
+  // @@protoc_insertion_point(copy_constructor:vehicle_msgs.CameraBatch)
+}
+
+inline void CameraBatch::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.frames_){arena}
+    , decltype(_impl_.timestamp_){int64_t{0}}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+}
+
+CameraBatch::~CameraBatch() {
+  // @@protoc_insertion_point(destructor:vehicle_msgs.CameraBatch)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void CameraBatch::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.frames_.~RepeatedPtrField();
+}
+
+void CameraBatch::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void CameraBatch::Clear() {
+// @@protoc_insertion_point(message_clear_start:vehicle_msgs.CameraBatch)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.frames_.Clear();
+  _impl_.timestamp_ = int64_t{0};
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* CameraBatch::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // repeated .vehicle_msgs.CameraFrame frames = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 10)) {
+          ptr -= 1;
+          do {
+            ptr += 1;
+            ptr = ctx->ParseMessage(_internal_add_frames(), ptr);
+            CHK_(ptr);
+            if (!ctx->DataAvailable(ptr)) break;
+          } while (::PROTOBUF_NAMESPACE_ID::internal::ExpectTag<10>(ptr));
+        } else
+          goto handle_unusual;
+        continue;
+      // int64 timestamp = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 16)) {
+          _impl_.timestamp_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint64(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* CameraBatch::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:vehicle_msgs.CameraBatch)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // repeated .vehicle_msgs.CameraFrame frames = 1;
+  for (unsigned i = 0,
+      n = static_cast<unsigned>(this->_internal_frames_size()); i < n; i++) {
+    const auto& repfield = this->_internal_frames(i);
+    target = ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::
+        InternalWriteMessage(1, repfield, repfield.GetCachedSize(), target, stream);
+  }
+
+  // int64 timestamp = 2;
+  if (this->_internal_timestamp() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt64ToArray(2, this->_internal_timestamp(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:vehicle_msgs.CameraBatch)
+  return target;
+}
+
+size_t CameraBatch::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:vehicle_msgs.CameraBatch)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // repeated .vehicle_msgs.CameraFrame frames = 1;
+  total_size += 1UL * this->_internal_frames_size();
+  for (const auto& msg : this->_impl_.frames_) {
+    total_size +=
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::MessageSize(msg);
+  }
+
+  // int64 timestamp = 2;
+  if (this->_internal_timestamp() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int64SizePlusOne(this->_internal_timestamp());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData CameraBatch::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    CameraBatch::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*CameraBatch::GetClassData() const { return &_class_data_; }
+
+
+void CameraBatch::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<CameraBatch*>(&to_msg);
+  auto& from = static_cast<const CameraBatch&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:vehicle_msgs.CameraBatch)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  _this->_impl_.frames_.MergeFrom(from._impl_.frames_);
+  if (from._internal_timestamp() != 0) {
+    _this->_internal_set_timestamp(from._internal_timestamp());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void CameraBatch::CopyFrom(const CameraBatch& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:vehicle_msgs.CameraBatch)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool CameraBatch::IsInitialized() const {
+  return true;
+}
+
+void CameraBatch::InternalSwap(CameraBatch* other) {
+  using std::swap;
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  _impl_.frames_.InternalSwap(&other->_impl_.frames_);
+  swap(_impl_.timestamp_, other->_impl_.timestamp_);
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata CameraBatch::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_getter, &descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_once,
+      file_level_metadata_HMI_5fRX_5fCONTROLS_2eproto[1]);
+}
 
 // ===================================================================
 
@@ -119,7 +634,7 @@ Waypoint::Waypoint(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:Waypoint)
+  // @@protoc_insertion_point(arena_constructor:vehicle_msgs.Waypoint)
 }
 Waypoint::Waypoint(const Waypoint& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -133,7 +648,7 @@ Waypoint::Waypoint(const Waypoint& from)
   ::memcpy(&_impl_.lat_, &from._impl_.lat_,
     static_cast<size_t>(reinterpret_cast<char*>(&_impl_.lon_) -
     reinterpret_cast<char*>(&_impl_.lat_)) + sizeof(_impl_.lon_));
-  // @@protoc_insertion_point(copy_constructor:Waypoint)
+  // @@protoc_insertion_point(copy_constructor:vehicle_msgs.Waypoint)
 }
 
 inline void Waypoint::SharedCtor(
@@ -148,7 +663,7 @@ inline void Waypoint::SharedCtor(
 }
 
 Waypoint::~Waypoint() {
-  // @@protoc_insertion_point(destructor:Waypoint)
+  // @@protoc_insertion_point(destructor:vehicle_msgs.Waypoint)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -165,7 +680,7 @@ void Waypoint::SetCachedSize(int size) const {
 }
 
 void Waypoint::Clear() {
-// @@protoc_insertion_point(message_clear_start:Waypoint)
+// @@protoc_insertion_point(message_clear_start:vehicle_msgs.Waypoint)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -223,7 +738,7 @@ failure:
 
 uint8_t* Waypoint::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:Waypoint)
+  // @@protoc_insertion_point(serialize_to_array_start:vehicle_msgs.Waypoint)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -251,12 +766,12 @@ uint8_t* Waypoint::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:Waypoint)
+  // @@protoc_insertion_point(serialize_to_array_end:vehicle_msgs.Waypoint)
   return target;
 }
 
 size_t Waypoint::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:Waypoint)
+// @@protoc_insertion_point(message_byte_size_start:vehicle_msgs.Waypoint)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
@@ -294,7 +809,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*Waypoint::GetClassData() const
 void Waypoint::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<Waypoint*>(&to_msg);
   auto& from = static_cast<const Waypoint&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:Waypoint)
+  // @@protoc_insertion_point(class_specific_merge_from_start:vehicle_msgs.Waypoint)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -317,7 +832,7 @@ void Waypoint::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTO
 }
 
 void Waypoint::CopyFrom(const Waypoint& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:Waypoint)
+// @@protoc_insertion_point(class_specific_copy_from_start:vehicle_msgs.Waypoint)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -341,7 +856,7 @@ void Waypoint::InternalSwap(Waypoint* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata Waypoint::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_getter, &descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_once,
-      file_level_metadata_HMI_5fRX_5fCONTROLS_2eproto[0]);
+      file_level_metadata_HMI_5fRX_5fCONTROLS_2eproto[2]);
 }
 
 // ===================================================================
@@ -354,7 +869,7 @@ Navigation::Navigation(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                          bool is_message_owned)
   : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
   SharedCtor(arena, is_message_owned);
-  // @@protoc_insertion_point(arena_constructor:Navigation)
+  // @@protoc_insertion_point(arena_constructor:vehicle_msgs.Navigation)
 }
 Navigation::Navigation(const Navigation& from)
   : ::PROTOBUF_NAMESPACE_ID::Message() {
@@ -371,7 +886,7 @@ Navigation::Navigation(const Navigation& from)
   ::memcpy(&_impl_.current_lat_, &from._impl_.current_lat_,
     static_cast<size_t>(reinterpret_cast<char*>(&_impl_.safety_states_) -
     reinterpret_cast<char*>(&_impl_.current_lat_)) + sizeof(_impl_.safety_states_));
-  // @@protoc_insertion_point(copy_constructor:Navigation)
+  // @@protoc_insertion_point(copy_constructor:vehicle_msgs.Navigation)
 }
 
 inline void Navigation::SharedCtor(
@@ -389,7 +904,7 @@ inline void Navigation::SharedCtor(
 }
 
 Navigation::~Navigation() {
-  // @@protoc_insertion_point(destructor:Navigation)
+  // @@protoc_insertion_point(destructor:vehicle_msgs.Navigation)
   if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
   (void)arena;
     return;
@@ -407,7 +922,7 @@ void Navigation::SetCachedSize(int size) const {
 }
 
 void Navigation::Clear() {
-// @@protoc_insertion_point(message_clear_start:Navigation)
+// @@protoc_insertion_point(message_clear_start:vehicle_msgs.Navigation)
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -449,7 +964,7 @@ const char* Navigation::_InternalParse(const char* ptr, ::_pbi::ParseContext* ct
         } else
           goto handle_unusual;
         continue;
-      // repeated .Waypoint waypoints = 4;
+      // repeated .vehicle_msgs.Waypoint waypoints = 4;
       case 4:
         if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 34)) {
           ptr -= 1;
@@ -495,7 +1010,7 @@ failure:
 
 uint8_t* Navigation::_InternalSerialize(
     uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
-  // @@protoc_insertion_point(serialize_to_array_start:Navigation)
+  // @@protoc_insertion_point(serialize_to_array_start:vehicle_msgs.Navigation)
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -529,7 +1044,7 @@ uint8_t* Navigation::_InternalSerialize(
     target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_heading_deg(), target);
   }
 
-  // repeated .Waypoint waypoints = 4;
+  // repeated .vehicle_msgs.Waypoint waypoints = 4;
   for (unsigned i = 0,
       n = static_cast<unsigned>(this->_internal_waypoints_size()); i < n; i++) {
     const auto& repfield = this->_internal_waypoints(i);
@@ -547,19 +1062,19 @@ uint8_t* Navigation::_InternalSerialize(
     target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
         _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:Navigation)
+  // @@protoc_insertion_point(serialize_to_array_end:vehicle_msgs.Navigation)
   return target;
 }
 
 size_t Navigation::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:Navigation)
+// @@protoc_insertion_point(message_byte_size_start:vehicle_msgs.Navigation)
   size_t total_size = 0;
 
   uint32_t cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  // repeated .Waypoint waypoints = 4;
+  // repeated .vehicle_msgs.Waypoint waypoints = 4;
   total_size += 1UL * this->_internal_waypoints_size();
   for (const auto& msg : this->_impl_.waypoints_) {
     total_size +=
@@ -611,7 +1126,7 @@ const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*Navigation::GetClassData() con
 void Navigation::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
   auto* const _this = static_cast<Navigation*>(&to_msg);
   auto& from = static_cast<const Navigation&>(from_msg);
-  // @@protoc_insertion_point(class_specific_merge_from_start:Navigation)
+  // @@protoc_insertion_point(class_specific_merge_from_start:vehicle_msgs.Navigation)
   GOOGLE_DCHECK_NE(&from, _this);
   uint32_t cached_has_bits = 0;
   (void) cached_has_bits;
@@ -645,7 +1160,7 @@ void Navigation::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PRO
 }
 
 void Navigation::CopyFrom(const Navigation& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:Navigation)
+// @@protoc_insertion_point(class_specific_copy_from_start:vehicle_msgs.Navigation)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -670,18 +1185,27 @@ void Navigation::InternalSwap(Navigation* other) {
 ::PROTOBUF_NAMESPACE_ID::Metadata Navigation::GetMetadata() const {
   return ::_pbi::AssignDescriptors(
       &descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_getter, &descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_once,
-      file_level_metadata_HMI_5fRX_5fCONTROLS_2eproto[1]);
+      file_level_metadata_HMI_5fRX_5fCONTROLS_2eproto[3]);
 }
 
 // @@protoc_insertion_point(namespace_scope)
+}  // namespace vehicle_msgs
 PROTOBUF_NAMESPACE_OPEN
-template<> PROTOBUF_NOINLINE ::Waypoint*
-Arena::CreateMaybeMessage< ::Waypoint >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::Waypoint >(arena);
+template<> PROTOBUF_NOINLINE ::vehicle_msgs::CameraFrame*
+Arena::CreateMaybeMessage< ::vehicle_msgs::CameraFrame >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::vehicle_msgs::CameraFrame >(arena);
 }
-template<> PROTOBUF_NOINLINE ::Navigation*
-Arena::CreateMaybeMessage< ::Navigation >(Arena* arena) {
-  return Arena::CreateMessageInternal< ::Navigation >(arena);
+template<> PROTOBUF_NOINLINE ::vehicle_msgs::CameraBatch*
+Arena::CreateMaybeMessage< ::vehicle_msgs::CameraBatch >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::vehicle_msgs::CameraBatch >(arena);
+}
+template<> PROTOBUF_NOINLINE ::vehicle_msgs::Waypoint*
+Arena::CreateMaybeMessage< ::vehicle_msgs::Waypoint >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::vehicle_msgs::Waypoint >(arena);
+}
+template<> PROTOBUF_NOINLINE ::vehicle_msgs::Navigation*
+Arena::CreateMaybeMessage< ::vehicle_msgs::Navigation >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::vehicle_msgs::Navigation >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

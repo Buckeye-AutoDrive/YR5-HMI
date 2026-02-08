@@ -10,18 +10,103 @@ Item {
     Layout.fillWidth: true
     Layout.fillHeight: true
 
-    // CAN networks selection (frontend-only state)
-    property bool canHS: false
-    property bool canCE: false
-    property bool canSC: false
-    property bool canLS: false
+    // CAN bus filter: HS=0, CE=1, SC=2, LS=3 (synced from LoggerBackend)
+    property bool canHS: typeof LoggerBackend !== "undefined" ? LoggerBackend.canHS : true
+    property bool canCE: typeof LoggerBackend !== "undefined" ? LoggerBackend.canCE : true
+    property bool canSC: typeof LoggerBackend !== "undefined" ? LoggerBackend.canSC : true
+    property bool canLS: typeof LoggerBackend !== "undefined" ? LoggerBackend.canLS : true
 
-    // Recording state (frontend-only)
+    // Recording state (synced from LoggerBackend)
     property bool recording: false
     property bool paused: false
 
+    // CAN bus tiles enabled only when there is incoming CAN traffic (status indicator on)
+    property bool canBusSelectionEnabled: typeof NavigationBackend !== "undefined" ? NavigationBackend.canLoggerOn : false
+
+    signal showCanBusDisabledWarning()
+
+    Connections {
+        target: typeof LoggerBackend !== "undefined" ? LoggerBackend : null
+        function onIsRecordingChanged() {
+            const nowRecording = LoggerBackend.isRecording
+            if (nowRecording && !root.recording) root.recordingElapsedMs = 0
+            root.recording = nowRecording
+        }
+        function onIsPausedChanged() { root.paused = LoggerBackend.isPaused }
+        function onCanHSChanged() { root.canHS = LoggerBackend.canHS }
+        function onCanCEChanged() { root.canCE = LoggerBackend.canCE }
+        function onCanSCChanged() { root.canSC = LoggerBackend.canSC }
+        function onCanLSChanged() { root.canLS = LoggerBackend.canLS }
+    }
+
     readonly property real _canTileSize: HMI.Theme.px(88)
-    readonly property real _canSectionHeight: HMI.Theme.px(24) + HMI.Theme.px(14) + (_canTileSize * 2 + HMI.Theme.px(10)) + HMI.Theme.px(32)
+    readonly property real _canRowHeight: _canTileSize * 2 + HMI.Theme.px(10)
+    readonly property real _canSectionHeight: HMI.Theme.px(24) + HMI.Theme.px(14) + _canRowHeight + HMI.Theme.px(32)
+
+    // Recording timer: elapsed ms (only counts while recording and not paused); updates every 1s
+    property int recordingElapsedMs: 0
+    function formatTimeOnly(ms) {
+        if (ms <= 0) return "0:00"
+        const totalSecs = Math.floor(ms / 1000)
+        const minutes = Math.floor(totalSecs / 60)
+        const seconds = totalSecs % 60
+        const pad2 = function(n) { return n < 10 ? "0" + n : "" + n }
+        if (minutes < 10) return minutes + ":" + pad2(seconds)
+        return pad2(minutes) + ":" + pad2(seconds)
+    }
+    function formatRecordingTime(ms) {
+        if (ms <= 0) return "Recording • 0:00"
+        return "Recording • " + formatTimeOnly(ms)
+    }
+
+    // Post-recording feedback: "Saved • 12:34" (green) or "Discarded • 12:34" (red), hides after 5s
+    property string _postRecordingMessage: ""
+    property string _postRecordingTime: ""
+    property bool _postRecordingGreen: true
+    function showPostRecordingFeedback(msg, time, isGreen) {
+        root._postRecordingMessage = msg
+        root._postRecordingTime = time
+        root._postRecordingGreen = isGreen
+        postRecordingHideTimer.restart()
+    }
+
+    Component.onCompleted: {
+        if (typeof LoggerBackend !== "undefined") {
+            root.recording = LoggerBackend.isRecording
+            root.paused = LoggerBackend.isPaused
+            root.canHS = LoggerBackend.canHS
+            root.canCE = LoggerBackend.canCE
+            root.canSC = LoggerBackend.canSC
+            root.canLS = LoggerBackend.canLS
+            root.canBusSelectionEnabled = typeof NavigationBackend !== "undefined" ? NavigationBackend.canLoggerOn : false
+            LoggerBackend.refreshLogList()
+            refreshLogsTimer.start()
+        }
+    }
+    Timer {
+        id: refreshLogsTimer
+        interval: 400
+        repeat: false
+        onTriggered: if (typeof LoggerBackend !== "undefined") LoggerBackend.refreshLogList()
+    }
+
+    Timer {
+        id: recordingTimer
+        interval: 1000
+        repeat: true
+        running: root.recording && !root.paused
+        onTriggered: root.recordingElapsedMs += 1000
+    }
+
+    Timer {
+        id: postRecordingHideTimer
+        interval: 5000
+        repeat: false
+        onTriggered: {
+            root._postRecordingMessage = ""
+            root._postRecordingTime = ""
+        }
+    }
 
     Flickable {
         anchors.fill: parent
@@ -66,76 +151,174 @@ Item {
                     RowLayout {
                         id: canRow
                         Layout.fillWidth: true
-                        spacing: HMI.Theme.px(24)
+                        Layout.preferredHeight: root._canRowHeight
+                        spacing: 0
 
-                        // Left: 2x2 grid (HS, CE, SC, LS) — checkbox-style with ripple
+                        // Column 1: CAN network selection (2x2 grid)
                         GridLayout {
                             id: canGrid
                             columns: 2
                             rowSpacing: HMI.Theme.px(10)
                             columnSpacing: HMI.Theme.px(10)
                             Layout.preferredWidth: canTileSize * 2 + canGrid.columnSpacing
-                            Layout.preferredHeight: canTileSize * 2 + canGrid.rowSpacing
+                            Layout.preferredHeight: root._canRowHeight
+                            Layout.rightMargin: HMI.Theme.px(16)
 
                             readonly property real canTileSize: root._canTileSize
 
                             CANCheckTile {
                                 label: "HS"
                                 checked: root.canHS
+                                enabled: root.canBusSelectionEnabled
                                 tileSize: canGrid.canTileSize
-                                onToggled: root.canHS = !root.canHS
+                                onToggled: if (typeof LoggerBackend !== "undefined") LoggerBackend.canHS = !LoggerBackend.canHS
+                                onDisabledTapped: root.showCanBusDisabledWarning()
                             }
                             CANCheckTile {
                                 label: "CE"
                                 checked: root.canCE
+                                enabled: root.canBusSelectionEnabled
                                 tileSize: canGrid.canTileSize
-                                onToggled: root.canCE = !root.canCE
+                                onToggled: if (typeof LoggerBackend !== "undefined") LoggerBackend.canCE = !LoggerBackend.canCE
+                                onDisabledTapped: root.showCanBusDisabledWarning()
                             }
                             CANCheckTile {
                                 label: "SC"
                                 checked: root.canSC
+                                enabled: root.canBusSelectionEnabled
                                 tileSize: canGrid.canTileSize
-                                onToggled: root.canSC = !root.canSC
+                                onToggled: if (typeof LoggerBackend !== "undefined") LoggerBackend.canSC = !LoggerBackend.canSC
+                                onDisabledTapped: root.showCanBusDisabledWarning()
                             }
                             CANCheckTile {
                                 label: "LS"
                                 checked: root.canLS
+                                enabled: root.canBusSelectionEnabled
                                 tileSize: canGrid.canTileSize
-                                onToggled: root.canLS = !root.canLS
+                                onToggled: if (typeof LoggerBackend !== "undefined") LoggerBackend.canLS = !LoggerBackend.canLS
+                                onDisabledTapped: root.showCanBusDisabledWarning()
                             }
                         }
 
-                        // Right: Record, Pause, Stop (with icons)
-                        RowLayout {
-                            spacing: HMI.Theme.px(10)
-                            Layout.fillWidth: true
-                            Layout.alignment: Qt.AlignRight
+                        // Invisible column border
+                        Item { Layout.preferredWidth: HMI.Theme.px(16) }
 
-                            RecordControlButton {
-                                iconSource: "../src/icons/record.svg"
-                                label: "Record"
+                        // Column 2: Logging controls (timer overlaid on top so buttons never move)
+                        Item {
+                            Layout.preferredWidth: recordColumn.implicitWidth
+                            Layout.preferredHeight: root._canRowHeight
+                            Layout.rightMargin: HMI.Theme.px(16)
+
+                            RowLayout {
+                                id: recordColumn
+                                anchors.fill: parent
+                                spacing: HMI.Theme.px(10)
+
+                                RecordControlButton {
+                                iconSource: root.recording ? "../src/icons/save.svg" : "../src/icons/record.svg"
+                                label: root.recording ? "Save" : "Record"
                                 highlighted: root.recording && !root.paused
-                                enabled: true
+                                enabled: root.canBusSelectionEnabled
                                 onClicked: {
-                                    root.recording = !root.recording
-                                    if (!root.recording) root.paused = false
+                                    if (root.recording) {
+                                        var t = root.formatTimeOnly(root.recordingElapsedMs)
+                                        LoggerBackend.saveRecording()
+                                        root.showPostRecordingFeedback("Saved", t, true)
+                                    } else {
+                                        LoggerBackend.startRecording()
+                                    }
                                 }
+                                onDisabledTapped: root.showCanBusDisabledWarning()
                             }
                             RecordControlButton {
                                 iconSource: root.paused ? "../src/icons/resume.svg" : "../src/icons/pause.svg"
                                 label: root.paused ? "Resume" : "Pause"
                                 highlighted: root.recording && root.paused
-                                enabled: root.recording
-                                onClicked: root.paused = !root.paused
+                                enabled: root.canBusSelectionEnabled && root.recording
+                                onClicked: {
+                                    if (root.paused)
+                                        LoggerBackend.resumeRecording()
+                                    else
+                                        LoggerBackend.pauseRecording()
+                                }
+                                onDisabledTapped: root.showCanBusDisabledWarning()
                             }
                             RecordControlButton {
                                 iconSource: "../src/icons/discard.svg"
                                 label: "Discard"
                                 highlighted: false
-                                enabled: root.recording
+                                enabled: root.canBusSelectionEnabled && root.recording
                                 onClicked: {
-                                    root.recording = false
-                                    root.paused = false
+                                    var t = root.formatTimeOnly(root.recordingElapsedMs)
+                                    LoggerBackend.discardRecording()
+                                    root.showPostRecordingFeedback("Discarded", t, false)
+                                }
+                                onDisabledTapped: root.showCanBusDisabledWarning()
+                            }
+                            }
+
+                            // Recording timer; when stopped, shows "Saved • 12:34" (green) or "Discarded • 12:34" (red) for 5s
+                            Label {
+                                anchors.top: parent.top
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.topMargin: HMI.Theme.px(4)
+                                visible: root.recording || root._postRecordingMessage !== ""
+                                text: root.recording ? root.formatRecordingTime(root.recordingElapsedMs) : (root._postRecordingMessage + " • " + root._postRecordingTime)
+                                color: root.recording ? HMI.Theme.text : (root._postRecordingGreen ? "#2E7D32" : "#C62828")
+                                font.pixelSize: HMI.Theme.px(20)
+                                font.family: "monospace"
+                            }
+                        }
+
+                        // Invisible column border
+                        Item { Layout.preferredWidth: HMI.Theme.px(16) }
+
+                        // Column 3: Saved logs list (scrollable)
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            Layout.minimumWidth: HMI.Theme.px(140)
+                            spacing: HMI.Theme.px(6)
+
+                            Label {
+                                text: "Saved logs"
+                                color: HMI.Theme.text
+                                font.pixelSize: HMI.Theme.px(18)
+                                font.bold: true
+                                Layout.fillWidth: true
+                            }
+
+                            ListView {
+                                id: savedLogsList
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                Layout.minimumHeight: HMI.Theme.px(80)
+                                clip: true
+                                model: typeof LoggerBackend !== "undefined" ? LoggerBackend.logFileNames : []
+                                spacing: HMI.Theme.px(4)
+                                boundsBehavior: Flickable.DragAndOvershootBounds
+                                flickDeceleration: 3000
+                                maximumFlickVelocity: 2500
+                                ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff }
+
+                                delegate: Rectangle {
+                                    width: savedLogsList.width - HMI.Theme.px(2)
+                                    height: HMI.Theme.px(36)
+                                    radius: HMI.Theme.px(8)
+                                    color: HMI.Theme.surface
+                                    border.color: HMI.Theme.outline
+                                    border.width: 1
+
+                                    Text {
+                                        anchors.fill: parent
+                                        anchors.margins: HMI.Theme.px(8)
+                                        text: modelData
+                                        color: HMI.Theme.text
+                                        font.pixelSize: HMI.Theme.px(14)
+                                        font.family: "monospace"
+                                        verticalAlignment: Text.AlignVCenter
+                                        elide: Text.ElideRight
+                                    }
                                 }
                             }
                         }
@@ -150,12 +333,15 @@ Item {
         id: tile
         property string label: ""
         property bool checked: false
+        property bool enabled: true
         property real tileSize: HMI.Theme.px(88)
         signal toggled()
+        signal disabledTapped()
 
         implicitWidth: tileSize
         implicitHeight: tileSize
         radius: HMI.Theme.radius
+        opacity: tile.enabled ? 1.0 : 0.5
         color: checked ? Qt.darker(HMI.Theme.accent, 1.15) : HMI.Theme.surface
         border.color: checked ? HMI.Theme.accent : HMI.Theme.outline
         border.width: checked ? 2 : 1
@@ -173,7 +359,7 @@ Item {
         Text {
             anchors.centerIn: parent
             text: tile.label
-            color: mouse.pressed ? HMI.Theme.sub : HMI.Theme.text
+            color: tile.checked ? (mouse.pressed ? HMI.Theme.sub : "#FFFFFF") : (mouse.pressed ? HMI.Theme.sub : HMI.Theme.text)
             font.pixelSize: HMI.Theme.px(28)
             font.bold: true
         }
@@ -189,7 +375,12 @@ Item {
                 rippleAnim.stop()
                 rippleAnim.start()
             }
-            onClicked: tile.toggled()
+            onClicked: {
+                if (tile.enabled)
+                    tile.toggled()
+                else
+                    tile.disabledTapped()
+            }
         }
 
         ParallelAnimation {
@@ -216,6 +407,7 @@ Item {
         property bool highlighted: false
         property bool enabled: true
         signal clicked()
+        signal disabledTapped()
 
         implicitWidth: HMI.Theme.px(72)
         implicitHeight: HMI.Theme.px(72)
@@ -269,10 +461,9 @@ Item {
         MouseArea {
             id: mouse
             anchors.fill: parent
-            enabled: btn.enabled
-            cursorShape: btn.enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+            cursorShape: Qt.PointingHandCursor
             onPressed: { }
-            onClicked: if (btn.enabled) btn.clicked()
+            onClicked: btn.enabled ? btn.clicked() : btn.disabledTapped()
         }
 
         Behavior on color { ColorAnimation { duration: 120 } }

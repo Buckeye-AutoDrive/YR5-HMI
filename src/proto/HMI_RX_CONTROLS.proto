@@ -1,16 +1,38 @@
 syntax = "proto3";
 
+package vehicle_msgs;
+
+// =======================
+// Camera messages
+// =======================
+
+// Represents a single image from one camera
+message CameraFrame {
+  string camera_id = 1;   // e.g., "cam0"
+  bytes jpeg_data = 2;    // Compressed JPEG
+}
+
+// Represents the list of images sent in one packet
+message CameraBatch {
+  repeated CameraFrame frames = 1;
+  int64 timestamp = 2;    // Optional: shared timestamp for the batch
+}
+
+
+// =======================
+// Navigation messages
+// =======================
+
 message Waypoint {
-    float lat = 1;
-    float lon = 2;
+  float lat = 1;
+  float lon = 2;
 }
 
 message Navigation {
-    float current_lat  = 1;
-    float current_lon  = 2;
-    float heading_deg  = 3;
+  float current_lat  = 1;
+  float current_lon  = 2;
+  float heading_deg  = 3;
 
-    repeated Waypoint waypoints = 4;   // may be empty OR partial OR full
-
-    int32 safety_states = 5;
+  repeated Waypoint waypoints = 4;  // empty / partial / full
+  int32 safety_states = 5;
 }

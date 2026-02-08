@@ -13,6 +13,21 @@ Item {
         // Current tab index (0=Left-Center, 1=Center-Bumper, 2=Center-Right, 3=LiDAR)
         property int currentTabIndex: 0
 
+        // When false, show TCP proto camera frames (cam0/cam1/cam2); when true, show RTSP URLs
+        property bool useRtspStream: SettingsBackend ? SettingsBackend.useRtspStream : true
+
+        // Map slot index (0=Left,1=Center,2=Bumper,3=Right,4=LiDAR) to proto camera_id for image provider
+        function protoCameraIdForIndex(idx) {
+            switch (idx) {
+                case 0: return "cam0"
+                case 1: return "cam1"
+                case 2: return "cam2"
+                case 3: return "cam2"
+                case 4: return ""
+                default: return ""
+            }
+        }
+
         // Camera list (labels only; URLs come from SettingsBackend)
         ListModel {
             id: cameraModel
@@ -58,28 +73,28 @@ Item {
         property url leftCameraStreamUrl: streamUrlForIndex(leftCameraIndex)
         property url rightCameraStreamUrl: streamUrlForIndex(rightCameraIndex)
 
-        // Media players for split view
+        // Media players for split view (only used when useRtspStream is true)
         MediaPlayer {
             id: leftPlayer
-            source: leftCameraStreamUrl
+            source: useRtspStream ? leftCameraStreamUrl : ""
             videoOutput: leftVideo
-            autoPlay: true
+            autoPlay: useRtspStream
             loops: MediaPlayer.Infinite
 
             onErrorOccurred: {
-                leftRetryTimer.restart()
+                if (useRtspStream) leftRetryTimer.restart()
             }
         }
 
         MediaPlayer {
             id: rightPlayer
-            source: rightCameraStreamUrl
+            source: useRtspStream ? rightCameraStreamUrl : ""
             videoOutput: rightVideo
-            autoPlay: true
+            autoPlay: useRtspStream
             loops: MediaPlayer.Infinite
 
             onErrorOccurred: {
-                rightRetryTimer.restart()
+                if (useRtspStream) rightRetryTimer.restart()
             }
         }
 
@@ -104,15 +119,14 @@ Item {
             currentTabIndex = tabIndex
             console.log("Selected tab:", tabIndex)
             
-            // Restart players when tab changes
-            if (leftPlayer.playbackState === MediaPlayer.PlayingState) {
-                leftPlayer.stop()
+            if (useRtspStream) {
+                if (leftPlayer.playbackState === MediaPlayer.PlayingState)
+                    leftPlayer.stop()
+                if (rightPlayer.playbackState === MediaPlayer.PlayingState)
+                    rightPlayer.stop()
+                leftPlayer.play()
+                rightPlayer.play()
             }
-            if (rightPlayer.playbackState === MediaPlayer.PlayingState) {
-                rightPlayer.stop()
-            }
-            leftPlayer.play()
-            rightPlayer.play()
         }
 
         // Outside rectangle (card)
@@ -137,7 +151,7 @@ Item {
                     Layout.fillHeight: true
                     spacing: HMI.Theme.px(12)
 
-                    // Left video output
+                    // Left video output (RTSP or proto frames)
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
@@ -149,13 +163,29 @@ Item {
 
                         VideoOutput {
                             id: leftVideo
+                            visible: root.useRtspStream
                             anchors.fill: parent
                             anchors.margins: HMI.Theme.px(12)
                             fillMode: VideoOutput.PreserveAspectFit
                         }
 
+                        Image {
+                            id: leftProtoImage
+                            visible: !root.useRtspStream
+                            anchors.fill: parent
+                            anchors.margins: HMI.Theme.px(12)
+                            fillMode: Image.PreserveAspectFit
+                            source: {
+                                if (root.useRtspStream) return ""
+                                var id = root.protoCameraIdForIndex(root.leftCameraIndex)
+                                if (!id || !CameraFramesBackend) return ""
+                                return "image://camera/" + id + "?v=" + (CameraFramesBackend.frameVersion || 0)
+                            }
+                        }
+
                         Label {
                             id: leftStatusText
+                            visible: root.useRtspStream
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.bottom: parent.bottom
                             anchors.bottomMargin: HMI.Theme.px(12)
@@ -168,16 +198,24 @@ Item {
                             font.pixelSize: HMI.Theme.px(18)
                         }
 
+                        Label {
+                            visible: !root.useRtspStream && root.leftCameraIndex === 4
+                            anchors.centerIn: parent
+                            color: HMI.Theme.sub
+                            text: "LiDAR (Placeholder)"
+                            font.pixelSize: HMI.Theme.px(18)
+                        }
+
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
-                                if (leftPlayer.playbackState !== MediaPlayer.PlayingState && leftCameraIndex !== 4)
+                                if (root.useRtspStream && leftPlayer.playbackState !== MediaPlayer.PlayingState && leftCameraIndex !== 4)
                                     leftPlayer.play()
                             }
                         }
                     }
 
-                    // Right video output
+                    // Right video output (RTSP or proto frames)
                     Rectangle {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
@@ -189,13 +227,29 @@ Item {
 
                         VideoOutput {
                             id: rightVideo
+                            visible: root.useRtspStream
                             anchors.fill: parent
                             anchors.margins: HMI.Theme.px(12)
                             fillMode: VideoOutput.PreserveAspectFit
                         }
 
+                        Image {
+                            id: rightProtoImage
+                            visible: !root.useRtspStream
+                            anchors.fill: parent
+                            anchors.margins: HMI.Theme.px(12)
+                            fillMode: Image.PreserveAspectFit
+                            source: {
+                                if (root.useRtspStream) return ""
+                                var id = root.protoCameraIdForIndex(root.rightCameraIndex)
+                                if (!id || !CameraFramesBackend) return ""
+                                return "image://camera/" + id + "?v=" + (CameraFramesBackend.frameVersion || 0)
+                            }
+                        }
+
                         Label {
                             id: rightStatusText
+                            visible: root.useRtspStream
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.bottom: parent.bottom
                             anchors.bottomMargin: HMI.Theme.px(12)
@@ -208,10 +262,18 @@ Item {
                             font.pixelSize: HMI.Theme.px(18)
                         }
 
+                        Label {
+                            visible: !root.useRtspStream && root.rightCameraIndex === 4
+                            anchors.centerIn: parent
+                            color: HMI.Theme.sub
+                            text: "LiDAR (Placeholder)"
+                            font.pixelSize: HMI.Theme.px(18)
+                        }
+
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
-                                if (rightPlayer.playbackState !== MediaPlayer.PlayingState && rightCameraIndex !== 4)
+                                if (root.useRtspStream && rightPlayer.playbackState !== MediaPlayer.PlayingState && rightCameraIndex !== 4)
                                     rightPlayer.play()
                             }
                         }
@@ -250,7 +312,7 @@ Item {
                             Label {
                                 anchors.centerIn: parent
                                 text: "Left-Center"
-                                color: HMI.Theme.text
+                                color: leftCenterButton.selected ? HMI.Theme.textOnAccent : HMI.Theme.text
                                 font.pixelSize: HMI.Theme.px(18)
                                 font.bold: leftCenterButton.selected
                                 elide: Text.ElideRight
@@ -287,7 +349,7 @@ Item {
                             Label {
                                 anchors.centerIn: parent
                                 text: "Center-Bumper"
-                                color: HMI.Theme.text
+                                color: centerBumperButton.selected ? HMI.Theme.textOnAccent : HMI.Theme.text
                                 font.pixelSize: HMI.Theme.px(18)
                                 font.bold: centerBumperButton.selected
                                 elide: Text.ElideRight
@@ -324,7 +386,7 @@ Item {
                             Label {
                                 anchors.centerIn: parent
                                 text: "Center-Right"
-                                color: HMI.Theme.text
+                                color: centerRightButton.selected ? HMI.Theme.textOnAccent : HMI.Theme.text
                                 font.pixelSize: HMI.Theme.px(18)
                                 font.bold: centerRightButton.selected
                                 elide: Text.ElideRight
@@ -361,7 +423,7 @@ Item {
                             Label {
                                 anchors.centerIn: parent
                                 text: "LiDAR"
-                                color: HMI.Theme.text
+                                color: lidarButton.selected ? HMI.Theme.textOnAccent : HMI.Theme.text
                                 font.pixelSize: HMI.Theme.px(18)
                                 font.bold: lidarButton.selected
                                 elide: Text.ElideRight

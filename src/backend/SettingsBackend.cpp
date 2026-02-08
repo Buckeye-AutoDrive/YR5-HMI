@@ -12,6 +12,8 @@ SettingsBackend::SettingsBackend(QObject* parent)
     , m_txHost("192.168.69.10")
     , m_txPort(6001)
     , m_rxPort(5001)
+    , m_rxPortPerception(6002)
+    , m_rxPortLogger(6003)
     , m_gnssTimeout(1200)
     , m_defaultZoom(19)
     , m_followVehicle(true)
@@ -56,6 +58,28 @@ void SettingsBackend::setRxPort(int port)
     emit rxPortChanged();
 }
 
+void SettingsBackend::setRxPortPerception(int port)
+{
+    if (m_rxPortPerception == port) return;
+    if (!validatePort(port)) {
+        emit settingsError("Port must be between 1 and 65535");
+        return;
+    }
+    m_rxPortPerception = port;
+    emit rxPortPerceptionChanged();
+}
+
+void SettingsBackend::setRxPortLogger(int port)
+{
+    if (m_rxPortLogger == port) return;
+    if (!validatePort(port)) {
+        emit settingsError("Port must be between 1 and 65535");
+        return;
+    }
+    m_rxPortLogger = port;
+    emit rxPortLoggerChanged();
+}
+
 void SettingsBackend::setGnssTimeout(int timeout)
 {
     if (m_gnssTimeout == timeout) return;
@@ -92,6 +116,34 @@ void SettingsBackend::setThemeDark(bool dark)
     emit themeDarkChanged();
 }
 
+void SettingsBackend::setAutoBackupLogs(bool v)
+{
+    if (m_autoBackupLogs == v) return;
+    m_autoBackupLogs = v;
+    emit autoBackupLogsChanged();
+}
+
+void SettingsBackend::setWebdavServerUrl(const QString& v)
+{
+    if (m_webdavServerUrl == v) return;
+    m_webdavServerUrl = v;
+    emit webdavServerUrlChanged();
+}
+
+void SettingsBackend::setWebdavUsername(const QString& v)
+{
+    if (m_webdavUsername == v) return;
+    m_webdavUsername = v;
+    emit webdavUsernameChanged();
+}
+
+void SettingsBackend::setWebdavPassword(const QString& v)
+{
+    if (m_webdavPassword == v) return;
+    m_webdavPassword = v;
+    emit webdavPasswordChanged();
+}
+
 void SettingsBackend::setLeftCameraUrl(const QString& url)
 {
     if (m_leftCameraUrl == url) return;
@@ -113,6 +165,13 @@ void SettingsBackend::setBumperCameraUrl(const QString& url)
     emit bumperCameraUrlChanged();
 }
 
+void SettingsBackend::setUseRtspStream(bool use)
+{
+    if (m_useRtspStream == use) return;
+    m_useRtspStream = use;
+    emit useRtspStreamChanged();
+}
+
 void SettingsBackend::setRightCameraUrl(const QString& url)
 {
     if (m_rightCameraUrl == url) return;
@@ -120,12 +179,23 @@ void SettingsBackend::setRightCameraUrl(const QString& url)
     emit rightCameraUrlChanged();
 }
 
+void SettingsBackend::setTerminalButton1Label(const QString& v) { if (m_terminalButton1Label == v) return; m_terminalButton1Label = v; emit terminalButton1LabelChanged(); }
+void SettingsBackend::setTerminalButton1Command(const QString& v) { if (m_terminalButton1Command == v) return; m_terminalButton1Command = v; emit terminalButton1CommandChanged(); }
+void SettingsBackend::setTerminalButton2Label(const QString& v) { if (m_terminalButton2Label == v) return; m_terminalButton2Label = v; emit terminalButton2LabelChanged(); }
+void SettingsBackend::setTerminalButton2Command(const QString& v) { if (m_terminalButton2Command == v) return; m_terminalButton2Command = v; emit terminalButton2CommandChanged(); }
+void SettingsBackend::setTerminalButton3Label(const QString& v) { if (m_terminalButton3Label == v) return; m_terminalButton3Label = v; emit terminalButton3LabelChanged(); }
+void SettingsBackend::setTerminalButton3Command(const QString& v) { if (m_terminalButton3Command == v) return; m_terminalButton3Command = v; emit terminalButton3CommandChanged(); }
+void SettingsBackend::setTerminalButton4Label(const QString& v) { if (m_terminalButton4Label == v) return; m_terminalButton4Label = v; emit terminalButton4LabelChanged(); }
+void SettingsBackend::setTerminalButton4Command(const QString& v) { if (m_terminalButton4Command == v) return; m_terminalButton4Command = v; emit terminalButton4CommandChanged(); }
+
 void SettingsBackend::loadSettings()
 {
     m_settings->beginGroup("network");
     m_txHost = m_settings->value("txHost", "192.168.69.10").toString();
     m_txPort = m_settings->value("txPort", 6001).toInt();
     m_rxPort = m_settings->value("rxPort", 5001).toInt();
+    m_rxPortPerception = m_settings->value("rxPortPerception", 6002).toInt();
+    m_rxPortLogger = m_settings->value("rxPortLogger", 6003).toInt();
     m_gnssTimeout = m_settings->value("gnssTimeout", 1200).toInt();
     m_settings->endGroup();
 
@@ -138,7 +208,26 @@ void SettingsBackend::loadSettings()
     m_themeDark = m_settings->value("dark", true).toBool();
     m_settings->endGroup();
 
+    m_settings->beginGroup("dataLogger");
+    m_autoBackupLogs = m_settings->value("autoBackupLogs", false).toBool();
+    m_webdavServerUrl = m_settings->value("webdavServerUrl", "https://webdav.calpardo.com/AutoDrive/HMI").toString();
+    m_webdavUsername = m_settings->value("webdavUsername", "hmidav").toString();
+    m_webdavPassword = m_settings->value("webdavPassword", "hmilogger123*").toString();
+    m_settings->endGroup();
+
+    m_settings->beginGroup("terminal");
+    m_terminalButton1Label = m_settings->value("button1Label", "ipconfig").toString();
+    m_terminalButton1Command = m_settings->value("button1Command", "ifconfig").toString();
+    m_terminalButton2Label = m_settings->value("button2Label", "ssh intel").toString();
+    m_terminalButton2Command = m_settings->value("button2Command", "ssh autodrive@192.168.69.10").toString();
+    m_terminalButton3Label = m_settings->value("button3Label", "top").toString();
+    m_terminalButton3Command = m_settings->value("button3Command", "top").toString();
+    m_terminalButton4Label = m_settings->value("button4Label", "ls").toString();
+    m_terminalButton4Command = m_settings->value("button4Command", "ls").toString();
+    m_settings->endGroup();
+
     m_settings->beginGroup("cameras");
+    m_useRtspStream = m_settings->value("useRtspStream", true).toBool();
     m_leftCameraUrl = m_settings->value("leftUrl", "rtsp://192.168.1.231:8554/cam1").toString();
     m_centerCameraUrl = m_settings->value("centerUrl", "rtsp://192.168.1.231:8554/cam0").toString();
     m_bumperCameraUrl = m_settings->value("bumperUrl", "rtsp://192.168.1.231:8554/cam2").toString();
@@ -149,10 +238,25 @@ void SettingsBackend::loadSettings()
     emit txHostChanged();
     emit txPortChanged();
     emit rxPortChanged();
+    emit rxPortPerceptionChanged();
+    emit rxPortLoggerChanged();
     emit gnssTimeoutChanged();
     emit defaultZoomChanged();
     emit followVehicleChanged();
     emit themeDarkChanged();
+    emit autoBackupLogsChanged();
+    emit webdavServerUrlChanged();
+    emit webdavUsernameChanged();
+    emit webdavPasswordChanged();
+    emit terminalButton1LabelChanged();
+    emit terminalButton1CommandChanged();
+    emit terminalButton2LabelChanged();
+    emit terminalButton2CommandChanged();
+    emit terminalButton3LabelChanged();
+    emit terminalButton3CommandChanged();
+    emit terminalButton4LabelChanged();
+    emit terminalButton4CommandChanged();
+    emit useRtspStreamChanged();
     emit leftCameraUrlChanged();
     emit centerCameraUrlChanged();
     emit bumperCameraUrlChanged();
@@ -169,6 +273,8 @@ void SettingsBackend::saveSettings()
     m_settings->setValue("txHost", m_txHost);
     m_settings->setValue("txPort", m_txPort);
     m_settings->setValue("rxPort", m_rxPort);
+    m_settings->setValue("rxPortPerception", m_rxPortPerception);
+    m_settings->setValue("rxPortLogger", m_rxPortLogger);
     m_settings->setValue("gnssTimeout", m_gnssTimeout);
     m_settings->endGroup();
 
@@ -181,7 +287,26 @@ void SettingsBackend::saveSettings()
     m_settings->setValue("dark", m_themeDark);
     m_settings->endGroup();
 
+    m_settings->beginGroup("dataLogger");
+    m_settings->setValue("autoBackupLogs", m_autoBackupLogs);
+    m_settings->setValue("webdavServerUrl", m_webdavServerUrl);
+    m_settings->setValue("webdavUsername", m_webdavUsername);
+    m_settings->setValue("webdavPassword", m_webdavPassword);
+    m_settings->endGroup();
+
+    m_settings->beginGroup("terminal");
+    m_settings->setValue("button1Label", m_terminalButton1Label);
+    m_settings->setValue("button1Command", m_terminalButton1Command);
+    m_settings->setValue("button2Label", m_terminalButton2Label);
+    m_settings->setValue("button2Command", m_terminalButton2Command);
+    m_settings->setValue("button3Label", m_terminalButton3Label);
+    m_settings->setValue("button3Command", m_terminalButton3Command);
+    m_settings->setValue("button4Label", m_terminalButton4Label);
+    m_settings->setValue("button4Command", m_terminalButton4Command);
+    m_settings->endGroup();
+
     m_settings->beginGroup("cameras");
+    m_settings->setValue("useRtspStream", m_useRtspStream);
     m_settings->setValue("leftUrl", m_leftCameraUrl);
     m_settings->setValue("centerUrl", m_centerCameraUrl);
     m_settings->setValue("bumperUrl", m_bumperCameraUrl);
@@ -201,10 +326,25 @@ void SettingsBackend::resetToDefaults()
     m_txHost = "192.168.69.10";
     m_txPort = 6001;
     m_rxPort = 5001;
+    m_rxPortPerception = 6002;
+    m_rxPortLogger = 6003;
     m_gnssTimeout = 1200;
     m_defaultZoom = 19;
     m_followVehicle = true;
     m_themeDark = true;
+    m_autoBackupLogs = false;
+    m_webdavServerUrl = "https://webdav.calpardo.com/AutoDrive/HMI";
+    m_webdavUsername = "hmidav";
+    m_webdavPassword = "hmilogger123*";
+    m_terminalButton1Label = "ipconfig";
+    m_terminalButton1Command = "ifconfig";
+    m_terminalButton2Label = "ssh intel";
+    m_terminalButton2Command = "ssh autodrive@192.168.69.10";
+    m_terminalButton3Label = "top";
+    m_terminalButton3Command = "top";
+    m_terminalButton4Label = "ls";
+    m_terminalButton4Command = "ls";
+    m_useRtspStream = true;
     m_leftCameraUrl = "rtsp://192.168.1.231:8554/cam1";
     m_centerCameraUrl = "rtsp://192.168.1.231:8554/cam0";
     m_bumperCameraUrl = "rtsp://192.168.1.231:8554/cam2";
@@ -213,10 +353,25 @@ void SettingsBackend::resetToDefaults()
     emit txHostChanged();
     emit txPortChanged();
     emit rxPortChanged();
+    emit rxPortPerceptionChanged();
+    emit rxPortLoggerChanged();
     emit gnssTimeoutChanged();
     emit defaultZoomChanged();
     emit followVehicleChanged();
     emit themeDarkChanged();
+    emit autoBackupLogsChanged();
+    emit webdavServerUrlChanged();
+    emit webdavUsernameChanged();
+    emit webdavPasswordChanged();
+    emit terminalButton1LabelChanged();
+    emit terminalButton1CommandChanged();
+    emit terminalButton2LabelChanged();
+    emit terminalButton2CommandChanged();
+    emit terminalButton3LabelChanged();
+    emit terminalButton3CommandChanged();
+    emit terminalButton4LabelChanged();
+    emit terminalButton4CommandChanged();
+    emit useRtspStreamChanged();
     emit leftCameraUrlChanged();
     emit centerCameraUrlChanged();
     emit bumperCameraUrlChanged();
@@ -235,6 +390,14 @@ bool SettingsBackend::validateSettings()
     }
     if (!validatePort(m_rxPort)) {
         emit settingsError("Invalid RX port (must be 1-65535)");
+        return false;
+    }
+    if (!validatePort(m_rxPortPerception)) {
+        emit settingsError("Invalid RX port perception (must be 1-65535)");
+        return false;
+    }
+    if (!validatePort(m_rxPortLogger)) {
+        emit settingsError("Invalid RX port logger (must be 1-65535)");
         return false;
     }
     if (m_gnssTimeout < 100 || m_gnssTimeout > 10000) {
@@ -257,12 +420,13 @@ void SettingsBackend::applyNetworkSettings()
         m_tx->reconnectHmi();
     }
 
-    // Apply GNSS timeout to NavigationBackend
+    // Apply GNSS timeout and RX ports to NavigationBackend
     if (m_nav) {
         m_nav->setGnssTimeout(m_gnssTimeout);
+        m_nav->applyRxPorts(m_rxPort, m_rxPortLogger);
     }
 
-    // Note: RX port change requires restarting the receiver
+    // Note: Further RX port changes take effect on next apply (e.g. Save in Settings)
     // This would require NavigationBackend to recreate GlobalReceiver
     // For now, RX port changes require app restart to take effect
 }

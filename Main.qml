@@ -111,7 +111,7 @@ ApplicationWindow {
             Layout.preferredWidth: app.width * 0.22
             currentIndex: 0
 
-            model: ["Map", "Cameras", "Data Logger", "AV Actions", "System Settings", "Quit"]
+            model: ["Map", "Cameras", "Data Logger", "AV Actions", "Terminal", "Settings", "Quit"]
 
             onActivated: function(i) {
                 if (i === model.length - 1) {
@@ -123,9 +123,10 @@ ApplicationWindow {
                 // normal navigation
                 if (i === 0)        stack.currentIndex = 0   // Map
                 else if (i === 1)   stack.currentIndex = 1   // Cameras
-                else if (i === 2)   stack.currentIndex = 4   // Data Logger
+                else if (i === 2)   stack.currentIndex = 5   // Data Logger
                 else if (i === 3)   stack.currentIndex = 2   // AV Actions
-                else if (i === 4)   stack.currentIndex = 3   // System Settings
+                else if (i === 4)   stack.currentIndex = 3   // Terminal
+                else if (i === 5)   stack.currentIndex = 4   // Settings
                 else                stack.currentIndex = 0
             }
         }
@@ -159,12 +160,12 @@ ApplicationWindow {
                     Row {
                         anchors.left: parent.left
                         anchors.verticalCenter: parent.verticalCenter
-                        spacing: HMI.Theme.px(10)
+                        spacing: HMI.Theme.px(5)
 
-                        StatusIcon { kind: "lan";     on: NavigationBackend.lanOn }
-                        StatusIcon { kind: "gnss";    on: NavigationBackend.gnssOn }
-                        StatusIcon { kind: "sensors"; on: false }
-                        StatusIcon { kind: "auto";    on: NavigationBackend.autoOn }
+                        StatusIcon { kind: "lan";      on: NavigationBackend.lanOn }
+                        StatusIcon { kind: "gnss";     on: NavigationBackend.gnssOn }
+                        StatusIcon { kind: "can";      on: NavigationBackend.canLoggerOn }
+                        StatusIcon { kind: "auto";     on: NavigationBackend.autoOn }
                     }
 
                     // CENTER: title (stays centered)
@@ -175,8 +176,9 @@ ApplicationWindow {
                         text: stack.currentIndex === 0 ? "Map"
                              : stack.currentIndex === 1 ? "Cameras"
                              : stack.currentIndex === 2 ? "AV Actions"
-                             : stack.currentIndex === 3 ? "System Settings"
-                             : stack.currentIndex === 4 ? "Data Logger"
+                             : stack.currentIndex === 3 ? "Terminal"
+                             : stack.currentIndex === 4 ? "Settings"
+                             : stack.currentIndex === 5 ? "Data Logger"
                              : "Map"
 
                         color: HMI.Theme.text
@@ -205,8 +207,15 @@ ApplicationWindow {
                     HMI.MapPage {}
                     HMI.CamerasPage {}
                     HMI.AVActionsPage {}
+                    HMI.TerminalPage {}
                     HMI.SettingsPage {}
-                    HMI.LoggerPage {}
+                    HMI.LoggerPage {
+                        id: loggerPage
+                        onShowCanBusDisabledWarning: avWarnPage.openCustomWarning(
+                            "No CAN traffic",
+                            "Connect the CAN logger (port 6003) and wait for incoming data to enable bus selection."
+                        )
+                    }
                 }
             }
         }
@@ -296,10 +305,11 @@ ApplicationWindow {
 
             source: {
                 const base = "src/icons/"
-                if (statusIcon.kind === "auto")    return base + (statusIcon.on ? "auto_on.svg"    : "auto_off.svg")
-                if (statusIcon.kind === "sensors") return base + (statusIcon.on ? "sensors_on.svg" : "sensors_off.svg")
-                if (statusIcon.kind === "gnss")    return base + (statusIcon.on ? "gnss_on.svg"    : "gnss_off.svg")
-                if (statusIcon.kind === "lan")     return base + (statusIcon.on ? "lan_on.svg"     : "lan_off.svg")
+                if (statusIcon.kind === "auto")     return base + (statusIcon.on ? "auto_on.svg"     : "auto_off.svg")
+                if (statusIcon.kind === "sensors")  return base + (statusIcon.on ? "sensors_on.svg"  : "sensors_off.svg")
+                if (statusIcon.kind === "gnss")     return base + (statusIcon.on ? "gnss_on.svg"     : "gnss_off.svg")
+                if (statusIcon.kind === "lan")      return base + (statusIcon.on ? "lan_on.svg"      : "lan_off.svg")
+                if (statusIcon.kind === "can")      return base + (statusIcon.on ? "can_on.svg"      : "can_off.svg")
                 return ""
             }
 

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package can_stream;
+
+message CanEvent {
+  uint32 bus_id = 1;   // 0..3 → which CAN bus
+  uint32 can_id = 2;   // arbitration ID
+  bool   is_extended = 3;
+  bool   is_rtr = 4;
+
+  uint64 ts_ns = 5;    // authoritative monotonic timestamp (ns)
+
+  uint32 dlc = 6;      // 0..8
+  bytes  data = 7;     // length == dlc
+}
+
+message CanBatch {
+  repeated CanEvent events = 1;
+}

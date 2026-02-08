@@ -21,6 +21,8 @@ QtObject {
     property color accent:    themeDark ? "#B10F2E" : "#A00C28"
     property color text:      themeDark ? "#E6E6E6" : "#1A1A1A"
     property color sub:       themeDark ? "#9E9E9E" : "#5C5C5C"
+    // Text on accent background (e.g. Save button, selected camera tabs) — always light
+    property color textOnAccent: "#FFFFFF"
 
     property int radius: 12
     property int pad: 16

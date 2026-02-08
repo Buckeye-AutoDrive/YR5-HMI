@@ -35,6 +35,7 @@ qt_add_qml_module(appHMI_Mk1
         pages/AVActionsPage.qml
         pages/CamerasPage.qml
         pages/AVWarnPage.qml
+        pages/TerminalPage.qml
         pages/SettingsPage.qml
         pages/LoggerPage.qml
 
@@ -49,7 +50,10 @@ qt_add_qml_module(appHMI_Mk1
         src/icons/lan_off.svg
         src/icons/sensors_on.svg
         src/icons/sensors_off.svg
+        src/icons/can_on.svg
+        src/icons/can_off.svg
         src/icons/record.svg
+        src/icons/save.svg
         src/icons/pause.svg
         src/icons/resume.svg
         src/icons/discard.svg
