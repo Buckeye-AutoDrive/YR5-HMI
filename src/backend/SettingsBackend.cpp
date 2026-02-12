@@ -5,6 +5,12 @@
 #include <QSettings>
 #include <QHostAddress>
 #include <QDebug>
+#include <QFile>
+#include <QSaveFile>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QDir>
+#include <QFileInfo>
 
 SettingsBackend::SettingsBackend(QObject* parent)
     : QObject(parent)
@@ -22,6 +28,7 @@ SettingsBackend::SettingsBackend(QObject* parent)
     , m_bumperCameraUrl("rtsp://192.168.1.231:8554/cam2")
     , m_rightCameraUrl("rtsp://192.168.1.231:8554/cam2")
 {
+    m_localSourcePath = QStringLiteral("/home/hmi/YR5-HMI");
     loadSettings();
 }
 
@@ -179,6 +186,23 @@ void SettingsBackend::setRightCameraUrl(const QString& url)
     emit rightCameraUrlChanged();
 }
 
+void SettingsBackend::setUserConfigEnabled(bool enabled)
+{
+    if (m_userConfigEnabled == enabled) return;
+    m_userConfigEnabled = enabled;
+    emit userConfigEnabledChanged();
+}
+
+void SettingsBackend::setLocalSourcePath(const QString& path)
+{
+    QString p = path.trimmed();
+    while (p.endsWith(QLatin1Char('/')))
+        p.chop(1);
+    if (m_localSourcePath == p) return;
+    m_localSourcePath = p;
+    emit localSourcePathChanged();
+}
+
 void SettingsBackend::setTerminalButton1Label(const QString& v) { if (m_terminalButton1Label == v) return; m_terminalButton1Label = v; emit terminalButton1LabelChanged(); }
 void SettingsBackend::setTerminalButton1Command(const QString& v) { if (m_terminalButton1Command == v) return; m_terminalButton1Command = v; emit terminalButton1CommandChanged(); }
 void SettingsBackend::setTerminalButton2Label(const QString& v) { if (m_terminalButton2Label == v) return; m_terminalButton2Label = v; emit terminalButton2LabelChanged(); }
@@ -234,6 +258,13 @@ void SettingsBackend::loadSettings()
     m_rightCameraUrl = m_settings->value("rightUrl", "rtsp://192.168.1.231:8554/cam2").toString();
     m_settings->endGroup();
 
+    m_settings->beginGroup("userConfig");
+    m_userConfigEnabled = m_settings->value("enabled", true).toBool();
+    m_localSourcePath = m_settings->value("localSourcePath", QStringLiteral("/home/hmi/YR5-HMI")).toString();
+    while (m_localSourcePath.endsWith(QLatin1Char('/')))
+        m_localSourcePath.chop(1);
+    m_settings->endGroup();
+
     // Emit all changed signals
     emit txHostChanged();
     emit txPortChanged();
@@ -261,6 +292,17 @@ void SettingsBackend::loadSettings()
     emit centerCameraUrlChanged();
     emit bumperCameraUrlChanged();
     emit rightCameraUrlChanged();
+    emit userConfigEnabledChanged();
+    emit localSourcePathChanged();
+
+#if defined(Q_OS_LINUX)
+    if (m_userConfigEnabled && !m_localSourcePath.isEmpty()) {
+        const QString configPath = m_localSourcePath + QLatin1String("/user-config.json");
+        loadFromUserConfigFile(configPath);
+        emit userConfigEnabledChanged();
+        emit localSourcePathChanged();
+    }
+#endif
 }
 
 void SettingsBackend::saveSettings()
@@ -313,7 +355,19 @@ void SettingsBackend::saveSettings()
     m_settings->setValue("rightUrl", m_rightCameraUrl);
     m_settings->endGroup();
 
+    m_settings->beginGroup("userConfig");
+    m_settings->setValue("enabled", m_userConfigEnabled);
+    m_settings->setValue("localSourcePath", m_localSourcePath);
+    m_settings->endGroup();
+
     m_settings->sync();
+
+#if defined(Q_OS_LINUX)
+    if (m_userConfigEnabled && !m_localSourcePath.isEmpty()) {
+        const QString configPath = m_localSourcePath + QLatin1String("/user-config.json");
+        saveToUserConfigFile(configPath);
+    }
+#endif
 
     // Apply network settings immediately
     applyNetworkSettings();
@@ -349,6 +403,8 @@ void SettingsBackend::resetToDefaults()
     m_centerCameraUrl = "rtsp://192.168.1.231:8554/cam0";
     m_bumperCameraUrl = "rtsp://192.168.1.231:8554/cam2";
     m_rightCameraUrl = "rtsp://192.168.1.231:8554/cam2";
+    m_userConfigEnabled = true;
+    m_localSourcePath = QStringLiteral("/home/hmi/YR5-HMI");
 
     emit txHostChanged();
     emit txPortChanged();
@@ -376,6 +432,8 @@ void SettingsBackend::resetToDefaults()
     emit centerCameraUrlChanged();
     emit bumperCameraUrlChanged();
     emit rightCameraUrlChanged();
+    emit userConfigEnabledChanged();
+    emit localSourcePathChanged();
 }
 
 bool SettingsBackend::validateSettings()
@@ -447,4 +505,158 @@ void SettingsBackend::applyInitialSettings()
 {
     // Apply loaded settings to backends after they're connected
     applyNetworkSettings();
+}
+
+void SettingsBackend::loadFromUserConfigFile(const QString& path)
+{
+    QFile f(path);
+    if (!f.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    QByteArray data = f.readAll();
+    f.close();
+
+    QJsonParseError err;
+    QJsonDocument doc = QJsonDocument::fromJson(data, &err);
+    if (err.error != QJsonParseError::NoError || !doc.isObject())
+        return;
+
+    QJsonObject o = doc.object();
+
+    auto str = [&o](const char* key) -> QString {
+        if (!o.contains(key)) return QString();
+        return o.value(key).toString();
+    };
+    auto num = [&o](const char* key, int def) -> int {
+        if (!o.contains(key)) return def;
+        return o.value(key).toInt(def);
+    };
+    auto bol = [&o](const char* key, bool def) -> bool {
+        if (!o.contains(key)) return def;
+        return o.value(key).toBool(def);
+    };
+
+    if (o.contains("txHost")) m_txHost = str("txHost");
+    if (o.contains("txPort")) m_txPort = num("txPort", m_txPort);
+    if (o.contains("rxPort")) m_rxPort = num("rxPort", m_rxPort);
+    if (o.contains("rxPortPerception")) m_rxPortPerception = num("rxPortPerception", m_rxPortPerception);
+    if (o.contains("rxPortLogger")) m_rxPortLogger = num("rxPortLogger", m_rxPortLogger);
+    if (o.contains("gnssTimeout")) m_gnssTimeout = num("gnssTimeout", m_gnssTimeout);
+    if (o.contains("defaultZoom")) m_defaultZoom = num("defaultZoom", m_defaultZoom);
+    if (o.contains("followVehicle")) m_followVehicle = bol("followVehicle", m_followVehicle);
+    if (o.contains("themeDark")) m_themeDark = bol("themeDark", m_themeDark);
+    if (o.contains("autoBackupLogs")) m_autoBackupLogs = bol("autoBackupLogs", m_autoBackupLogs);
+    if (o.contains("webdavServerUrl")) m_webdavServerUrl = str("webdavServerUrl");
+    if (o.contains("webdavUsername")) m_webdavUsername = str("webdavUsername");
+    if (o.contains("webdavPassword")) m_webdavPassword = str("webdavPassword");
+    if (o.contains("terminalButton1Label")) m_terminalButton1Label = str("terminalButton1Label");
+    if (o.contains("terminalButton1Command")) m_terminalButton1Command = str("terminalButton1Command");
+    if (o.contains("terminalButton2Label")) m_terminalButton2Label = str("terminalButton2Label");
+    if (o.contains("terminalButton2Command")) m_terminalButton2Command = str("terminalButton2Command");
+    if (o.contains("terminalButton3Label")) m_terminalButton3Label = str("terminalButton3Label");
+    if (o.contains("terminalButton3Command")) m_terminalButton3Command = str("terminalButton3Command");
+    if (o.contains("terminalButton4Label")) m_terminalButton4Label = str("terminalButton4Label");
+    if (o.contains("terminalButton4Command")) m_terminalButton4Command = str("terminalButton4Command");
+    if (o.contains("useRtspStream")) m_useRtspStream = bol("useRtspStream", m_useRtspStream);
+    if (o.contains("leftCameraUrl")) m_leftCameraUrl = str("leftCameraUrl");
+    if (o.contains("centerCameraUrl")) m_centerCameraUrl = str("centerCameraUrl");
+    if (o.contains("bumperCameraUrl")) m_bumperCameraUrl = str("bumperCameraUrl");
+    if (o.contains("rightCameraUrl")) m_rightCameraUrl = str("rightCameraUrl");
+    if (o.contains("userConfigEnabled")) m_userConfigEnabled = bol("userConfigEnabled", m_userConfigEnabled);
+    if (o.contains("localSourcePath")) {
+        QString p = str("localSourcePath").trimmed();
+        while (p.endsWith(QLatin1Char('/'))) p.chop(1);
+        if (!p.isEmpty()) m_localSourcePath = p;
+    }
+    // Backwards compat: old JSON may have userConfigPath (full path to file); treat as directory
+    if (o.contains("userConfigPath")) {
+        QString p = str("userConfigPath").trimmed();
+        if (!p.isEmpty()) {
+            if (p.endsWith(QLatin1String("/user-config.json")))
+                p.chop(20);
+            else if (p.endsWith(QLatin1String("user-config.json")))
+                p.chop(19);
+            while (p.endsWith(QLatin1Char('/'))) p.chop(1);
+            if (!p.isEmpty()) m_localSourcePath = p;
+        }
+    }
+
+    emit txHostChanged();
+    emit txPortChanged();
+    emit rxPortChanged();
+    emit rxPortPerceptionChanged();
+    emit rxPortLoggerChanged();
+    emit gnssTimeoutChanged();
+    emit defaultZoomChanged();
+    emit followVehicleChanged();
+    emit themeDarkChanged();
+    emit autoBackupLogsChanged();
+    emit webdavServerUrlChanged();
+    emit webdavUsernameChanged();
+    emit webdavPasswordChanged();
+    emit terminalButton1LabelChanged();
+    emit terminalButton1CommandChanged();
+    emit terminalButton2LabelChanged();
+    emit terminalButton2CommandChanged();
+    emit terminalButton3LabelChanged();
+    emit terminalButton3CommandChanged();
+    emit terminalButton4LabelChanged();
+    emit terminalButton4CommandChanged();
+    emit useRtspStreamChanged();
+    emit leftCameraUrlChanged();
+    emit centerCameraUrlChanged();
+    emit bumperCameraUrlChanged();
+    emit rightCameraUrlChanged();
+}
+
+void SettingsBackend::saveToUserConfigFile(const QString& path)
+{
+    if (path.isEmpty()) return;
+
+    QFileInfo fi(path);
+    QDir dir = fi.absoluteDir();
+    if (!dir.exists() && !dir.mkpath(QStringLiteral("."))) {
+        qWarning() << "SettingsBackend: could not create directory for" << path;
+        return;
+    }
+
+    QJsonObject o;
+    o.insert(QStringLiteral("txHost"), m_txHost);
+    o.insert(QStringLiteral("txPort"), m_txPort);
+    o.insert(QStringLiteral("rxPort"), m_rxPort);
+    o.insert(QStringLiteral("rxPortPerception"), m_rxPortPerception);
+    o.insert(QStringLiteral("rxPortLogger"), m_rxPortLogger);
+    o.insert(QStringLiteral("gnssTimeout"), m_gnssTimeout);
+    o.insert(QStringLiteral("defaultZoom"), m_defaultZoom);
+    o.insert(QStringLiteral("followVehicle"), m_followVehicle);
+    o.insert(QStringLiteral("themeDark"), m_themeDark);
+    o.insert(QStringLiteral("autoBackupLogs"), m_autoBackupLogs);
+    o.insert(QStringLiteral("webdavServerUrl"), m_webdavServerUrl);
+    o.insert(QStringLiteral("webdavUsername"), m_webdavUsername);
+    o.insert(QStringLiteral("webdavPassword"), m_webdavPassword);
+    o.insert(QStringLiteral("terminalButton1Label"), m_terminalButton1Label);
+    o.insert(QStringLiteral("terminalButton1Command"), m_terminalButton1Command);
+    o.insert(QStringLiteral("terminalButton2Label"), m_terminalButton2Label);
+    o.insert(QStringLiteral("terminalButton2Command"), m_terminalButton2Command);
+    o.insert(QStringLiteral("terminalButton3Label"), m_terminalButton3Label);
+    o.insert(QStringLiteral("terminalButton3Command"), m_terminalButton3Command);
+    o.insert(QStringLiteral("terminalButton4Label"), m_terminalButton4Label);
+    o.insert(QStringLiteral("terminalButton4Command"), m_terminalButton4Command);
+    o.insert(QStringLiteral("useRtspStream"), m_useRtspStream);
+    o.insert(QStringLiteral("leftCameraUrl"), m_leftCameraUrl);
+    o.insert(QStringLiteral("centerCameraUrl"), m_centerCameraUrl);
+    o.insert(QStringLiteral("bumperCameraUrl"), m_bumperCameraUrl);
+    o.insert(QStringLiteral("rightCameraUrl"), m_rightCameraUrl);
+    o.insert(QStringLiteral("userConfigEnabled"), m_userConfigEnabled);
+    o.insert(QStringLiteral("localSourcePath"), m_localSourcePath);
+
+    QSaveFile f(path);
+    if (!f.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "SettingsBackend: could not write" << path << f.errorString();
+        return;
+    }
+    f.write(QJsonDocument(o).toJson(QJsonDocument::Indented));
+    if (!f.commit()) {
+        qWarning() << "SettingsBackend: could not commit" << path << f.errorString();
+    }
 }

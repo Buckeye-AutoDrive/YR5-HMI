@@ -460,6 +460,49 @@ Item {
                 }
             }
 
+            // Local Source Path (Linux only): maps from path+/maps/, user config from path+/user-config.json
+            Rectangle {
+                visible: typeof Qt !== "undefined" && Qt.platform && Qt.platform.os === "linux"
+                Layout.fillWidth: true
+                Layout.preferredHeight: visible ? (localSourceColumn.implicitHeight + HMI.Theme.px(32)) : 0
+                radius: HMI.Theme.px(18)
+                color: HMI.Theme.center
+                border.color: HMI.Theme.outline
+                border.width: 1
+
+                ColumnLayout {
+                    id: localSourceColumn
+                    anchors.fill: parent
+                    anchors.margins: HMI.Theme.px(16)
+                    spacing: HMI.Theme.px(10)
+
+                    Label {
+                        text: "Local Source Path (Linux only)"
+                        color: HMI.Theme.text
+                        font.pixelSize: HMI.Theme.px(24)
+                        font.bold: true
+                        Layout.fillWidth: true
+                    }
+
+                    SettingRow {
+                        label: "Save user config to file"
+                        value: settings.userConfigEnabled ? "true" : "false"
+                        onValueEdited: (value) => { settings.userConfigEnabled = (value === "true") }
+                        inputType: "toggle"
+                        note: "Maps load from path + /maps/, user config from path + /user-config.json"
+                    }
+
+                    SettingRow {
+                        enabled: settings.userConfigEnabled
+                        opacity: settings.userConfigEnabled ? 1 : 0.5
+                        label: "Local source path"
+                        value: settings.localSourcePath
+                        onValueEdited: (value) => { settings.localSourcePath = value }
+                        note: "Directory (e.g. /home/hmi/YR5-HMI). Linux only."
+                    }
+                }
+            }
+
             // Action Buttons
             RowLayout {
                 Layout.fillWidth: true

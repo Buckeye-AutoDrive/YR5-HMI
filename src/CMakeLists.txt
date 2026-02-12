@@ -8,6 +8,7 @@ add_library(HMI_Backend
     backend/GlobalTransmitter.cpp
     backend/SettingsBackend.cpp
     backend/LoggerBackend.cpp
+    backend/InternetBackend.cpp
     backend/TerminalBackend.cpp
     backend/CameraFramesBackend.cpp
     backend/LogBackupBackend.cpp

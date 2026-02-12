@@ -30,9 +30,9 @@ void TerminalBackend::ensureProcessRunning()
         m_process.start("cmd.exe");
         appendOutput("[terminal] cmd.exe started\r\n");
     #else
-        // Jetson/Ubuntu priority: bash interactive
-        m_process.start("/bin/bash", {"-i"});
-        appendOutput("[terminal] /bin/bash -i started\r\n");
+        // Non-interactive bash: commands run as-is (e.g. ifconfig), no "bash <cmd>" wrapping
+        m_process.start("/bin/bash", {});
+        appendOutput("[terminal] /bin/bash started\r\n");
     #endif
 }
 

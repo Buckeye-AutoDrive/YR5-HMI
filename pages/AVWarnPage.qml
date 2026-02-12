@@ -211,8 +211,9 @@ Item {
                     Text {
                         anchors.centerIn: parent
                         text: "slide to engage"
-                        font.pixelSize: HMI.Theme.px(22)
-                        color: HMI.Theme.themeDark ? "#FFFFFFDD" : "#80000000"
+                        font.pixelSize: HMI.Theme.px(26)
+                        font.bold: true
+                        color: HMI.Theme.text
                         opacity: 0.4 + 0.6 * (1.0 - sliderTrack.progress)
                     }
 

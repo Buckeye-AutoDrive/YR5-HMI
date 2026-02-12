@@ -31,6 +31,7 @@ qt_add_qml_module(appHMI_Mk1
         ui/SideNav.qml
         ui/DataTable.qml
         ui/DestList.qml
+        ui/AVPanel.qml
         pages/MapPage.qml
         pages/AVActionsPage.qml
         pages/CamerasPage.qml
@@ -52,6 +53,8 @@ qt_add_qml_module(appHMI_Mk1
         src/icons/sensors_off.svg
         src/icons/can_on.svg
         src/icons/can_off.svg
+        src/icons/internet_on.svg
+        src/icons/internet_off.svg
         src/icons/record.svg
         src/icons/save.svg
         src/icons/pause.svg

@@ -10,6 +10,7 @@
 #include "src/backend/GlobalTransmitter.h"
 #include "src/backend/SettingsBackend.h"
 #include "src/backend/LoggerBackend.h"
+#include "src/backend/InternetBackend.h"
 #include "src/backend/TerminalBackend.h"
 #include "src/backend/CameraFramesBackend.h"
 #include "src/backend/LogBackupBackend.h"
@@ -71,6 +72,7 @@ int main(int argc, char *argv[])
         if (settingsBackend->autoBackupLogs())
             logBackupBackend->startBackup();
     });
+    engine.rootContext()->setContextProperty("InternetBackend", new InternetBackend(&engine));
     engine.rootContext()->setContextProperty("TerminalBackend", new TerminalBackend(&engine));
 
     QObject::connect(navBackend->globalReceiver(), &GlobalReceiver::canBatchReceived,
@@ -85,7 +87,10 @@ int main(int argc, char *argv[])
     // Cross-platform maps directory:
     // On Linux you used /home/hmi/HMI/maps/. On Windows, use a local "maps" folder next to the exe.
     const QString mapsDir = QDir(QCoreApplication::applicationDirPath()).filePath("maps");
-    engine.rootContext()->setContextProperty("HMIMapsDirUrl", QUrl::fromLocalFile(mapsDir + QDir::separator()));
+    const QString mapsDirPath = QDir(mapsDir).absolutePath() + QDir::separator();
+    engine.rootContext()->setContextProperty("HMIMapsDirUrl", QUrl::fromLocalFile(mapsDirPath));
+    // Plain path for OSM plugin (offline tiles); plugin expects filesystem path, not file:// URL, so offline works on Linux too
+    engine.rootContext()->setContextProperty("HMIMapsDirPath", mapsDirPath);
 
     QObject::connect(
         &engine,

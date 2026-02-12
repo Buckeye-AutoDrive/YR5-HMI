@@ -241,19 +241,19 @@ Item {
                     // Tile 0
                     TileButton {
                         labelText: p0
-                        onClicked: root.destinationSelected(label)
+                        onClicked: function(label) { root.destinationSelected(label) }
                     }
 
                     // Tile 1
                     TileButton {
                         labelText: p1
-                        onClicked: root.destinationSelected(label)
+                        onClicked: function(label) { root.destinationSelected(label) }
                     }
 
                     // Tile 2
                     TileButton {
                         labelText: p2
-                        onClicked: root.destinationSelected(label)
+                        onClicked: function(label) { root.destinationSelected(label) }
                     }
                 }
             }

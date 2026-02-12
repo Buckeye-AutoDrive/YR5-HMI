@@ -43,6 +43,10 @@ class SettingsBackend : public QObject
     Q_PROPERTY(QString terminalButton4Label READ terminalButton4Label WRITE setTerminalButton4Label NOTIFY terminalButton4LabelChanged)
     Q_PROPERTY(QString terminalButton4Command READ terminalButton4Command WRITE setTerminalButton4Command NOTIFY terminalButton4CommandChanged)
 
+    // Linux only: local source directory (maps from path+/maps/, user config from path+/user-config.json)
+    Q_PROPERTY(bool userConfigEnabled READ userConfigEnabled WRITE setUserConfigEnabled NOTIFY userConfigEnabledChanged)
+    Q_PROPERTY(QString localSourcePath READ localSourcePath WRITE setLocalSourcePath NOTIFY localSourcePathChanged)
+
     // Camera Settings
     Q_PROPERTY(bool useRtspStream READ useRtspStream WRITE setUseRtspStream NOTIFY useRtspStreamChanged)
     Q_PROPERTY(QString leftCameraUrl READ leftCameraUrl WRITE setLeftCameraUrl NOTIFY leftCameraUrlChanged)
@@ -105,6 +109,11 @@ public:
     QString terminalButton4Command() const { return m_terminalButton4Command; }
     void setTerminalButton4Command(const QString& v);
 
+    bool userConfigEnabled() const { return m_userConfigEnabled; }
+    void setUserConfigEnabled(bool enabled);
+    QString localSourcePath() const { return m_localSourcePath; }
+    void setLocalSourcePath(const QString& path);
+
     // Camera Settings
     bool useRtspStream() const { return m_useRtspStream; }
     void setUseRtspStream(bool use);
@@ -151,6 +160,8 @@ signals:
     void terminalButton3CommandChanged();
     void terminalButton4LabelChanged();
     void terminalButton4CommandChanged();
+    void userConfigEnabledChanged();
+    void localSourcePathChanged();
     void useRtspStreamChanged();
     void leftCameraUrlChanged();
     void centerCameraUrlChanged();
@@ -193,6 +204,9 @@ private:
     QString m_terminalButton4Label;
     QString m_terminalButton4Command;
 
+    bool m_userConfigEnabled = true;
+    QString m_localSourcePath;
+
     // Camera Settings
     bool m_useRtspStream = true;
     QString m_leftCameraUrl;
@@ -208,4 +222,7 @@ private:
     void applyNetworkSettings();
     bool validatePort(int port);
     bool validateHost(const QString& host);
+
+    void loadFromUserConfigFile(const QString& path);
+    void saveToUserConfigFile(const QString& path);
 };

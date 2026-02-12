@@ -8,9 +8,16 @@ import QtQuick.Shapes
 
 Item {
     id: root
-    // If you inject the maps dir from C++:  property url mapDir: HMIMapsDirUrl
-    // TEMP absolute for dev on Windows; change to HMIMapsDirUrl for deploy.
     property url mapDir: HMIMapsDirUrl
+    // Plain path for OSM plugin (offline). On Linux, use Settings localSourcePath + /maps/ when set (e.g. Docker /home/hmi/YR5-HMI/maps/)
+    property string mapDirPath: {
+        if (typeof Qt !== "undefined" && Qt.platform && Qt.platform.os === "linux"
+            && typeof SettingsBackend !== "undefined" && SettingsBackend.localSourcePath) {
+            var p = String(SettingsBackend.localSourcePath).replace(/\/+$/, "")
+            return p ? (p + "/maps/") : (typeof HMIMapsDirPath !== "undefined" ? HMIMapsDirPath : (mapDir.toString().replace(/^file:\/\//, "")))
+        }
+        return typeof HMIMapsDirPath !== "undefined" ? HMIMapsDirPath : (mapDir.toString().replace(/^file:\/\//, ""))
+    }
     property real   defaultZoom: 19
     property string currentRegion: ""
     property bool   initialFixApplied: false
@@ -63,12 +70,12 @@ Item {
 
 
     // ---------- OSM plugin (OFFLINE MBTiles) ----------
+    // Use mapDirPath (filesystem path) so the plugin finds offline tiles without internet (Qt expects path, not file:// URL)
     Plugin {
         id: osmPlugin
         name: "osm"
-        // Both may be file:/// URLs here; we avoid custom cache param to silence warnings.
-        PluginParameter { name: "osm.mapping.offline.directory"; value: mapDir }
-        PluginParameter { id: dbParam; name: "osm.mapping.offline.database"; value: mapDir + "mcity.mbtiles" }
+        PluginParameter { name: "osm.mapping.offline.directory"; value: mapDirPath }
+        PluginParameter { id: dbParam; name: "osm.mapping.offline.database"; value: mapDirPath + "mcity.mbtiles" }
 
         // keep online providers disabled so it never fetches from net
         PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }
@@ -276,12 +283,12 @@ Item {
     // ---------- Region switching (update ONLY dbParam.value) ----------
     function loadRegion(regionName, lat, lon) {
         if (currentRegion === regionName) return
-        const fileUrl = mapDir + regionName + ".mbtiles"
+        const filePath = mapDirPath + regionName + ".mbtiles"
         currentRegion = regionName
-        dbParam.value = fileUrl
+        dbParam.value = filePath
         mapView.center = QtPositioning.coordinate(lat, lon)
         mapView.zoomLevel = defaultZoom
-        console.log("Loaded region:", regionName, "from", fileUrl)
+        console.log("Loaded region:", regionName, "from", filePath)
     }
 
     function detectRegion(lat, lon) {
@@ -312,7 +319,7 @@ Item {
     }
 
     Component.onCompleted: {
-        console.log("Using MBTiles dir:", mapDir)
+        console.log("Using MBTiles dir:", mapDir, "path:", mapDirPath)
         applyInitialGps(39.99846475680883, -83.03239944474197, 0) // OSU
     }
 }

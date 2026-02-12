@@ -198,9 +198,13 @@ void GlobalTransmitter::sendFrame(TxChannel& ch, const QByteArray& payload)
     if (written != frame.size()) {
         qWarning() << "[GlobalTransmitter] Failed to write entire frame"
                    << "expected" << frame.size() << "wrote" << written;
+        return;
     }
 
-    // Let Qt flush it asynchronously; no waitForBytesWritten() here.
+    // Ensure frame is written (and flushed) so receiver gets it before UI updates
+    if (!ch.socket->waitForBytesWritten(1000)) {
+        qWarning() << "[GlobalTransmitter] waitForBytesWritten failed";
+    }
 }
 
 // --- Slots for socket events ---
