@@ -46,7 +46,7 @@ public:
 
     // So that main can connect canBatchReceived and settings can apply RX ports
     GlobalReceiver* globalReceiver() const { return m_rx; }
-    void applyRxPorts(int controlsPort, int loggerPort);
+    void applyRxPorts(int controlsPort, int perceptionPort, int loggerPort);
 
 signals:
     void updated();

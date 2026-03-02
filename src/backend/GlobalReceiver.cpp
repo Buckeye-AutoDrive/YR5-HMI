@@ -24,8 +24,22 @@ bool GlobalReceiver::listenControls(quint16 port)
     return true;
 }
 
-// Perception stream (TX side not ready; uncomment when ready)
-// bool GlobalReceiver::listenPerception(quint16 port) { ... }
+bool GlobalReceiver::listenPerception(quint16 port)
+{
+    if (m_servers.contains(port)) return true;
+
+    auto* srv = new QTcpServer(this);
+    if (!srv->listen(QHostAddress::Any, port)) {
+        qWarning() << "[GlobalReceiver] Failed to listen on port" << port << srv->errorString();
+        srv->deleteLater();
+        return false;
+    }
+    m_servers.insert(port, srv);
+    m_portKinds.insert(port, StreamKind::Perception);
+    connect(srv, &QTcpServer::newConnection, this, &GlobalReceiver::onNewConnection);
+    qInfo() << "[GlobalReceiver] Listening Perception on" << port;
+    return true;
+}
 
 bool GlobalReceiver::listenLogger(quint16 port)
 {
@@ -180,7 +194,15 @@ void GlobalReceiver::processFrame(quint16 port, const QByteArray& payload)
         emit canBatchReceived(batch);
         break;
     }
-        // case StreamKind::Perception: { ... }
+    case StreamKind::Perception: {
+        hmi::perception::v1::PerceptionFrame frame;
+        if (!frame.ParseFromArray(payload.constData(), payload.size())) {
+            qWarning() << "[GlobalReceiver] Perception: failed to parse PerceptionFrame";
+            return;
+        }
+        emit perceptionFrameReceived(frame);
+        break;
+    }
     default:
         break;
     }

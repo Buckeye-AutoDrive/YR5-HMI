@@ -97,7 +97,7 @@ Item {
                         inputType: "number"
                         minValue: 1
                         maxValue: 65535
-                        note: "TX not ready; not started by default"
+                        note: "Perception stream. Save and restart to apply."
                     }
 
                     SettingRow {
@@ -166,6 +166,13 @@ Item {
                         label: "Follow Vehicle"
                         value: settings.followVehicle ? "true" : "false"
                         onValueEdited: (value) => { settings.followVehicle = (value === "true") }
+                        inputType: "toggle"
+                    }
+
+                    SettingRow {
+                        label: "Enable 3D map"
+                        value: settings.map3dEnabled ? "true" : "false"
+                        onValueEdited: (value) => { settings.map3dEnabled = (value === "true") }
                         inputType: "toggle"
                     }
                 }

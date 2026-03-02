@@ -116,6 +116,13 @@ void SettingsBackend::setFollowVehicle(bool follow)
     emit followVehicleChanged();
 }
 
+void SettingsBackend::setMap3dEnabled(bool enabled)
+{
+    if (m_map3dEnabled == enabled) return;
+    m_map3dEnabled = enabled;
+    emit map3dEnabledChanged();
+}
+
 void SettingsBackend::setThemeDark(bool dark)
 {
     if (m_themeDark == dark) return;
@@ -226,6 +233,7 @@ void SettingsBackend::loadSettings()
     m_settings->beginGroup("map");
     m_defaultZoom = m_settings->value("defaultZoom", 19).toInt();
     m_followVehicle = m_settings->value("followVehicle", true).toBool();
+    m_map3dEnabled = m_settings->value("map3dEnabled", false).toBool();
     m_settings->endGroup();
 
     m_settings->beginGroup("theme");
@@ -274,6 +282,7 @@ void SettingsBackend::loadSettings()
     emit gnssTimeoutChanged();
     emit defaultZoomChanged();
     emit followVehicleChanged();
+    emit map3dEnabledChanged();
     emit themeDarkChanged();
     emit autoBackupLogsChanged();
     emit webdavServerUrlChanged();
@@ -323,6 +332,7 @@ void SettingsBackend::saveSettings()
     m_settings->beginGroup("map");
     m_settings->setValue("defaultZoom", m_defaultZoom);
     m_settings->setValue("followVehicle", m_followVehicle);
+    m_settings->setValue("map3dEnabled", m_map3dEnabled);
     m_settings->endGroup();
 
     m_settings->beginGroup("theme");
@@ -385,6 +395,7 @@ void SettingsBackend::resetToDefaults()
     m_gnssTimeout = 1200;
     m_defaultZoom = 19;
     m_followVehicle = true;
+    m_map3dEnabled = false;
     m_themeDark = true;
     m_autoBackupLogs = false;
     m_webdavServerUrl = "https://webdav.calpardo.com/AutoDrive/HMI";
@@ -414,6 +425,7 @@ void SettingsBackend::resetToDefaults()
     emit gnssTimeoutChanged();
     emit defaultZoomChanged();
     emit followVehicleChanged();
+    emit map3dEnabledChanged();
     emit themeDarkChanged();
     emit autoBackupLogsChanged();
     emit webdavServerUrlChanged();
@@ -481,7 +493,7 @@ void SettingsBackend::applyNetworkSettings()
     // Apply GNSS timeout and RX ports to NavigationBackend
     if (m_nav) {
         m_nav->setGnssTimeout(m_gnssTimeout);
-        m_nav->applyRxPorts(m_rxPort, m_rxPortLogger);
+        m_nav->applyRxPorts(m_rxPort, m_rxPortPerception, m_rxPortLogger);
     }
 
     // Note: Further RX port changes take effect on next apply (e.g. Save in Settings)
@@ -544,6 +556,7 @@ void SettingsBackend::loadFromUserConfigFile(const QString& path)
     if (o.contains("gnssTimeout")) m_gnssTimeout = num("gnssTimeout", m_gnssTimeout);
     if (o.contains("defaultZoom")) m_defaultZoom = num("defaultZoom", m_defaultZoom);
     if (o.contains("followVehicle")) m_followVehicle = bol("followVehicle", m_followVehicle);
+    if (o.contains("map3dEnabled")) m_map3dEnabled = bol("map3dEnabled", m_map3dEnabled);
     if (o.contains("themeDark")) m_themeDark = bol("themeDark", m_themeDark);
     if (o.contains("autoBackupLogs")) m_autoBackupLogs = bol("autoBackupLogs", m_autoBackupLogs);
     if (o.contains("webdavServerUrl")) m_webdavServerUrl = str("webdavServerUrl");
@@ -589,6 +602,7 @@ void SettingsBackend::loadFromUserConfigFile(const QString& path)
     emit gnssTimeoutChanged();
     emit defaultZoomChanged();
     emit followVehicleChanged();
+    emit map3dEnabledChanged();
     emit themeDarkChanged();
     emit autoBackupLogsChanged();
     emit webdavServerUrlChanged();
@@ -629,6 +643,7 @@ void SettingsBackend::saveToUserConfigFile(const QString& path)
     o.insert(QStringLiteral("gnssTimeout"), m_gnssTimeout);
     o.insert(QStringLiteral("defaultZoom"), m_defaultZoom);
     o.insert(QStringLiteral("followVehicle"), m_followVehicle);
+    o.insert(QStringLiteral("map3dEnabled"), m_map3dEnabled);
     o.insert(QStringLiteral("themeDark"), m_themeDark);
     o.insert(QStringLiteral("autoBackupLogs"), m_autoBackupLogs);
     o.insert(QStringLiteral("webdavServerUrl"), m_webdavServerUrl);

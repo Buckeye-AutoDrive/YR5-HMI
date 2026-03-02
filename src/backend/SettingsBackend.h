@@ -23,6 +23,7 @@ class SettingsBackend : public QObject
     // Map Settings
     Q_PROPERTY(int defaultZoom READ defaultZoom WRITE setDefaultZoom NOTIFY defaultZoomChanged)
     Q_PROPERTY(bool followVehicle READ followVehicle WRITE setFollowVehicle NOTIFY followVehicleChanged)
+    Q_PROPERTY(bool map3dEnabled READ map3dEnabled WRITE setMap3dEnabled NOTIFY map3dEnabledChanged)
 
     // Theme (dark = true, light = false; map and camera feeds are unchanged)
     Q_PROPERTY(bool themeDark READ themeDark WRITE setThemeDark NOTIFY themeDarkChanged)
@@ -76,6 +77,8 @@ public:
     void setDefaultZoom(int zoom);
     bool followVehicle() const { return m_followVehicle; }
     void setFollowVehicle(bool follow);
+    bool map3dEnabled() const { return m_map3dEnabled; }
+    void setMap3dEnabled(bool enabled);
 
     // Theme
     bool themeDark() const { return m_themeDark; }
@@ -147,6 +150,7 @@ signals:
     void gnssTimeoutChanged();
     void defaultZoomChanged();
     void followVehicleChanged();
+    void map3dEnabledChanged();
     void themeDarkChanged();
     void autoBackupLogsChanged();
     void webdavServerUrlChanged();
@@ -184,6 +188,7 @@ private:
     // Map Settings
     int m_defaultZoom;
     bool m_followVehicle;
+    bool m_map3dEnabled = false;
 
     // Theme
     bool m_themeDark = true;

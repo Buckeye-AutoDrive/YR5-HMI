@@ -1,18 +1,91 @@
 syntax = "proto3";
 
-package perception;
+// HMI-facing perception payload.
+//
+// Purpose:
+// - A ROS subscriber process converts perception ROS messages into this protobuf.
+// - The serialized bytes are then sent over TCP to an HMI device.
+//
+// Design notes:
+// - Compact and simple for fast decode on embedded/HMI side.
+// - Numeric IDs are intentionally aligned with perception_msgs enums so conversion
+//   from ROS -> protobuf is mostly direct assignment.
+// - Coordinates are absolute GPS (lat/lon) only.
+//
+// Recommended TCP framing:
+// - Send each protobuf message prefixed with a 4-byte big-endian payload length.
+// - Receiver reads length, then exactly that many bytes, then parses PerceptionFrame.
+//
+package hmi.perception.v1;
 
-message SignalValue {
-  string name = 1;
-  string value = 2;
+// Absolute coordinate in WGS84-style degrees.
+// NOTE: altitude intentionally omitted for current HMI scope.
+message CoordAbs {
+  // Degrees latitude (north positive, south negative).
+  float latitude = 1;
+  // Degrees longitude (east positive, west negative).
+  float longitude = 2;
 }
 
-message PerceptMessage {
-  string category = 1;
-  string message_name = 2;
-  uint32 can_id = 3;
-  uint32 dlc = 4;
-  bytes raw_data = 5;
-  repeated SignalValue decoded_signals = 6;
-  string timestamp_iso8601 = 7;
+// One detected/tracked object entry.
+message PerceptionObject {
+  // Object class ID.
+  //
+  // Must match perception_msgs/msg/DetectedObject.object_type:
+  // 0 UNKNOWN
+  // 1 VEHICLE
+  // 2 LARGE_VEHICLE
+  // 3 BICYCLE
+  // 4 PEDESTRIAN
+  // 5 BARRICADE
+  // 6 ANIMAL
+  // 7 RAILROAD
+  // 8 TRAFFIC_LIGHT
+  // 9 TRAFFIC_SIGN
+  int32 object_type_id = 1;
+
+  // Absolute position used by HMI to place object on map/geospatial view.
+  CoordAbs coord_abs = 2;
+
+  // Compact traffic sign payload:
+  //
+  // Use only for object_type_id == 9 (TRAFFIC_SIGN). Otherwise keep empty.
+  //
+  // Encoding rules:
+  // - Non-traffic-sign object: []
+  // - Traffic sign (non-speed sign): [sign_type_id]
+  // - Speed limit sign: [sign_type_id, speed_limit_value]
+  //
+  // Example:
+  // - STOP sign: [3]
+  // - SPEED_LIMIT_MPH 35: [1, 35]
+  // - SPEED_LIMIT_KPH 50: [2, 50]
+  //
+  // sign_type_id must match perception_msgs/msg/TrafficSignState.sign_type:
+  // 0 UNKNOWN
+  // 1 SPEED_LIMIT_MPH
+  // 2 SPEED_LIMIT_KPH
+  // 3 STOP
+  // 4 YIELD
+  // 5 NO_LEFT_TURN
+  // 6 NO_RIGHT_TURN
+  // 7 DO_NOT_ENTER
+  // 8 LEFT_TURN_ONLY
+  // 9 RIGHT_TURN_ONLY
+  // 10 RAILROAD_CROSSING
+  // 11 CROSSWALK
+  // 12 NO_TURN_ON_RED
+  // 13 NO_U_TURN
+  // 14 ONE_WAY_LEFT
+  // 15 ONE_WAY_RIGHT
+  // 16 NO_PARKING
+  // 17 HANDICAPPED_PARKING
+  repeated int32 traffic_sign_data = 3;
+}
+
+// One transmitted frame.
+// Sender typically emits this at the same rate as incoming perception topic.
+message PerceptionFrame {
+  // All currently visible objects for this frame.
+  repeated PerceptionObject objects = 1;
 }

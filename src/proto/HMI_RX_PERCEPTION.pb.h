@@ -44,40 +44,50 @@ struct TableStruct_HMI_5fRX_5fPERCEPTION_2eproto {
   static const uint32_t offsets[];
 };
 extern const ::PROTOBUF_NAMESPACE_ID::internal::DescriptorTable descriptor_table_HMI_5fRX_5fPERCEPTION_2eproto;
+namespace hmi {
 namespace perception {
-class PerceptMessage;
-struct PerceptMessageDefaultTypeInternal;
-extern PerceptMessageDefaultTypeInternal _PerceptMessage_default_instance_;
-class SignalValue;
-struct SignalValueDefaultTypeInternal;
-extern SignalValueDefaultTypeInternal _SignalValue_default_instance_;
+namespace v1 {
+class CoordAbs;
+struct CoordAbsDefaultTypeInternal;
+extern CoordAbsDefaultTypeInternal _CoordAbs_default_instance_;
+class PerceptionFrame;
+struct PerceptionFrameDefaultTypeInternal;
+extern PerceptionFrameDefaultTypeInternal _PerceptionFrame_default_instance_;
+class PerceptionObject;
+struct PerceptionObjectDefaultTypeInternal;
+extern PerceptionObjectDefaultTypeInternal _PerceptionObject_default_instance_;
+}  // namespace v1
 }  // namespace perception
+}  // namespace hmi
 PROTOBUF_NAMESPACE_OPEN
-template<> ::perception::PerceptMessage* Arena::CreateMaybeMessage<::perception::PerceptMessage>(Arena*);
-template<> ::perception::SignalValue* Arena::CreateMaybeMessage<::perception::SignalValue>(Arena*);
+template<> ::hmi::perception::v1::CoordAbs* Arena::CreateMaybeMessage<::hmi::perception::v1::CoordAbs>(Arena*);
+template<> ::hmi::perception::v1::PerceptionFrame* Arena::CreateMaybeMessage<::hmi::perception::v1::PerceptionFrame>(Arena*);
+template<> ::hmi::perception::v1::PerceptionObject* Arena::CreateMaybeMessage<::hmi::perception::v1::PerceptionObject>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
+namespace hmi {
 namespace perception {
+namespace v1 {
 
 // ===================================================================
 
-class SignalValue final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:perception.SignalValue) */ {
+class CoordAbs final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:hmi.perception.v1.CoordAbs) */ {
  public:
-  inline SignalValue() : SignalValue(nullptr) {}
-  ~SignalValue() override;
-  explicit PROTOBUF_CONSTEXPR SignalValue(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  inline CoordAbs() : CoordAbs(nullptr) {}
+  ~CoordAbs() override;
+  explicit PROTOBUF_CONSTEXPR CoordAbs(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
-  SignalValue(const SignalValue& from);
-  SignalValue(SignalValue&& from) noexcept
-    : SignalValue() {
+  CoordAbs(const CoordAbs& from);
+  CoordAbs(CoordAbs&& from) noexcept
+    : CoordAbs() {
     *this = ::std::move(from);
   }
 
-  inline SignalValue& operator=(const SignalValue& from) {
+  inline CoordAbs& operator=(const CoordAbs& from) {
     CopyFrom(from);
     return *this;
   }
-  inline SignalValue& operator=(SignalValue&& from) noexcept {
+  inline CoordAbs& operator=(CoordAbs&& from) noexcept {
     if (this == &from) return *this;
     if (GetOwningArena() == from.GetOwningArena()
   #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
@@ -100,20 +110,20 @@ class SignalValue final :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const SignalValue& default_instance() {
+  static const CoordAbs& default_instance() {
     return *internal_default_instance();
   }
-  static inline const SignalValue* internal_default_instance() {
-    return reinterpret_cast<const SignalValue*>(
-               &_SignalValue_default_instance_);
+  static inline const CoordAbs* internal_default_instance() {
+    return reinterpret_cast<const CoordAbs*>(
+               &_CoordAbs_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     0;
 
-  friend void swap(SignalValue& a, SignalValue& b) {
+  friend void swap(CoordAbs& a, CoordAbs& b) {
     a.Swap(&b);
   }
-  inline void Swap(SignalValue* other) {
+  inline void Swap(CoordAbs* other) {
     if (other == this) return;
   #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
     if (GetOwningArena() != nullptr &&
@@ -126,7 +136,7 @@ class SignalValue final :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(SignalValue* other) {
+  void UnsafeArenaSwap(CoordAbs* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
     InternalSwap(other);
@@ -134,14 +144,14 @@ class SignalValue final :
 
   // implements Message ----------------------------------------------
 
-  SignalValue* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<SignalValue>(arena);
+  CoordAbs* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<CoordAbs>(arena);
   }
   using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const SignalValue& from);
+  void CopyFrom(const CoordAbs& from);
   using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const SignalValue& from) {
-    SignalValue::MergeImpl(*this, from);
+  void MergeFrom( const CoordAbs& from) {
+    CoordAbs::MergeImpl(*this, from);
   }
   private:
   static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
@@ -159,15 +169,15 @@ class SignalValue final :
   void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
   void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(SignalValue* other);
+  void InternalSwap(CoordAbs* other);
 
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "perception.SignalValue";
+    return "hmi.perception.v1.CoordAbs";
   }
   protected:
-  explicit SignalValue(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+  explicit CoordAbs(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                        bool is_message_owned = false);
   public:
 
@@ -181,38 +191,28 @@ class SignalValue final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kNameFieldNumber = 1,
-    kValueFieldNumber = 2,
+    kLatitudeFieldNumber = 1,
+    kLongitudeFieldNumber = 2,
   };
-  // string name = 1;
-  void clear_name();
-  const std::string& name() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_name(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_name();
-  PROTOBUF_NODISCARD std::string* release_name();
-  void set_allocated_name(std::string* name);
+  // float latitude = 1;
+  void clear_latitude();
+  float latitude() const;
+  void set_latitude(float value);
   private:
-  const std::string& _internal_name() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_name(const std::string& value);
-  std::string* _internal_mutable_name();
+  float _internal_latitude() const;
+  void _internal_set_latitude(float value);
   public:
 
-  // string value = 2;
-  void clear_value();
-  const std::string& value() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_value(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_value();
-  PROTOBUF_NODISCARD std::string* release_value();
-  void set_allocated_value(std::string* value);
+  // float longitude = 2;
+  void clear_longitude();
+  float longitude() const;
+  void set_longitude(float value);
   private:
-  const std::string& _internal_value() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_value(const std::string& value);
-  std::string* _internal_mutable_value();
+  float _internal_longitude() const;
+  void _internal_set_longitude(float value);
   public:
 
-  // @@protoc_insertion_point(class_scope:perception.SignalValue)
+  // @@protoc_insertion_point(class_scope:hmi.perception.v1.CoordAbs)
  private:
   class _Internal;
 
@@ -220,8 +220,8 @@ class SignalValue final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr name_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr value_;
+    float latitude_;
+    float longitude_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -229,24 +229,24 @@ class SignalValue final :
 };
 // -------------------------------------------------------------------
 
-class PerceptMessage final :
-    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:perception.PerceptMessage) */ {
+class PerceptionObject final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:hmi.perception.v1.PerceptionObject) */ {
  public:
-  inline PerceptMessage() : PerceptMessage(nullptr) {}
-  ~PerceptMessage() override;
-  explicit PROTOBUF_CONSTEXPR PerceptMessage(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+  inline PerceptionObject() : PerceptionObject(nullptr) {}
+  ~PerceptionObject() override;
+  explicit PROTOBUF_CONSTEXPR PerceptionObject(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
 
-  PerceptMessage(const PerceptMessage& from);
-  PerceptMessage(PerceptMessage&& from) noexcept
-    : PerceptMessage() {
+  PerceptionObject(const PerceptionObject& from);
+  PerceptionObject(PerceptionObject&& from) noexcept
+    : PerceptionObject() {
     *this = ::std::move(from);
   }
 
-  inline PerceptMessage& operator=(const PerceptMessage& from) {
+  inline PerceptionObject& operator=(const PerceptionObject& from) {
     CopyFrom(from);
     return *this;
   }
-  inline PerceptMessage& operator=(PerceptMessage&& from) noexcept {
+  inline PerceptionObject& operator=(PerceptionObject&& from) noexcept {
     if (this == &from) return *this;
     if (GetOwningArena() == from.GetOwningArena()
   #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
@@ -269,20 +269,20 @@ class PerceptMessage final :
   static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
     return default_instance().GetMetadata().reflection;
   }
-  static const PerceptMessage& default_instance() {
+  static const PerceptionObject& default_instance() {
     return *internal_default_instance();
   }
-  static inline const PerceptMessage* internal_default_instance() {
-    return reinterpret_cast<const PerceptMessage*>(
-               &_PerceptMessage_default_instance_);
+  static inline const PerceptionObject* internal_default_instance() {
+    return reinterpret_cast<const PerceptionObject*>(
+               &_PerceptionObject_default_instance_);
   }
   static constexpr int kIndexInFileMessages =
     1;
 
-  friend void swap(PerceptMessage& a, PerceptMessage& b) {
+  friend void swap(PerceptionObject& a, PerceptionObject& b) {
     a.Swap(&b);
   }
-  inline void Swap(PerceptMessage* other) {
+  inline void Swap(PerceptionObject* other) {
     if (other == this) return;
   #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
     if (GetOwningArena() != nullptr &&
@@ -295,7 +295,7 @@ class PerceptMessage final :
       ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
     }
   }
-  void UnsafeArenaSwap(PerceptMessage* other) {
+  void UnsafeArenaSwap(PerceptionObject* other) {
     if (other == this) return;
     GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
     InternalSwap(other);
@@ -303,14 +303,14 @@ class PerceptMessage final :
 
   // implements Message ----------------------------------------------
 
-  PerceptMessage* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
-    return CreateMaybeMessage<PerceptMessage>(arena);
+  PerceptionObject* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<PerceptionObject>(arena);
   }
   using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
-  void CopyFrom(const PerceptMessage& from);
+  void CopyFrom(const PerceptionObject& from);
   using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
-  void MergeFrom( const PerceptMessage& from) {
-    PerceptMessage::MergeImpl(*this, from);
+  void MergeFrom( const PerceptionObject& from) {
+    PerceptionObject::MergeImpl(*this, from);
   }
   private:
   static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
@@ -328,15 +328,15 @@ class PerceptMessage final :
   void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
   void SharedDtor();
   void SetCachedSize(int size) const final;
-  void InternalSwap(PerceptMessage* other);
+  void InternalSwap(PerceptionObject* other);
 
   private:
   friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
   static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
-    return "perception.PerceptMessage";
+    return "hmi.perception.v1.PerceptionObject";
   }
   protected:
-  explicit PerceptMessage(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+  explicit PerceptionObject(::PROTOBUF_NAMESPACE_ID::Arena* arena,
                        bool is_message_owned = false);
   public:
 
@@ -350,107 +350,60 @@ class PerceptMessage final :
   // accessors -------------------------------------------------------
 
   enum : int {
-    kDecodedSignalsFieldNumber = 6,
-    kCategoryFieldNumber = 1,
-    kMessageNameFieldNumber = 2,
-    kRawDataFieldNumber = 5,
-    kTimestampIso8601FieldNumber = 7,
-    kCanIdFieldNumber = 3,
-    kDlcFieldNumber = 4,
+    kTrafficSignDataFieldNumber = 3,
+    kCoordAbsFieldNumber = 2,
+    kObjectTypeIdFieldNumber = 1,
   };
-  // repeated .perception.SignalValue decoded_signals = 6;
-  int decoded_signals_size() const;
+  // repeated int32 traffic_sign_data = 3;
+  int traffic_sign_data_size() const;
   private:
-  int _internal_decoded_signals_size() const;
+  int _internal_traffic_sign_data_size() const;
   public:
-  void clear_decoded_signals();
-  ::perception::SignalValue* mutable_decoded_signals(int index);
-  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::perception::SignalValue >*
-      mutable_decoded_signals();
+  void clear_traffic_sign_data();
   private:
-  const ::perception::SignalValue& _internal_decoded_signals(int index) const;
-  ::perception::SignalValue* _internal_add_decoded_signals();
+  int32_t _internal_traffic_sign_data(int index) const;
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t >&
+      _internal_traffic_sign_data() const;
+  void _internal_add_traffic_sign_data(int32_t value);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t >*
+      _internal_mutable_traffic_sign_data();
   public:
-  const ::perception::SignalValue& decoded_signals(int index) const;
-  ::perception::SignalValue* add_decoded_signals();
-  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::perception::SignalValue >&
-      decoded_signals() const;
+  int32_t traffic_sign_data(int index) const;
+  void set_traffic_sign_data(int index, int32_t value);
+  void add_traffic_sign_data(int32_t value);
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t >&
+      traffic_sign_data() const;
+  ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t >*
+      mutable_traffic_sign_data();
 
-  // string category = 1;
-  void clear_category();
-  const std::string& category() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_category(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_category();
-  PROTOBUF_NODISCARD std::string* release_category();
-  void set_allocated_category(std::string* category);
+  // .hmi.perception.v1.CoordAbs coord_abs = 2;
+  bool has_coord_abs() const;
   private:
-  const std::string& _internal_category() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_category(const std::string& value);
-  std::string* _internal_mutable_category();
+  bool _internal_has_coord_abs() const;
   public:
-
-  // string message_name = 2;
-  void clear_message_name();
-  const std::string& message_name() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_message_name(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_message_name();
-  PROTOBUF_NODISCARD std::string* release_message_name();
-  void set_allocated_message_name(std::string* message_name);
+  void clear_coord_abs();
+  const ::hmi::perception::v1::CoordAbs& coord_abs() const;
+  PROTOBUF_NODISCARD ::hmi::perception::v1::CoordAbs* release_coord_abs();
+  ::hmi::perception::v1::CoordAbs* mutable_coord_abs();
+  void set_allocated_coord_abs(::hmi::perception::v1::CoordAbs* coord_abs);
   private:
-  const std::string& _internal_message_name() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_message_name(const std::string& value);
-  std::string* _internal_mutable_message_name();
+  const ::hmi::perception::v1::CoordAbs& _internal_coord_abs() const;
+  ::hmi::perception::v1::CoordAbs* _internal_mutable_coord_abs();
   public:
+  void unsafe_arena_set_allocated_coord_abs(
+      ::hmi::perception::v1::CoordAbs* coord_abs);
+  ::hmi::perception::v1::CoordAbs* unsafe_arena_release_coord_abs();
 
-  // bytes raw_data = 5;
-  void clear_raw_data();
-  const std::string& raw_data() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_raw_data(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_raw_data();
-  PROTOBUF_NODISCARD std::string* release_raw_data();
-  void set_allocated_raw_data(std::string* raw_data);
+  // int32 object_type_id = 1;
+  void clear_object_type_id();
+  int32_t object_type_id() const;
+  void set_object_type_id(int32_t value);
   private:
-  const std::string& _internal_raw_data() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_raw_data(const std::string& value);
-  std::string* _internal_mutable_raw_data();
+  int32_t _internal_object_type_id() const;
+  void _internal_set_object_type_id(int32_t value);
   public:
 
-  // string timestamp_iso8601 = 7;
-  void clear_timestamp_iso8601();
-  const std::string& timestamp_iso8601() const;
-  template <typename ArgT0 = const std::string&, typename... ArgT>
-  void set_timestamp_iso8601(ArgT0&& arg0, ArgT... args);
-  std::string* mutable_timestamp_iso8601();
-  PROTOBUF_NODISCARD std::string* release_timestamp_iso8601();
-  void set_allocated_timestamp_iso8601(std::string* timestamp_iso8601);
-  private:
-  const std::string& _internal_timestamp_iso8601() const;
-  inline PROTOBUF_ALWAYS_INLINE void _internal_set_timestamp_iso8601(const std::string& value);
-  std::string* _internal_mutable_timestamp_iso8601();
-  public:
-
-  // uint32 can_id = 3;
-  void clear_can_id();
-  uint32_t can_id() const;
-  void set_can_id(uint32_t value);
-  private:
-  uint32_t _internal_can_id() const;
-  void _internal_set_can_id(uint32_t value);
-  public:
-
-  // uint32 dlc = 4;
-  void clear_dlc();
-  uint32_t dlc() const;
-  void set_dlc(uint32_t value);
-  private:
-  uint32_t _internal_dlc() const;
-  void _internal_set_dlc(uint32_t value);
-  public:
-
-  // @@protoc_insertion_point(class_scope:perception.PerceptMessage)
+  // @@protoc_insertion_point(class_scope:hmi.perception.v1.PerceptionObject)
  private:
   class _Internal;
 
@@ -458,13 +411,167 @@ class PerceptMessage final :
   typedef void InternalArenaConstructable_;
   typedef void DestructorSkippable_;
   struct Impl_ {
-    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::perception::SignalValue > decoded_signals_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr category_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr message_name_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr raw_data_;
-    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr timestamp_iso8601_;
-    uint32_t can_id_;
-    uint32_t dlc_;
+    ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t > traffic_sign_data_;
+    mutable std::atomic<int> _traffic_sign_data_cached_byte_size_;
+    ::hmi::perception::v1::CoordAbs* coord_abs_;
+    int32_t object_type_id_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_HMI_5fRX_5fPERCEPTION_2eproto;
+};
+// -------------------------------------------------------------------
+
+class PerceptionFrame final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:hmi.perception.v1.PerceptionFrame) */ {
+ public:
+  inline PerceptionFrame() : PerceptionFrame(nullptr) {}
+  ~PerceptionFrame() override;
+  explicit PROTOBUF_CONSTEXPR PerceptionFrame(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  PerceptionFrame(const PerceptionFrame& from);
+  PerceptionFrame(PerceptionFrame&& from) noexcept
+    : PerceptionFrame() {
+    *this = ::std::move(from);
+  }
+
+  inline PerceptionFrame& operator=(const PerceptionFrame& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline PerceptionFrame& operator=(PerceptionFrame&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const PerceptionFrame& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const PerceptionFrame* internal_default_instance() {
+    return reinterpret_cast<const PerceptionFrame*>(
+               &_PerceptionFrame_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    2;
+
+  friend void swap(PerceptionFrame& a, PerceptionFrame& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(PerceptionFrame* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(PerceptionFrame* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  PerceptionFrame* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<PerceptionFrame>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const PerceptionFrame& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const PerceptionFrame& from) {
+    PerceptionFrame::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(PerceptionFrame* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "hmi.perception.v1.PerceptionFrame";
+  }
+  protected:
+  explicit PerceptionFrame(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kObjectsFieldNumber = 1,
+  };
+  // repeated .hmi.perception.v1.PerceptionObject objects = 1;
+  int objects_size() const;
+  private:
+  int _internal_objects_size() const;
+  public:
+  void clear_objects();
+  ::hmi::perception::v1::PerceptionObject* mutable_objects(int index);
+  ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::hmi::perception::v1::PerceptionObject >*
+      mutable_objects();
+  private:
+  const ::hmi::perception::v1::PerceptionObject& _internal_objects(int index) const;
+  ::hmi::perception::v1::PerceptionObject* _internal_add_objects();
+  public:
+  const ::hmi::perception::v1::PerceptionObject& objects(int index) const;
+  ::hmi::perception::v1::PerceptionObject* add_objects();
+  const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::hmi::perception::v1::PerceptionObject >&
+      objects() const;
+
+  // @@protoc_insertion_point(class_scope:hmi.perception.v1.PerceptionFrame)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::hmi::perception::v1::PerceptionObject > objects_;
     mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
   };
   union { Impl_ _impl_; };
@@ -479,390 +586,251 @@ class PerceptMessage final :
   #pragma GCC diagnostic push
   #pragma GCC diagnostic ignored "-Wstrict-aliasing"
 #endif  // __GNUC__
-// SignalValue
+// CoordAbs
 
-// string name = 1;
-inline void SignalValue::clear_name() {
-  _impl_.name_.ClearToEmpty();
+// float latitude = 1;
+inline void CoordAbs::clear_latitude() {
+  _impl_.latitude_ = 0;
 }
-inline const std::string& SignalValue::name() const {
-  // @@protoc_insertion_point(field_get:perception.SignalValue.name)
-  return _internal_name();
+inline float CoordAbs::_internal_latitude() const {
+  return _impl_.latitude_;
 }
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void SignalValue::set_name(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.name_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:perception.SignalValue.name)
+inline float CoordAbs::latitude() const {
+  // @@protoc_insertion_point(field_get:hmi.perception.v1.CoordAbs.latitude)
+  return _internal_latitude();
 }
-inline std::string* SignalValue::mutable_name() {
-  std::string* _s = _internal_mutable_name();
-  // @@protoc_insertion_point(field_mutable:perception.SignalValue.name)
-  return _s;
-}
-inline const std::string& SignalValue::_internal_name() const {
-  return _impl_.name_.Get();
-}
-inline void SignalValue::_internal_set_name(const std::string& value) {
+inline void CoordAbs::_internal_set_latitude(float value) {
   
-  _impl_.name_.Set(value, GetArenaForAllocation());
+  _impl_.latitude_ = value;
 }
-inline std::string* SignalValue::_internal_mutable_name() {
-  
-  return _impl_.name_.Mutable(GetArenaForAllocation());
-}
-inline std::string* SignalValue::release_name() {
-  // @@protoc_insertion_point(field_release:perception.SignalValue.name)
-  return _impl_.name_.Release();
-}
-inline void SignalValue::set_allocated_name(std::string* name) {
-  if (name != nullptr) {
-    
-  } else {
-    
-  }
-  _impl_.name_.SetAllocated(name, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.name_.IsDefault()) {
-    _impl_.name_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:perception.SignalValue.name)
+inline void CoordAbs::set_latitude(float value) {
+  _internal_set_latitude(value);
+  // @@protoc_insertion_point(field_set:hmi.perception.v1.CoordAbs.latitude)
 }
 
-// string value = 2;
-inline void SignalValue::clear_value() {
-  _impl_.value_.ClearToEmpty();
+// float longitude = 2;
+inline void CoordAbs::clear_longitude() {
+  _impl_.longitude_ = 0;
 }
-inline const std::string& SignalValue::value() const {
-  // @@protoc_insertion_point(field_get:perception.SignalValue.value)
-  return _internal_value();
+inline float CoordAbs::_internal_longitude() const {
+  return _impl_.longitude_;
 }
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void SignalValue::set_value(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.value_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:perception.SignalValue.value)
+inline float CoordAbs::longitude() const {
+  // @@protoc_insertion_point(field_get:hmi.perception.v1.CoordAbs.longitude)
+  return _internal_longitude();
 }
-inline std::string* SignalValue::mutable_value() {
-  std::string* _s = _internal_mutable_value();
-  // @@protoc_insertion_point(field_mutable:perception.SignalValue.value)
-  return _s;
-}
-inline const std::string& SignalValue::_internal_value() const {
-  return _impl_.value_.Get();
-}
-inline void SignalValue::_internal_set_value(const std::string& value) {
+inline void CoordAbs::_internal_set_longitude(float value) {
   
-  _impl_.value_.Set(value, GetArenaForAllocation());
+  _impl_.longitude_ = value;
 }
-inline std::string* SignalValue::_internal_mutable_value() {
-  
-  return _impl_.value_.Mutable(GetArenaForAllocation());
-}
-inline std::string* SignalValue::release_value() {
-  // @@protoc_insertion_point(field_release:perception.SignalValue.value)
-  return _impl_.value_.Release();
-}
-inline void SignalValue::set_allocated_value(std::string* value) {
-  if (value != nullptr) {
-    
-  } else {
-    
-  }
-  _impl_.value_.SetAllocated(value, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.value_.IsDefault()) {
-    _impl_.value_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:perception.SignalValue.value)
+inline void CoordAbs::set_longitude(float value) {
+  _internal_set_longitude(value);
+  // @@protoc_insertion_point(field_set:hmi.perception.v1.CoordAbs.longitude)
 }
 
 // -------------------------------------------------------------------
 
-// PerceptMessage
+// PerceptionObject
 
-// string category = 1;
-inline void PerceptMessage::clear_category() {
-  _impl_.category_.ClearToEmpty();
+// int32 object_type_id = 1;
+inline void PerceptionObject::clear_object_type_id() {
+  _impl_.object_type_id_ = 0;
 }
-inline const std::string& PerceptMessage::category() const {
-  // @@protoc_insertion_point(field_get:perception.PerceptMessage.category)
-  return _internal_category();
+inline int32_t PerceptionObject::_internal_object_type_id() const {
+  return _impl_.object_type_id_;
 }
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void PerceptMessage::set_category(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.category_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:perception.PerceptMessage.category)
+inline int32_t PerceptionObject::object_type_id() const {
+  // @@protoc_insertion_point(field_get:hmi.perception.v1.PerceptionObject.object_type_id)
+  return _internal_object_type_id();
 }
-inline std::string* PerceptMessage::mutable_category() {
-  std::string* _s = _internal_mutable_category();
-  // @@protoc_insertion_point(field_mutable:perception.PerceptMessage.category)
-  return _s;
-}
-inline const std::string& PerceptMessage::_internal_category() const {
-  return _impl_.category_.Get();
-}
-inline void PerceptMessage::_internal_set_category(const std::string& value) {
+inline void PerceptionObject::_internal_set_object_type_id(int32_t value) {
   
-  _impl_.category_.Set(value, GetArenaForAllocation());
+  _impl_.object_type_id_ = value;
 }
-inline std::string* PerceptMessage::_internal_mutable_category() {
-  
-  return _impl_.category_.Mutable(GetArenaForAllocation());
+inline void PerceptionObject::set_object_type_id(int32_t value) {
+  _internal_set_object_type_id(value);
+  // @@protoc_insertion_point(field_set:hmi.perception.v1.PerceptionObject.object_type_id)
 }
-inline std::string* PerceptMessage::release_category() {
-  // @@protoc_insertion_point(field_release:perception.PerceptMessage.category)
-  return _impl_.category_.Release();
+
+// .hmi.perception.v1.CoordAbs coord_abs = 2;
+inline bool PerceptionObject::_internal_has_coord_abs() const {
+  return this != internal_default_instance() && _impl_.coord_abs_ != nullptr;
 }
-inline void PerceptMessage::set_allocated_category(std::string* category) {
-  if (category != nullptr) {
+inline bool PerceptionObject::has_coord_abs() const {
+  return _internal_has_coord_abs();
+}
+inline void PerceptionObject::clear_coord_abs() {
+  if (GetArenaForAllocation() == nullptr && _impl_.coord_abs_ != nullptr) {
+    delete _impl_.coord_abs_;
+  }
+  _impl_.coord_abs_ = nullptr;
+}
+inline const ::hmi::perception::v1::CoordAbs& PerceptionObject::_internal_coord_abs() const {
+  const ::hmi::perception::v1::CoordAbs* p = _impl_.coord_abs_;
+  return p != nullptr ? *p : reinterpret_cast<const ::hmi::perception::v1::CoordAbs&>(
+      ::hmi::perception::v1::_CoordAbs_default_instance_);
+}
+inline const ::hmi::perception::v1::CoordAbs& PerceptionObject::coord_abs() const {
+  // @@protoc_insertion_point(field_get:hmi.perception.v1.PerceptionObject.coord_abs)
+  return _internal_coord_abs();
+}
+inline void PerceptionObject::unsafe_arena_set_allocated_coord_abs(
+    ::hmi::perception::v1::CoordAbs* coord_abs) {
+  if (GetArenaForAllocation() == nullptr) {
+    delete reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(_impl_.coord_abs_);
+  }
+  _impl_.coord_abs_ = coord_abs;
+  if (coord_abs) {
     
   } else {
     
   }
-  _impl_.category_.SetAllocated(category, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.category_.IsDefault()) {
-    _impl_.category_.Set("", GetArenaForAllocation());
+  // @@protoc_insertion_point(field_unsafe_arena_set_allocated:hmi.perception.v1.PerceptionObject.coord_abs)
+}
+inline ::hmi::perception::v1::CoordAbs* PerceptionObject::release_coord_abs() {
+  
+  ::hmi::perception::v1::CoordAbs* temp = _impl_.coord_abs_;
+  _impl_.coord_abs_ = nullptr;
+#ifdef PROTOBUF_FORCE_COPY_IN_RELEASE
+  auto* old =  reinterpret_cast<::PROTOBUF_NAMESPACE_ID::MessageLite*>(temp);
+  temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
+  if (GetArenaForAllocation() == nullptr) { delete old; }
+#else  // PROTOBUF_FORCE_COPY_IN_RELEASE
+  if (GetArenaForAllocation() != nullptr) {
+    temp = ::PROTOBUF_NAMESPACE_ID::internal::DuplicateIfNonNull(temp);
   }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:perception.PerceptMessage.category)
+#endif  // !PROTOBUF_FORCE_COPY_IN_RELEASE
+  return temp;
 }
-
-// string message_name = 2;
-inline void PerceptMessage::clear_message_name() {
-  _impl_.message_name_.ClearToEmpty();
-}
-inline const std::string& PerceptMessage::message_name() const {
-  // @@protoc_insertion_point(field_get:perception.PerceptMessage.message_name)
-  return _internal_message_name();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void PerceptMessage::set_message_name(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.message_name_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:perception.PerceptMessage.message_name)
-}
-inline std::string* PerceptMessage::mutable_message_name() {
-  std::string* _s = _internal_mutable_message_name();
-  // @@protoc_insertion_point(field_mutable:perception.PerceptMessage.message_name)
-  return _s;
-}
-inline const std::string& PerceptMessage::_internal_message_name() const {
-  return _impl_.message_name_.Get();
-}
-inline void PerceptMessage::_internal_set_message_name(const std::string& value) {
+inline ::hmi::perception::v1::CoordAbs* PerceptionObject::unsafe_arena_release_coord_abs() {
+  // @@protoc_insertion_point(field_release:hmi.perception.v1.PerceptionObject.coord_abs)
   
-  _impl_.message_name_.Set(value, GetArenaForAllocation());
+  ::hmi::perception::v1::CoordAbs* temp = _impl_.coord_abs_;
+  _impl_.coord_abs_ = nullptr;
+  return temp;
 }
-inline std::string* PerceptMessage::_internal_mutable_message_name() {
+inline ::hmi::perception::v1::CoordAbs* PerceptionObject::_internal_mutable_coord_abs() {
   
-  return _impl_.message_name_.Mutable(GetArenaForAllocation());
+  if (_impl_.coord_abs_ == nullptr) {
+    auto* p = CreateMaybeMessage<::hmi::perception::v1::CoordAbs>(GetArenaForAllocation());
+    _impl_.coord_abs_ = p;
+  }
+  return _impl_.coord_abs_;
 }
-inline std::string* PerceptMessage::release_message_name() {
-  // @@protoc_insertion_point(field_release:perception.PerceptMessage.message_name)
-  return _impl_.message_name_.Release();
+inline ::hmi::perception::v1::CoordAbs* PerceptionObject::mutable_coord_abs() {
+  ::hmi::perception::v1::CoordAbs* _msg = _internal_mutable_coord_abs();
+  // @@protoc_insertion_point(field_mutable:hmi.perception.v1.PerceptionObject.coord_abs)
+  return _msg;
 }
-inline void PerceptMessage::set_allocated_message_name(std::string* message_name) {
-  if (message_name != nullptr) {
+inline void PerceptionObject::set_allocated_coord_abs(::hmi::perception::v1::CoordAbs* coord_abs) {
+  ::PROTOBUF_NAMESPACE_ID::Arena* message_arena = GetArenaForAllocation();
+  if (message_arena == nullptr) {
+    delete _impl_.coord_abs_;
+  }
+  if (coord_abs) {
+    ::PROTOBUF_NAMESPACE_ID::Arena* submessage_arena =
+        ::PROTOBUF_NAMESPACE_ID::Arena::InternalGetOwningArena(coord_abs);
+    if (message_arena != submessage_arena) {
+      coord_abs = ::PROTOBUF_NAMESPACE_ID::internal::GetOwnedMessage(
+          message_arena, coord_abs, submessage_arena);
+    }
     
   } else {
     
   }
-  _impl_.message_name_.SetAllocated(message_name, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.message_name_.IsDefault()) {
-    _impl_.message_name_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:perception.PerceptMessage.message_name)
+  _impl_.coord_abs_ = coord_abs;
+  // @@protoc_insertion_point(field_set_allocated:hmi.perception.v1.PerceptionObject.coord_abs)
 }
 
-// uint32 can_id = 3;
-inline void PerceptMessage::clear_can_id() {
-  _impl_.can_id_ = 0u;
+// repeated int32 traffic_sign_data = 3;
+inline int PerceptionObject::_internal_traffic_sign_data_size() const {
+  return _impl_.traffic_sign_data_.size();
 }
-inline uint32_t PerceptMessage::_internal_can_id() const {
-  return _impl_.can_id_;
+inline int PerceptionObject::traffic_sign_data_size() const {
+  return _internal_traffic_sign_data_size();
 }
-inline uint32_t PerceptMessage::can_id() const {
-  // @@protoc_insertion_point(field_get:perception.PerceptMessage.can_id)
-  return _internal_can_id();
+inline void PerceptionObject::clear_traffic_sign_data() {
+  _impl_.traffic_sign_data_.Clear();
 }
-inline void PerceptMessage::_internal_set_can_id(uint32_t value) {
-  
-  _impl_.can_id_ = value;
+inline int32_t PerceptionObject::_internal_traffic_sign_data(int index) const {
+  return _impl_.traffic_sign_data_.Get(index);
 }
-inline void PerceptMessage::set_can_id(uint32_t value) {
-  _internal_set_can_id(value);
-  // @@protoc_insertion_point(field_set:perception.PerceptMessage.can_id)
+inline int32_t PerceptionObject::traffic_sign_data(int index) const {
+  // @@protoc_insertion_point(field_get:hmi.perception.v1.PerceptionObject.traffic_sign_data)
+  return _internal_traffic_sign_data(index);
 }
-
-// uint32 dlc = 4;
-inline void PerceptMessage::clear_dlc() {
-  _impl_.dlc_ = 0u;
+inline void PerceptionObject::set_traffic_sign_data(int index, int32_t value) {
+  _impl_.traffic_sign_data_.Set(index, value);
+  // @@protoc_insertion_point(field_set:hmi.perception.v1.PerceptionObject.traffic_sign_data)
 }
-inline uint32_t PerceptMessage::_internal_dlc() const {
-  return _impl_.dlc_;
+inline void PerceptionObject::_internal_add_traffic_sign_data(int32_t value) {
+  _impl_.traffic_sign_data_.Add(value);
 }
-inline uint32_t PerceptMessage::dlc() const {
-  // @@protoc_insertion_point(field_get:perception.PerceptMessage.dlc)
-  return _internal_dlc();
+inline void PerceptionObject::add_traffic_sign_data(int32_t value) {
+  _internal_add_traffic_sign_data(value);
+  // @@protoc_insertion_point(field_add:hmi.perception.v1.PerceptionObject.traffic_sign_data)
 }
-inline void PerceptMessage::_internal_set_dlc(uint32_t value) {
-  
-  _impl_.dlc_ = value;
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t >&
+PerceptionObject::_internal_traffic_sign_data() const {
+  return _impl_.traffic_sign_data_;
 }
-inline void PerceptMessage::set_dlc(uint32_t value) {
-  _internal_set_dlc(value);
-  // @@protoc_insertion_point(field_set:perception.PerceptMessage.dlc)
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t >&
+PerceptionObject::traffic_sign_data() const {
+  // @@protoc_insertion_point(field_list:hmi.perception.v1.PerceptionObject.traffic_sign_data)
+  return _internal_traffic_sign_data();
 }
-
-// bytes raw_data = 5;
-inline void PerceptMessage::clear_raw_data() {
-  _impl_.raw_data_.ClearToEmpty();
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t >*
+PerceptionObject::_internal_mutable_traffic_sign_data() {
+  return &_impl_.traffic_sign_data_;
 }
-inline const std::string& PerceptMessage::raw_data() const {
-  // @@protoc_insertion_point(field_get:perception.PerceptMessage.raw_data)
-  return _internal_raw_data();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void PerceptMessage::set_raw_data(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.raw_data_.SetBytes(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:perception.PerceptMessage.raw_data)
-}
-inline std::string* PerceptMessage::mutable_raw_data() {
-  std::string* _s = _internal_mutable_raw_data();
-  // @@protoc_insertion_point(field_mutable:perception.PerceptMessage.raw_data)
-  return _s;
-}
-inline const std::string& PerceptMessage::_internal_raw_data() const {
-  return _impl_.raw_data_.Get();
-}
-inline void PerceptMessage::_internal_set_raw_data(const std::string& value) {
-  
-  _impl_.raw_data_.Set(value, GetArenaForAllocation());
-}
-inline std::string* PerceptMessage::_internal_mutable_raw_data() {
-  
-  return _impl_.raw_data_.Mutable(GetArenaForAllocation());
-}
-inline std::string* PerceptMessage::release_raw_data() {
-  // @@protoc_insertion_point(field_release:perception.PerceptMessage.raw_data)
-  return _impl_.raw_data_.Release();
-}
-inline void PerceptMessage::set_allocated_raw_data(std::string* raw_data) {
-  if (raw_data != nullptr) {
-    
-  } else {
-    
-  }
-  _impl_.raw_data_.SetAllocated(raw_data, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.raw_data_.IsDefault()) {
-    _impl_.raw_data_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:perception.PerceptMessage.raw_data)
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedField< int32_t >*
+PerceptionObject::mutable_traffic_sign_data() {
+  // @@protoc_insertion_point(field_mutable_list:hmi.perception.v1.PerceptionObject.traffic_sign_data)
+  return _internal_mutable_traffic_sign_data();
 }
 
-// repeated .perception.SignalValue decoded_signals = 6;
-inline int PerceptMessage::_internal_decoded_signals_size() const {
-  return _impl_.decoded_signals_.size();
+// -------------------------------------------------------------------
+
+// PerceptionFrame
+
+// repeated .hmi.perception.v1.PerceptionObject objects = 1;
+inline int PerceptionFrame::_internal_objects_size() const {
+  return _impl_.objects_.size();
 }
-inline int PerceptMessage::decoded_signals_size() const {
-  return _internal_decoded_signals_size();
+inline int PerceptionFrame::objects_size() const {
+  return _internal_objects_size();
 }
-inline void PerceptMessage::clear_decoded_signals() {
-  _impl_.decoded_signals_.Clear();
+inline void PerceptionFrame::clear_objects() {
+  _impl_.objects_.Clear();
 }
-inline ::perception::SignalValue* PerceptMessage::mutable_decoded_signals(int index) {
-  // @@protoc_insertion_point(field_mutable:perception.PerceptMessage.decoded_signals)
-  return _impl_.decoded_signals_.Mutable(index);
+inline ::hmi::perception::v1::PerceptionObject* PerceptionFrame::mutable_objects(int index) {
+  // @@protoc_insertion_point(field_mutable:hmi.perception.v1.PerceptionFrame.objects)
+  return _impl_.objects_.Mutable(index);
 }
-inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::perception::SignalValue >*
-PerceptMessage::mutable_decoded_signals() {
-  // @@protoc_insertion_point(field_mutable_list:perception.PerceptMessage.decoded_signals)
-  return &_impl_.decoded_signals_;
+inline ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::hmi::perception::v1::PerceptionObject >*
+PerceptionFrame::mutable_objects() {
+  // @@protoc_insertion_point(field_mutable_list:hmi.perception.v1.PerceptionFrame.objects)
+  return &_impl_.objects_;
 }
-inline const ::perception::SignalValue& PerceptMessage::_internal_decoded_signals(int index) const {
-  return _impl_.decoded_signals_.Get(index);
+inline const ::hmi::perception::v1::PerceptionObject& PerceptionFrame::_internal_objects(int index) const {
+  return _impl_.objects_.Get(index);
 }
-inline const ::perception::SignalValue& PerceptMessage::decoded_signals(int index) const {
-  // @@protoc_insertion_point(field_get:perception.PerceptMessage.decoded_signals)
-  return _internal_decoded_signals(index);
+inline const ::hmi::perception::v1::PerceptionObject& PerceptionFrame::objects(int index) const {
+  // @@protoc_insertion_point(field_get:hmi.perception.v1.PerceptionFrame.objects)
+  return _internal_objects(index);
 }
-inline ::perception::SignalValue* PerceptMessage::_internal_add_decoded_signals() {
-  return _impl_.decoded_signals_.Add();
+inline ::hmi::perception::v1::PerceptionObject* PerceptionFrame::_internal_add_objects() {
+  return _impl_.objects_.Add();
 }
-inline ::perception::SignalValue* PerceptMessage::add_decoded_signals() {
-  ::perception::SignalValue* _add = _internal_add_decoded_signals();
-  // @@protoc_insertion_point(field_add:perception.PerceptMessage.decoded_signals)
+inline ::hmi::perception::v1::PerceptionObject* PerceptionFrame::add_objects() {
+  ::hmi::perception::v1::PerceptionObject* _add = _internal_add_objects();
+  // @@protoc_insertion_point(field_add:hmi.perception.v1.PerceptionFrame.objects)
   return _add;
 }
-inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::perception::SignalValue >&
-PerceptMessage::decoded_signals() const {
-  // @@protoc_insertion_point(field_list:perception.PerceptMessage.decoded_signals)
-  return _impl_.decoded_signals_;
-}
-
-// string timestamp_iso8601 = 7;
-inline void PerceptMessage::clear_timestamp_iso8601() {
-  _impl_.timestamp_iso8601_.ClearToEmpty();
-}
-inline const std::string& PerceptMessage::timestamp_iso8601() const {
-  // @@protoc_insertion_point(field_get:perception.PerceptMessage.timestamp_iso8601)
-  return _internal_timestamp_iso8601();
-}
-template <typename ArgT0, typename... ArgT>
-inline PROTOBUF_ALWAYS_INLINE
-void PerceptMessage::set_timestamp_iso8601(ArgT0&& arg0, ArgT... args) {
- 
- _impl_.timestamp_iso8601_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
-  // @@protoc_insertion_point(field_set:perception.PerceptMessage.timestamp_iso8601)
-}
-inline std::string* PerceptMessage::mutable_timestamp_iso8601() {
-  std::string* _s = _internal_mutable_timestamp_iso8601();
-  // @@protoc_insertion_point(field_mutable:perception.PerceptMessage.timestamp_iso8601)
-  return _s;
-}
-inline const std::string& PerceptMessage::_internal_timestamp_iso8601() const {
-  return _impl_.timestamp_iso8601_.Get();
-}
-inline void PerceptMessage::_internal_set_timestamp_iso8601(const std::string& value) {
-  
-  _impl_.timestamp_iso8601_.Set(value, GetArenaForAllocation());
-}
-inline std::string* PerceptMessage::_internal_mutable_timestamp_iso8601() {
-  
-  return _impl_.timestamp_iso8601_.Mutable(GetArenaForAllocation());
-}
-inline std::string* PerceptMessage::release_timestamp_iso8601() {
-  // @@protoc_insertion_point(field_release:perception.PerceptMessage.timestamp_iso8601)
-  return _impl_.timestamp_iso8601_.Release();
-}
-inline void PerceptMessage::set_allocated_timestamp_iso8601(std::string* timestamp_iso8601) {
-  if (timestamp_iso8601 != nullptr) {
-    
-  } else {
-    
-  }
-  _impl_.timestamp_iso8601_.SetAllocated(timestamp_iso8601, GetArenaForAllocation());
-#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  if (_impl_.timestamp_iso8601_.IsDefault()) {
-    _impl_.timestamp_iso8601_.Set("", GetArenaForAllocation());
-  }
-#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
-  // @@protoc_insertion_point(field_set_allocated:perception.PerceptMessage.timestamp_iso8601)
+inline const ::PROTOBUF_NAMESPACE_ID::RepeatedPtrField< ::hmi::perception::v1::PerceptionObject >&
+PerceptionFrame::objects() const {
+  // @@protoc_insertion_point(field_list:hmi.perception.v1.PerceptionFrame.objects)
+  return _impl_.objects_;
 }
 
 #ifdef __GNUC__
@@ -870,10 +838,14 @@ inline void PerceptMessage::set_allocated_timestamp_iso8601(std::string* timesta
 #endif  // __GNUC__
 // -------------------------------------------------------------------
 
+// -------------------------------------------------------------------
+
 
 // @@protoc_insertion_point(namespace_scope)
 
+}  // namespace v1
 }  // namespace perception
+}  // namespace hmi
 
 // @@protoc_insertion_point(global_scope)
 

@@ -28,18 +28,46 @@ Item {
 
     property real vehicleHeading: 0.0            // keep north-up for now
     property bool followVehicle: true
+    property bool map3dEnabled: (typeof SettingsBackend !== "undefined") ? SettingsBackend.map3dEnabled : false
+    property var  defaultCenter: QtPositioning.coordinate(39.99846475680883, -83.03239944474197)
+    property real defaultTilt3d: 50
+    property var routePath: []
 
     // Dynamic marker size vs zoom (~28 px at z18)
     property real carSize: Math.max(22, Math.min(56, 24 + (mapView.zoomLevel - 16) * 6))
+    property real carSize3d: Math.max(24, Math.min(60, 26 + (mapView3d.zoomLevel - 16) * 5))
 
     Layout.fillWidth: true
     Layout.fillHeight: true
 
+    function activeMap() {
+        return root.map3dEnabled ? mapView3d : mapView
+    }
+
+    function normalizeHeading(deg) {
+        var h = deg % 360
+        if (h < 0) h += 360
+        return h
+    }
+
+    function recenterActiveMap() {
+        if (root.map3dEnabled) {
+            mapView3d.center = vehicleCoord
+            mapView3d.zoomLevel = Math.min(22, defaultZoom + 1.5)
+            mapView3d.bearing = normalizeHeading(vehicleHeading)
+            mapView3d.tilt = defaultTilt3d
+            followVehicle = true
+            return
+        }
+        mapView.recenterToVehicle()
+    }
+
     function updateVehicleFix(lat, lon) {
         vehicleCoord = QtPositioning.coordinate(lat, lon)
         carMarker.coordinate = vehicleCoord   // REQUIRED
+        carMarker3d.coordinate = vehicleCoord
         if (followVehicle)
-            mapView.center = vehicleCoord
+            activeMap().center = vehicleCoord
     }
 
     Connections {
@@ -53,8 +81,13 @@ Item {
                 NavigationBackend.currentLon
             )
 
-            // (Optional) update rotation later when we add heading)
-            carMarker.rotation = NavigationBackend.headingDeg
+            // Keep 2D and 3D cursors in sync
+            vehicleHeading = NavigationBackend.headingDeg
+            carMarker.rotation = vehicleHeading
+            mapView3d.bearing = normalizeHeading(vehicleHeading)
+            // In 3D mode map bearing already tracks heading; compensate marker so heading is not double-applied.
+            carMarker3d.rotation = vehicleHeading - mapView3d.bearing
+            mapView3d.tilt = defaultTilt3d
         }
 
         // Called 1Hz (or whenever new waypoint batch arrives)
@@ -63,7 +96,7 @@ Item {
 
             // NavigationBackend.waypointPath()
             // returns list of QGeoCoordinate items
-            routeLine.path = NavigationBackend.waypointPath()
+            routePath = NavigationBackend.waypointPath()
         }
     }
 
@@ -86,9 +119,10 @@ Item {
     Map {
         id: mapView
         anchors.fill: parent
+        visible: !root.map3dEnabled
         plugin: osmPlugin
         zoomLevel: defaultZoom
-        center: QtPositioning.coordinate(39.99846475680883, -83.03239944474197)
+        center: defaultCenter
 
         // Smooth recenter animation
         NumberAnimation { id: recLat;  target: mapView; property: "center.latitude";  duration: 450; easing.type: Easing.OutCubic }
@@ -151,7 +185,7 @@ Item {
             line.color: "#0081ff"
             opacity: 0.9
             z: 5000
-            path: []
+            path: routePath
         }
 
 
@@ -219,6 +253,189 @@ Item {
         }
     }
 
+    // 3D map view (tilted) with procedural cursor synced to same vehicle dynamics
+    Map {
+        id: mapView3d
+        anchors.fill: parent
+        visible: root.map3dEnabled
+        plugin: osmPlugin
+        zoomLevel: Math.min(22, defaultZoom + 1.5)
+        center: defaultCenter
+        bearing: vehicleHeading
+        tilt: defaultTilt3d
+
+        MapQuickItem {
+            id: carMarker3d
+            coordinate: vehicleCoord
+            visible: true
+            z: 9999
+
+            anchorPoint.x: carShape3d.width / 2
+            anchorPoint.y: carShape3d.height / 2
+
+            sourceItem: Item {
+                id: carShape3d
+                width: root.carSize3d
+                height: root.carSize3d
+                transform: [
+                    Rotation {
+                        origin.x: carShape3d.width / 2
+                        origin.y: carShape3d.height / 2
+                        axis.x: 1; axis.y: 0; axis.z: 0
+                        angle: Math.max(0, (mapView3d.tilt - 25) * 0.55)
+                    }
+                ]
+
+                Canvas {
+                    anchors.fill: parent
+                    onPaint: {
+                        var ctx = getContext("2d")
+                        ctx.clearRect(0, 0, width, height)
+
+                        // Back layer for depth effect (procedural pseudo-3D)
+                        ctx.fillStyle = "#7d0a21"
+                        ctx.beginPath()
+                        ctx.moveTo(width * 0.52, height * 0.18)
+                        ctx.lineTo(width * 0.87, height * 0.90)
+                        ctx.lineTo(width * 0.52, height * 0.72)
+                        ctx.lineTo(width * 0.17, height * 0.90)
+                        ctx.closePath()
+                        ctx.fill()
+
+                        // Front layer (same red family as 2D cursor)
+                        ctx.fillStyle = "#ba0c2f"
+                        ctx.beginPath()
+                        ctx.moveTo(width * 0.50, height * 0.10)
+                        ctx.lineTo(width * 0.82, height * 0.82)
+                        ctx.lineTo(width * 0.50, height * 0.62)
+                        ctx.lineTo(width * 0.18, height * 0.82)
+                        ctx.closePath()
+                        ctx.fill()
+                    }
+                }
+            }
+        }
+
+        MapPolyline {
+            id: routeLine3d
+            line.width: 6
+            line.color: "#0081ff"
+            opacity: 0.92
+            z: 5000
+            path: routePath
+        }
+
+        // Touch-first camera controls:
+        //  - one finger: pan
+        //  - two fingers: pinch zoom + pan
+        MultiPointTouchArea {
+            id: touch3d
+            anchors.fill: parent
+            minimumTouchPoints: 1
+            maximumTouchPoints: 2
+            mouseEnabled: false
+
+            property real lastCenterX: 0
+            property real lastCenterY: 0
+            property real lastDistance: 0
+            property int lastCount: 0
+
+            function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)) }
+            function dist(a, b) {
+                var dx = a.x - b.x
+                var dy = a.y - b.y
+                return Math.sqrt(dx*dx + dy*dy)
+            }
+
+            onPressed: (points) => {
+                if (!points || points.length === 0) return
+                lastCount = points.length
+                if (points.length === 1) {
+                    lastCenterX = points[0].x
+                    lastCenterY = points[0].y
+                    lastDistance = 0
+                } else {
+                    lastCenterX = (points[0].x + points[1].x) * 0.5
+                    lastCenterY = (points[0].y + points[1].y) * 0.5
+                    lastDistance = dist(points[0], points[1])
+                }
+            }
+
+            onUpdated: (points) => {
+                if (!points || points.length === 0) return
+
+                if (points.length === 1) {
+                    var p = points[0]
+                    if (lastCount !== 1) {
+                        lastCenterX = p.x
+                        lastCenterY = p.y
+                    }
+                    var dx = p.x - lastCenterX
+                    var dy = p.y - lastCenterY
+
+                    mapView3d.pan(-dx, -dy)
+
+                    lastCenterX = p.x
+                    lastCenterY = p.y
+                    followVehicle = false
+                } else {
+                    var p0 = points[0]
+                    var p1 = points[1]
+                    var cx = (p0.x + p1.x) * 0.5
+                    var cy = (p0.y + p1.y) * 0.5
+                    var d = dist(p0, p1)
+
+                    if (lastCount >= 2) {
+                        if (lastDistance > 0) {
+                            var ratio = d / lastDistance
+                            mapView3d.zoomLevel = clamp(mapView3d.zoomLevel + (Math.log(ratio) / Math.log(2)), 3, 22)
+                        }
+                        mapView3d.pan(-(cx - lastCenterX), -(cy - lastCenterY))
+                    }
+
+                    lastCenterX = cx
+                    lastCenterY = cy
+                    lastDistance = d
+                    followVehicle = false
+                }
+
+                lastCount = points.length
+            }
+
+            onReleased: (points) => {
+                lastCount = points ? points.length : 0
+                if (lastCount < 2)
+                    lastDistance = 0
+            }
+        }
+
+        WheelHandler {
+            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+            onWheel: (event) => {
+                mapView3d.zoomLevel = Math.max(3, Math.min(22, mapView3d.zoomLevel + (event.angleDelta.y > 0 ? 0.4 : -0.4)))
+                followVehicle = false
+            }
+        }
+
+        // Desktop/laptop drag pan support (for testing without touch)
+        MouseArea {
+            anchors.fill: parent
+            enabled: root.map3dEnabled
+            property var lastPos
+            onPressed: {
+                lastPos = Qt.point(mouse.x, mouse.y)
+                followVehicle = false
+            }
+            onPositionChanged: {
+                if (!pressed) return
+                var dx = mouse.x - lastPos.x
+                var dy = mouse.y - lastPos.y
+                mapView3d.pan(-dx, -dy)
+                lastPos = Qt.point(mouse.x, mouse.y)
+            }
+        }
+    }
+
     // ---------- Re-center floating pill ----------
     Rectangle {
         id: recenterPill
@@ -274,7 +491,7 @@ Item {
             onCanceled: recenterPill.pressed = false
             onReleased: {
                 recenterPill.pressed = false
-                mapView.recenterToVehicle()
+                recenterActiveMap()
             }
         }
     }
@@ -288,7 +505,14 @@ Item {
         dbParam.value = filePath
         mapView.center = QtPositioning.coordinate(lat, lon)
         mapView.zoomLevel = defaultZoom
+        mapView3d.center = QtPositioning.coordinate(lat, lon)
+        mapView3d.zoomLevel = Math.min(22, defaultZoom + 1.5)
         console.log("Loaded region:", regionName, "from", filePath)
+    }
+
+    onMap3dEnabledChanged: {
+        if (followVehicle)
+            activeMap().center = vehicleCoord
     }
 
     function detectRegion(lat, lon) {

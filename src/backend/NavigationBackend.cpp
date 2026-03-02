@@ -66,10 +66,11 @@ void NavigationBackend::onControlsMessage(const vehicle_msgs::Navigation& msg)
     emit waypointsUpdated();
 }
 
-void NavigationBackend::applyRxPorts(int controlsPort, int loggerPort)
+void NavigationBackend::applyRxPorts(int controlsPort, int perceptionPort, int loggerPort)
 {
     if (m_rx) {
         m_rx->listenControls(static_cast<quint16>(controlsPort));
+        m_rx->listenPerception(static_cast<quint16>(perceptionPort));
         m_rx->listenLogger(static_cast<quint16>(loggerPort));
     }
 }

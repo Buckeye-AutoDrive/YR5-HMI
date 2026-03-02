@@ -13,6 +13,7 @@ add_library(HMI_Backend
     backend/CameraFramesBackend.cpp
     backend/LogBackupBackend.cpp
     proto/HMI_RX_CONTROLS.pb.cc
+    proto/HMI_RX_PERCEPTION.pb.cc
     proto/HMI_TX_CONTROLS.pb.cc
     # HMI_RX_CAN compiled by app (root CMakeLists) to avoid duplicate symbols
 )

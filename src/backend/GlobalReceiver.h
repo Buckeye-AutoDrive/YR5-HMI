@@ -8,9 +8,7 @@
 
 #include "../proto/HMI_RX_CONTROLS.pb.h"   // Navigation
 #include "../proto/HMI_RX_CAN.pb.h"       // can_stream::CanBatch
-
-// If/when you generate PERCEPTION, uncomment:
-// #include "../proto/HMI_RX_PERCEPTION.pb.h"  // Perception
+#include "../proto/HMI_RX_PERCEPTION.pb.h"  // hmi::perception::v1::PerceptionFrame
 
 class GlobalReceiver : public QObject
 {
@@ -21,8 +19,8 @@ public:
     // Add a listening port dedicated to the CONTROLS stream
     bool listenControls(quint16 port = 5001);
 
-    // Perception stream (TX side not ready yet; keep commented and not started by default)
-    // bool listenPerception(quint16 port = 6002);
+    // Perception stream (4-byte big-endian length prefix, PerceptionFrame)
+    bool listenPerception(quint16 port = 6002);
 
     // Logger stream: CAN batches, 32-bit LE length prefix
     bool listenLogger(quint16 port = 6003);
@@ -42,9 +40,8 @@ signals:
     // CAN status icon: true when port 6003 has a connection and has received data
     void canLoggerActiveChanged(bool active);
 
-    // Future:
-    // void perceptionRaw(const QByteArray& payload);
-    // void perceptionMessage(const Perception& msg);
+    // Perception stream (port 6002, PerceptionFrame)
+    void perceptionFrameReceived(const hmi::perception::v1::PerceptionFrame& frame);
 
 private slots:
     void onNewConnection();
@@ -67,7 +64,7 @@ private:
     bool tryPopFrame(quint16 port, QByteArray& buf, QByteArray& frame);
 
     // Which stream does this port represent?
-    enum class StreamKind { Controls, Logger /*, Perception*/ };
+    enum class StreamKind { Controls, Logger, Perception };
     QHash<quint16, StreamKind> m_portKinds;
 
     void processFrame(quint16 port, const QByteArray& payload);
