@@ -200,6 +200,7 @@ void GlobalReceiver::processFrame(quint16 port, const QByteArray& payload)
             qWarning() << "[GlobalReceiver] Perception: failed to parse PerceptionFrame";
             return;
         }
+        qDebug() << "[GlobalReceiver] Perception: received frame with" << frame.objects_size() << "objects";
         emit perceptionFrameReceived(frame);
         break;
     }

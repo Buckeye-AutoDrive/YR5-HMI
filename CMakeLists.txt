@@ -21,6 +21,24 @@ set_source_files_properties(ui/Theme.qml PROPERTIES
 # Generate qmldir for ui/ and pages/ so subdirectory QML components import correctly (Qt 6.8+)
 qt_policy(SET QTP0004 NEW)
 
+# Traffic sign PNGs: sign_0.png ... sign_17.png in src/icons/ (sign_type_id per HMI_RX_PERCEPTION.proto)
+file(GLOB TRAFFIC_SIGN_PNGS "${CMAKE_SOURCE_DIR}/src/icons/sign_*.png")
+list(SORT TRAFFIC_SIGN_PNGS)
+set(TRAFFIC_SIGN_PNGS_REL "")
+foreach(f IN LISTS TRAFFIC_SIGN_PNGS)
+    file(RELATIVE_PATH rel "${CMAKE_SOURCE_DIR}" "${f}")
+    list(APPEND TRAFFIC_SIGN_PNGS_REL "${rel}")
+endforeach()
+
+# Perception object icons: object_1.svg ... object_9.svg (object_type_id per HMI_RX_PERCEPTION.proto)
+file(GLOB OBJECT_ICON_SVGS "${CMAKE_SOURCE_DIR}/src/icons/object_*.svg")
+list(SORT OBJECT_ICON_SVGS)
+set(OBJECT_ICON_SVGS_REL "")
+foreach(f IN LISTS OBJECT_ICON_SVGS)
+    file(RELATIVE_PATH rel "${CMAKE_SOURCE_DIR}" "${f}")
+    list(APPEND OBJECT_ICON_SVGS_REL "${rel}")
+endforeach()
+
 qt_add_qml_module(appHMI_Mk1
     URI HMI_Mk1
     VERSION 1.0
@@ -41,6 +59,7 @@ qt_add_qml_module(appHMI_Mk1
         pages/LoggerPage.qml
 
     RESOURCES
+        src/models/car.glb
         src/fonts/UniversalSans.ttf
         src/fonts/UniversalSansDisplay.ttf
         src/icons/auto_on.svg
@@ -60,6 +79,8 @@ qt_add_qml_module(appHMI_Mk1
         src/icons/pause.svg
         src/icons/resume.svg
         src/icons/discard.svg
+        ${OBJECT_ICON_SVGS_REL}
+        ${TRAFFIC_SIGN_PNGS_REL}
 )
 
 # Protobuf

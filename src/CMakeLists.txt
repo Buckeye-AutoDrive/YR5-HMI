@@ -4,6 +4,8 @@ find_package(Qt6 REQUIRED COMPONENTS Core Network Positioning Quick)
 
 add_library(HMI_Backend
     backend/NavigationBackend.cpp
+    backend/PerceptionBackend.cpp
+    backend/PerceptionMapModel.cpp
     backend/GlobalReceiver.cpp
     backend/GlobalTransmitter.cpp
     backend/SettingsBackend.cpp

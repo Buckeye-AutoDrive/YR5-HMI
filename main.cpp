@@ -6,6 +6,7 @@
 #include <QQuickStyle>
 
 #include "src/backend/NavigationBackend.h"
+#include "src/backend/PerceptionBackend.h"
 #include "src/backend/GlobalReceiver.h"
 #include "src/backend/GlobalTransmitter.h"
 #include "src/backend/SettingsBackend.h"
@@ -62,6 +63,12 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("NavigationBackend", navBackend);
     engine.rootContext()->setContextProperty("GlobalTx", txBackend);
     engine.rootContext()->setContextProperty("SettingsBackend", settingsBackend);
+
+    auto* perceptionBackend = new PerceptionBackend(&engine);
+    engine.rootContext()->setContextProperty("PerceptionBackend", perceptionBackend);
+    QObject::connect(navBackend->globalReceiver(), &GlobalReceiver::perceptionFrameReceived,
+                     perceptionBackend, &PerceptionBackend::onPerceptionFrameReceived);
+
     auto* loggerBackend = new LoggerBackend(&engine);
     engine.rootContext()->setContextProperty("LoggerBackend", loggerBackend);
     auto* logBackupBackend = new LogBackupBackend(&engine);

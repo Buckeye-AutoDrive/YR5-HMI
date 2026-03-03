@@ -5,6 +5,7 @@ import QtLocation
 import QtPositioning
 import QtQuick.Layouts
 import QtQuick.Shapes
+import QtQuick3D
 
 Item {
     id: root
@@ -30,12 +31,18 @@ Item {
     property bool followVehicle: true
     property bool map3dEnabled: (typeof SettingsBackend !== "undefined") ? SettingsBackend.map3dEnabled : false
     property var  defaultCenter: QtPositioning.coordinate(39.99846475680883, -83.03239944474197)
-    property real defaultTilt3d: 50
+    property real defaultTilt3d: 60
     property var routePath: []
+    property var groundArrowPath: []
+    property var groundArrowDepthPath: []
 
     // Dynamic marker size vs zoom (~28 px at z18)
     property real carSize: Math.max(22, Math.min(56, 24 + (mapView.zoomLevel - 16) * 6))
-    property real carSize3d: Math.max(24, Math.min(60, 26 + (mapView3d.zoomLevel - 16) * 5))
+    // Keep 3D marker size fixed (no zoom-based scaling)
+    property real carSize3d: 56
+    // Perception object icons: same zoom rate as arrow (carSize), but a bit smaller so they stay under the cursor when zoomed out
+    property real perceptionIconSize: root.carSize * 0.78
+    property real perceptionIconSize3d: Math.max(20, Math.min(44, (24 + (mapView3d.zoomLevel - 16) * 6) * 0.78))
 
     Layout.fillWidth: true
     Layout.fillHeight: true
@@ -50,10 +57,27 @@ Item {
         return h
     }
 
+    function updateGroundArrow() {
+        var h = normalizeHeading(vehicleHeading)
+        var tip = vehicleCoord.atDistanceAndAzimuth(5.5, h)
+        var baseCenter = vehicleCoord.atDistanceAndAzimuth(2.5, h + 180)
+        var left = baseCenter.atDistanceAndAzimuth(2.1, h - 90)
+        var right = baseCenter.atDistanceAndAzimuth(2.1, h + 90)
+        var notch = vehicleCoord.atDistanceAndAzimuth(0.9, h + 180)
+        groundArrowPath = [tip, left, notch, right]
+
+        // Faux depth: duplicate arrow slightly shifted backward to look extruded.
+        var depthBack = 0.35
+        var depthSide = 0.12
+        var depthAz = h + 180 + 18
+        function d(p) { return p.atDistanceAndAzimuth(depthBack, depthAz).atDistanceAndAzimuth(depthSide, h + 90) }
+        groundArrowDepthPath = [d(tip), d(left), d(notch), d(right)]
+    }
+
     function recenterActiveMap() {
         if (root.map3dEnabled) {
             mapView3d.center = vehicleCoord
-            mapView3d.zoomLevel = Math.min(22, defaultZoom + 1.5)
+            mapView3d.zoomLevel = Math.min(22, defaultZoom + 2)
             mapView3d.bearing = normalizeHeading(vehicleHeading)
             mapView3d.tilt = defaultTilt3d
             followVehicle = true
@@ -68,6 +92,35 @@ Item {
         carMarker3d.coordinate = vehicleCoord
         if (followVehicle)
             activeMap().center = vehicleCoord
+    }
+
+    // Plain array for Repeater; synced from C++ model when count or data changes
+    property var mapObjectList: []
+    function syncMapObjectList() {
+        if (typeof PerceptionBackend === "undefined" || !PerceptionBackend.mapObjectsModel) {
+            mapObjectList = []
+            return
+        }
+        var m = PerceptionBackend.mapObjectsModel
+        var n = typeof PerceptionBackend.mapObjectCount === "number" ? PerceptionBackend.mapObjectCount : 0
+        var list = []
+        for (var i = 0; i < n; i++) {
+            var r = m.getRow(i)
+            if (r && r.latitude !== undefined && r.longitude !== undefined)
+                list.push({ latitude: Number(r.latitude), longitude: Number(r.longitude), objectTypeId: Number(r.objectTypeId) || 1 })
+        }
+        mapObjectList = list
+    }
+
+    Connections {
+        target: typeof PerceptionBackend !== "undefined" ? PerceptionBackend : null
+        function onMapObjectCountChanged() { root.syncMapObjectList() }
+    }
+    Timer {
+        interval: 300
+        running: true
+        repeat: true
+        onTriggered: root.syncMapObjectList()
     }
 
     Connections {
@@ -88,6 +141,7 @@ Item {
             // In 3D mode map bearing already tracks heading; compensate marker so heading is not double-applied.
             carMarker3d.rotation = vehicleHeading - mapView3d.bearing
             mapView3d.tilt = defaultTilt3d
+            updateGroundArrow()
         }
 
         // Called 1Hz (or whenever new waypoint batch arrives)
@@ -113,6 +167,19 @@ Item {
         // keep online providers disabled so it never fetches from net
         PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }
         PluginParameter { name: "osm.mapping.highdpi_tiles"; value: true }
+    }
+
+    // Debug: map object count (remove when working)
+    Text {
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.margins: 6
+        z: 20000
+        text: "Map: count=" + (typeof PerceptionBackend !== "undefined" ? PerceptionBackend.mapObjectCount : "?") + " list=" + (root.mapObjectList ? root.mapObjectList.length : 0)
+        font.pixelSize: 12
+        color: "white"
+        style: Text.Outline
+        styleColor: "black"
     }
 
     // ------------------ Map ------------------
@@ -188,6 +255,28 @@ Item {
             path: routePath
         }
 
+        // Perception objects: MapItemView (not Repeater) so items are proper map children and display correctly.
+        MapItemView {
+            model: (typeof PerceptionBackend !== "undefined" && PerceptionBackend.mapObjectsModel) ? PerceptionBackend.mapObjectsModel : null
+            delegate: Component {
+                MapQuickItem {
+                    coordinate: (model && model.latitude !== undefined) ? QtPositioning.coordinate(model.latitude, model.longitude) : root.defaultCenter
+                    visible: !!(model && model.latitude !== undefined)
+                    anchorPoint.x: objIcon.width / 2
+                    anchorPoint.y: objIcon.height / 2
+                    z: 8000
+                    sourceItem: Image {
+                        id: objIcon
+                        width: root.perceptionIconSize
+                        height: width
+                        source: (model && model.objectTypeId !== undefined) ? Qt.resolvedUrl("../src/icons/object_%1.svg".arg(Math.max(1, model.objectTypeId))) : ""
+                        sourceSize.width: width
+                        sourceSize.height: height
+                        fillMode: Image.PreserveAspectFit
+                    }
+                }
+            }
+        }
 
         // Kinetic panning (Qt 6.9: no MapGestureArea)
         MouseArea {
@@ -258,8 +347,9 @@ Item {
         id: mapView3d
         anchors.fill: parent
         visible: root.map3dEnabled
+        enabled: root.map3dEnabled
         plugin: osmPlugin
-        zoomLevel: Math.min(22, defaultZoom + 1.5)
+        zoomLevel: Math.min(22, defaultZoom + 2)
         center: defaultCenter
         bearing: vehicleHeading
         tilt: defaultTilt3d
@@ -267,7 +357,8 @@ Item {
         MapQuickItem {
             id: carMarker3d
             coordinate: vehicleCoord
-            visible: true
+            // Keep disabled: MapQuickItem stays camera-facing in tilted map, which looks like a billboard.
+            visible: false
             z: 9999
 
             anchorPoint.x: carShape3d.width / 2
@@ -275,45 +366,164 @@ Item {
 
             sourceItem: Item {
                 id: carShape3d
-                width: root.carSize3d
-                height: root.carSize3d
-                transform: [
-                    Rotation {
-                        origin.x: carShape3d.width / 2
-                        origin.y: carShape3d.height / 2
-                        axis.x: 1; axis.y: 0; axis.z: 0
-                        angle: Math.max(0, (mapView3d.tilt - 25) * 0.55)
-                    }
-                ]
+                width: root.carSize3d * 1.8
+                height: root.carSize3d * 1.8
 
-                Canvas {
+                // Legacy procedural pseudo-3D arrow (keep for easy rollback)
+                // transform: [
+                //     Rotation {
+                //         origin.x: carShape3d.width / 2
+                //         origin.y: carShape3d.height / 2
+                //         axis.x: 1; axis.y: 0; axis.z: 0
+                //         angle: Math.max(0, (mapView3d.tilt - 25) * 0.55)
+                //     }
+                // ]
+                // Canvas {
+                //     anchors.fill: parent
+                //     onPaint: {
+                //         var ctx = getContext("2d")
+                //         ctx.clearRect(0, 0, width, height)
+                //         ctx.fillStyle = "#7d0a21"
+                //         ctx.beginPath()
+                //         ctx.moveTo(width * 0.52, height * 0.18)
+                //         ctx.lineTo(width * 0.87, height * 0.90)
+                //         ctx.lineTo(width * 0.52, height * 0.72)
+                //         ctx.lineTo(width * 0.17, height * 0.90)
+                //         ctx.closePath()
+                //         ctx.fill()
+                //         ctx.fillStyle = "#ba0c2f"
+                //         ctx.beginPath()
+                //         ctx.moveTo(width * 0.50, height * 0.10)
+                //         ctx.lineTo(width * 0.82, height * 0.82)
+                //         ctx.lineTo(width * 0.50, height * 0.62)
+                //         ctx.lineTo(width * 0.18, height * 0.82)
+                //         ctx.closePath()
+                //         ctx.fill()
+                //     }
+                // }
+
+                View3D {
                     anchors.fill: parent
-                    onPaint: {
-                        var ctx = getContext("2d")
-                        ctx.clearRect(0, 0, width, height)
+                    camera: carCam
+                    environment: SceneEnvironment {
+                        backgroundMode: SceneEnvironment.Transparent
+                        antialiasingMode: SceneEnvironment.MSAA
+                        antialiasingQuality: SceneEnvironment.VeryHigh
+                    }
 
-                        // Back layer for depth effect (procedural pseudo-3D)
-                        ctx.fillStyle = "#7d0a21"
-                        ctx.beginPath()
-                        ctx.moveTo(width * 0.52, height * 0.18)
-                        ctx.lineTo(width * 0.87, height * 0.90)
-                        ctx.lineTo(width * 0.52, height * 0.72)
-                        ctx.lineTo(width * 0.17, height * 0.90)
-                        ctx.closePath()
-                        ctx.fill()
+                    PerspectiveCamera {
+                        id: carCam
+                        position: Qt.vector3d(0, 45, 260)
+                        eulerRotation.x: -10
+                    }
 
-                        // Front layer (same red family as 2D cursor)
-                        ctx.fillStyle = "#ba0c2f"
-                        ctx.beginPath()
-                        ctx.moveTo(width * 0.50, height * 0.10)
-                        ctx.lineTo(width * 0.82, height * 0.82)
-                        ctx.lineTo(width * 0.50, height * 0.62)
-                        ctx.lineTo(width * 0.18, height * 0.82)
-                        ctx.closePath()
-                        ctx.fill()
+                    DirectionalLight {
+                        eulerRotation.x: -45
+                        eulerRotation.y: -30
+                        brightness: 1.2
+                    }
+                    DirectionalLight {
+                        eulerRotation.x: 35
+                        eulerRotation.y: 120
+                        brightness: 0.5
+                    }
+
+                    Node {
+                        id: carRoot
+                        scale: Qt.vector3d(7.5, 7.5, 7.5)
+                        eulerRotation: Qt.vector3d(-90, 0, 180)
+
+                        // GLB loader path (disabled for now: QtQuick3D.AssetUtils plugin missing in runtime)
+                        // RuntimeLoader {
+                        //     id: carLoader
+                        //     source: "qrc:/qt/qml/HMI_Mk1/src/models/car.glb"
+                        // }
+
+                        // Procedural fallback "car" so app can launch without AssetUtils.
+                        // Made from primitives: body, cabin, nose, and wheels.
+                        Model {
+                            source: "#Cube"
+                            scale: Qt.vector3d(1.45, 0.35, 2.35)
+                            materials: PrincipledMaterial {
+                                baseColor: "#ba0c2f"
+                                roughness: 0.42
+                                metalness: 0.10
+                            }
+                        }
+                        Model {
+                            source: "#Cube"
+                            position: Qt.vector3d(0, 0.28, -0.05)
+                            scale: Qt.vector3d(0.95, 0.32, 1.15)
+                            materials: PrincipledMaterial {
+                                baseColor: "#d21a3c"
+                                roughness: 0.40
+                                metalness: 0.12
+                            }
+                        }
+                        Model {
+                            source: "#Cone"
+                            position: Qt.vector3d(0, 0.02, 1.35)
+                            scale: Qt.vector3d(0.72, 0.20, 0.70)
+                            eulerRotation: Qt.vector3d(0, 0, 180)
+                            materials: PrincipledMaterial {
+                                baseColor: "#8f0d28"
+                                roughness: 0.55
+                                metalness: 0.05
+                            }
+                        }
+                        Model {
+                            source: "#Cylinder"
+                            position: Qt.vector3d(-0.86, -0.22, 0.92)
+                            scale: Qt.vector3d(0.33, 0.10, 0.33)
+                            eulerRotation: Qt.vector3d(0, 0, 90)
+                            materials: PrincipledMaterial { baseColor: "#1c1c1c"; roughness: 0.80; metalness: 0.02 }
+                        }
+                        Model {
+                            source: "#Cylinder"
+                            position: Qt.vector3d(0.86, -0.22, 0.92)
+                            scale: Qt.vector3d(0.33, 0.10, 0.33)
+                            eulerRotation: Qt.vector3d(0, 0, 90)
+                            materials: PrincipledMaterial { baseColor: "#1c1c1c"; roughness: 0.80; metalness: 0.02 }
+                        }
+                        Model {
+                            source: "#Cylinder"
+                            position: Qt.vector3d(-0.86, -0.22, -0.92)
+                            scale: Qt.vector3d(0.33, 0.10, 0.33)
+                            eulerRotation: Qt.vector3d(0, 0, 90)
+                            materials: PrincipledMaterial { baseColor: "#1c1c1c"; roughness: 0.80; metalness: 0.02 }
+                        }
+                        Model {
+                            source: "#Cylinder"
+                            position: Qt.vector3d(0.86, -0.22, -0.92)
+                            scale: Qt.vector3d(0.33, 0.10, 0.33)
+                            eulerRotation: Qt.vector3d(0, 0, 90)
+                            materials: PrincipledMaterial { baseColor: "#1c1c1c"; roughness: 0.80; metalness: 0.02 }
+                        }
                     }
                 }
             }
+        }
+
+        // Ground-projected depth layer (under arrow)
+        MapPolygon {
+            id: groundArrowDepth
+            path: groundArrowDepthPath
+            color: "#6b0a1f"
+            border.color: "#4f0817"
+            border.width: 1
+            opacity: 0.92
+            z: 9999
+        }
+
+        // Ground-projected marker stays parallel to road/map plane at tilt.
+        MapPolygon {
+            id: groundArrow
+            path: groundArrowPath
+            color: "#ba0c2f"
+            border.color: "#7d0a21"
+            border.width: 1
+            opacity: 0.96
+            z: 10000
         }
 
         MapPolyline {
@@ -323,6 +533,29 @@ Item {
             opacity: 0.92
             z: 5000
             path: routePath
+        }
+
+        // Perception objects on 3D map (MapItemView)
+        MapItemView {
+            model: (typeof PerceptionBackend !== "undefined" && PerceptionBackend.mapObjectsModel) ? PerceptionBackend.mapObjectsModel : null
+            delegate: Component {
+                MapQuickItem {
+                    coordinate: (model && model.latitude !== undefined) ? QtPositioning.coordinate(model.latitude, model.longitude) : root.defaultCenter
+                    visible: !!(model && model.latitude !== undefined)
+                    anchorPoint.x: objIcon3d.width / 2
+                    anchorPoint.y: objIcon3d.height / 2
+                    z: 8000
+                    sourceItem: Image {
+                        id: objIcon3d
+                        width: root.perceptionIconSize3d
+                        height: width
+                        source: (model && model.objectTypeId !== undefined) ? Qt.resolvedUrl("../src/icons/object_%1.svg".arg(Math.max(1, model.objectTypeId))) : ""
+                        sourceSize.width: width
+                        sourceSize.height: height
+                        fillMode: Image.PreserveAspectFit
+                    }
+                }
+            }
         }
 
         // Touch-first camera controls:
@@ -436,6 +669,37 @@ Item {
         }
     }
 
+    // ---------- Top-right: detected traffic signs (bare PNGs, no text, no transparency) ----------
+    Item {
+        id: signsOverlay
+        anchors.top: parent.top
+        anchors.right: parent.right
+        anchors.topMargin: 12
+        anchors.rightMargin: 12
+        width: 280
+        height: signsFlow.implicitHeight
+
+        Flow {
+            id: signsFlow
+            anchors.right: parent.right
+            width: 280
+            spacing: 12
+            layoutDirection: Qt.RightToLeft
+            Repeater {
+                // No default when no signs; show only received traffic signs (sign_<id>.png)
+                model: typeof PerceptionBackend !== "undefined" ? PerceptionBackend.trafficSigns : []
+                Image {
+                    width: 128
+                    height: 128
+                    source: Qt.resolvedUrl("../src/icons/sign_%1.png".arg(modelData.signTypeId))
+                    sourceSize.width: 128
+                    sourceSize.height: 128
+                    fillMode: Image.PreserveAspectFit
+                }
+            }
+        }
+    }
+
     // ---------- Re-center floating pill ----------
     Rectangle {
         id: recenterPill
@@ -545,5 +809,7 @@ Item {
     Component.onCompleted: {
         console.log("Using MBTiles dir:", mapDir, "path:", mapDirPath)
         applyInitialGps(39.99846475680883, -83.03239944474197, 0) // OSU
+        updateGroundArrow()
+        root.syncMapObjectList()
     }
 }
