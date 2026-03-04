@@ -59,7 +59,6 @@ qt_add_qml_module(appHMI_Mk1
         pages/LoggerPage.qml
 
     RESOURCES
-        src/models/car.glb
         src/fonts/UniversalSans.ttf
         src/fonts/UniversalSansDisplay.ttf
         src/icons/auto_on.svg
