@@ -11,7 +11,7 @@ ApplicationWindow {
     height: 720
     visible: true
     title: "CAR HMI Mk1"
-    // visibility: Window.FullScreen
+    visibility: Window.FullScreen
 
     font.family: HMI.Theme.fontBody
     font.pixelSize: 16
@@ -69,7 +69,7 @@ ApplicationWindow {
                 avActionsPage.avEngaged = true
                 avActionsPage.avTargetEngaged = true
                 avActionsPage.avPending = false
-            } else if ((s === 0 || s === 9 || s === 10) && avActionsPage.avEngaged) {
+            } else if ((s === 0 || s === 2 || s === 9 || s === 10) && avActionsPage.avEngaged) {
                 avActionsPage.avEngaged = false
                 avActionsPage.avTargetEngaged = false
                 avActionsPage.avPending = false
