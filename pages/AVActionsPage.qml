@@ -8,6 +8,9 @@ Item {
     Layout.fillWidth: true
     Layout.fillHeight: true
 
+    signal userHmiDisengageCommandSent()
+    signal userHmiEngageCommandSent()
+
     // layout constants
     property int  cols: 4
     property real pad:  HMI.Theme.px(18)
@@ -87,6 +90,19 @@ Item {
         if (avPending)
             return "caution"
         return avEngaged ? "enabled" : "disabled"
+    }
+
+    // Main.qml calls this on every Navigation (0x01) update so FSM DEFAULT / 0,9,10 always wins over UI taps.
+    function applyStackEngagementFromSafety(isDisengaged) {
+        avToggleTimer.stop()
+        avPending = false
+        if (isDisengaged) {
+            avEngaged = false
+            avTargetEngaged = false
+        } else {
+            avEngaged = true
+            avTargetEngaged = true
+        }
     }
 
     // model
@@ -252,11 +268,11 @@ Item {
                                 root.avPending = true
 
                                 if (wantEngage) {
-                                    // Engage
                                     GlobalTx.sendEngageCommand(1, "")
+                                    root.userHmiEngageCommandSent()
                                 } else {
-                                    // Disengage
                                     GlobalTx.sendEngageCommand(0, "")
+                                    root.userHmiDisengageCommandSent()
                                 }
 
                                 avToggleTimer.restart()
