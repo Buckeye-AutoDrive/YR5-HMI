@@ -1,3 +1,4 @@
+//main qml
 import QtQuick 2.15
 import QtQuick.Layouts 1.15
 import QtQuick.Controls 2.15
@@ -11,7 +12,7 @@ ApplicationWindow {
     height: 720
     visible: true
     title: "CAR HMI Mk1"
-    visibility: Window.FullScreen
+    // visibility: Window.FullScreen
 
     font.family: HMI.Theme.fontBody
     font.pixelSize: 16
@@ -19,12 +20,58 @@ ApplicationWindow {
     Material.theme: Material.Dark
     Material.accent: "#ba0c2f"
     color: HMI.Theme.bg
-
     // Keep Theme in sync with Settings (map and camera feeds do not use Theme, so they stay unchanged)
     Binding { target: HMI.Theme; property: "themeDark"; value: SettingsBackend.themeDark }
 
     // Right panel: show AVPanel when engaged (from Map), DestList when not, DataTable on other pages
     readonly property bool rightPanelEngaged: avActionsPage.avEngaged
+
+
+
+    // MAP Directions overlay
+    // THIS HAS NO BACKEND CONNECTIONS YET
+
+    property bool directionsExpanded: false
+
+    // TODO: replace with backend values later
+    property string nextDirectionType: "right"
+    property string nextDirectionDistance: "250 m"
+
+    function turnIconSource(type) {
+        switch (type) {
+        case "left":
+            return "src/icons/directions/turn_left.svg"
+        case "right":
+            return "src/icons/directions/turn_right.svg"
+        case "straight":
+            return "src/icons/directions/straight.svg"
+        default:
+            return "src/icons/directions/straight.svg"
+        }
+    }
+
+    function directionLabel(type) {
+        switch (type) {
+        case "left":
+            return "Turn Left"
+        case "right":
+            return "Turn Right"
+        case "straight":
+            return "Straight"
+        default:
+            return "Straight"
+        }
+    }
+
+    // TODO: delete an replace with real backend data
+    ListModel {
+        id: directionsModel
+
+        ListElement { maneuverNumber: 1; turnType: "right";    distance: "250 m" }
+        ListElement { maneuverNumber: 2; turnType: "straight"; distance: "0.8 mi" }
+        ListElement { maneuverNumber: 3; turnType: "left";     distance: "500 ft" }
+    }
+
 
     Connections {
         target: avWarnPage
@@ -69,7 +116,7 @@ ApplicationWindow {
                 avActionsPage.avEngaged = true
                 avActionsPage.avTargetEngaged = true
                 avActionsPage.avPending = false
-            } else if ((s === 0 || s === 2 || s === 9 || s === 10) && avActionsPage.avEngaged) {
+            } else if ((s === 0 || s === 9 || s === 10) && avActionsPage.avEngaged) {
                 avActionsPage.avEngaged = false
                 avActionsPage.avTargetEngaged = false
                 avActionsPage.avPending = false
@@ -111,6 +158,16 @@ ApplicationWindow {
 
     onWidthChanged:  recomputeDp()
     onHeightChanged: recomputeDp()
+
+    Connections {
+        target: stack
+        function onCurrentIndexChanged() {
+            if (stack.currentIndex !== 0)
+                directionsExpanded = false
+        }
+    }
+
+
 
     Timer {
         interval: 250; running: true; repeat: true
@@ -207,29 +264,93 @@ ApplicationWindow {
                         StatusIcon { kind: "auto";     on: NavigationBackend.autoOn }
                     }
 
-                    // CENTER: title (stays centered)
-                    Label {
-                        id: pageTitle
-                        anchors.left: parent.left
-                        anchors.right: parent.right
+
+                    // CENTER: page title / map directions chip
+                    Item {
+                        id: pageTitleArea
                         anchors.top: parent.top
                         anchors.bottom: parent.bottom
+                        anchors.left: parent.left
+                        anchors.right: parent.right
+                        anchors.leftMargin: HMI.Theme.px(180)
+                        anchors.rightMargin: HMI.Theme.px(140)
 
-                        text: stack.currentIndex === 0 ? "Map"
-                             : stack.currentIndex === 1 ? "Cameras"
-                             : stack.currentIndex === 2 ? "AV Actions"
-                             : stack.currentIndex === 3 ? "Terminal"
-                             : stack.currentIndex === 4 ? "Settings"
-                             : stack.currentIndex === 5 ? "Data Logger"
-                             : "Map"
+                        // Only show this on the Map page
+                        Rectangle {
+                            id: directionsChip
+                            visible: stack.currentIndex === 0
+                            anchors.centerIn: parent
+                            width: Math.min(pageTitleArea.width, HMI.Theme.px(420))
+                            height: HMI.Theme.px(44)
+                            radius: HMI.Theme.px(12)
+                            color: "#CC1A1A1A"
+                            border.color: HMI.Theme.outline
+                            border.width: 1
 
-                        color: HMI.Theme.text
-                        font.pixelSize: HMI.Theme.px(34)
-                        font.bold: true
-                        font.family: HMI.Theme.fontDisplay
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
+                            Row {
+                                anchors.centerIn: parent
+                                spacing: HMI.Theme.px(10)
+
+                                Image {
+                                    width: HMI.Theme.px(22)
+                                    height: HMI.Theme.px(22)
+                                    source: turnIconSource(nextDirectionType)
+                                    fillMode: Image.PreserveAspectFit
+                                    smooth: true
+                                    onStatusChanged: {
+                                        if (status === Image.Error)
+                                            console.log("HEADER DIRECTION ICON LOAD ERROR:", source)
+                                    }
+                                }
+
+                                Text {
+                                    text: directionLabel(nextDirectionType)
+                                    color: "white"
+                                    font.pixelSize: HMI.Theme.px(16)
+                                    font.bold: true
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+
+                                Text {
+                                    text: nextDirectionDistance
+                                    color: "#B0B0B0"
+                                    font.pixelSize: HMI.Theme.px(13)
+                                    anchors.verticalCenter: parent.verticalCenter
+                                }
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                enabled: stack.currentIndex === 0
+                                onClicked: directionsExpanded = true
+                            }
+                        }
+
+                        // All non-map pages keep normal title, replacing map title with directions button
+                        Label {
+                            visible: stack.currentIndex !== 0
+                            anchors.fill: parent
+
+                            text: stack.currentIndex === 1 ? "Cameras"
+                                 : stack.currentIndex === 2 ? "AV Actions"
+                                 : stack.currentIndex === 3 ? "Terminal"
+                                 : stack.currentIndex === 4 ? "Settings"
+                                 : stack.currentIndex === 5 ? "Data Logger"
+                                 : "Map"
+
+                            color: HMI.Theme.text
+                            font.pixelSize: HMI.Theme.px(34)
+                            font.bold: true
+                            font.family: HMI.Theme.fontDisplay
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                        }
                     }
+
+
+
+
+
 
                     // RIGHT: FSM tile
                     Row {
@@ -241,23 +362,201 @@ ApplicationWindow {
                     }
                 }
 
-                StackLayout {
-                    id: stack
+
+                Item {
+                    id: stackContainer
                     Layout.fillWidth: true
                     Layout.fillHeight: true
-                    currentIndex: 0
 
-                    HMI.MapPage {}
-                    HMI.CamerasPage {}
-                    HMI.AVActionsPage { id: avActionsPage }
-                    HMI.TerminalPage {}
-                    HMI.SettingsPage {}
-                    HMI.LoggerPage {
-                        id: loggerPage
-                        onShowCanBusDisabledWarning: avWarnPage.openCustomWarning(
-                            "No CAN traffic",
-                            "Connect the CAN logger (port 6003) and wait for incoming data to enable bus selection."
-                        )
+                    StackLayout {
+                        id: stack
+                        anchors.fill: parent
+                        currentIndex: 0
+
+                        HMI.MapPage {}
+                        HMI.CamerasPage {}
+                        HMI.AVActionsPage { id: avActionsPage }
+                        HMI.TerminalPage {}
+                        HMI.SettingsPage {}
+                        HMI.LoggerPage {
+                            id: loggerPage
+                            onShowCanBusDisabledWarning: avWarnPage.openCustomWarning(
+                                "No CAN traffic",
+                                "Connect the CAN logger (port 6003) and wait for incoming data to enable bus selection."
+                            )
+                        }
+                    }
+
+                    Rectangle {
+                        id: directionsOverlay
+                        visible: stack.currentIndex === 0 && directionsExpanded
+                        anchors.fill: parent
+                        z: 100
+                        color: "#55000000"
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: directionsExpanded = false
+                        }
+
+                        Rectangle {
+                            id: directionsPanel
+                            width: Math.min(parent.width * 0.84, HMI.Theme.px(700))
+                            height: Math.min(parent.height * 0.74, HMI.Theme.px(460))
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            anchors.top: parent.top
+                            anchors.topMargin: HMI.Theme.px(14)
+                            radius: HMI.Theme.px(18)
+                            color: "#CC141414"
+                            border.color: "#3A3A3A"
+                            border.width: 1
+
+                            MouseArea {
+                                anchors.fill: parent
+                            }
+
+                            Column {
+                                anchors.fill: parent
+                                anchors.margins: HMI.Theme.px(18)
+                                spacing: HMI.Theme.px(14)
+
+                                Row {
+                                    width: parent.width
+                                    height: HMI.Theme.px(40)
+                                    spacing: HMI.Theme.px(12)
+
+                                    Text {
+                                        text: "Directions"
+                                        color: "white"
+                                        font.pixelSize: HMI.Theme.px(22)
+                                        font.bold: true
+                                        anchors.verticalCenter: parent.verticalCenter
+                                    }
+
+                                    Item {
+                                        width: parent.width - collapseButton.width - HMI.Theme.px(140)
+                                        height: 1
+                                    }
+
+                                    Rectangle {
+                                        id: collapseButton
+                                        width: HMI.Theme.px(110)
+                                        height: HMI.Theme.px(34)
+                                        radius: HMI.Theme.px(10)
+                                        color: HMI.Theme.accent
+                                        border.color: "#D8D8D8"
+                                        border.width: 1
+                                        anchors.verticalCenter: parent.verticalCenter
+
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: "Collapse"
+                                            color: "white"
+                                            font.pixelSize: HMI.Theme.px(14)
+                                            font.bold: true
+                                        }
+
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            onClicked: directionsExpanded = false
+                                        }
+                                    }
+                                }
+
+                                Rectangle {
+                                    width: parent.width
+                                    height: 1
+                                    color: "#2E2E2E"
+                                }
+
+                                ListView {
+                                    id: directionsList
+                                    width: parent.width
+                                    height: parent.height - HMI.Theme.px(60)
+                                    clip: true
+                                    spacing: HMI.Theme.px(10)
+                                    model: directionsModel
+
+                                    delegate: Rectangle {
+                                        required property int maneuverNumber
+                                        required property string turnType
+                                        required property string distance
+                                        required property int index
+
+                                        width: directionsList.width
+                                        height: HMI.Theme.px(68)
+                                        radius: HMI.Theme.px(12)
+                                        color: index === 0 ? HMI.Theme.accent : "#221F1F1F"
+                                        border.color: index === 0 ? "#D8D8D8" : "#2F2F2F"
+                                        border.width: 1
+
+                                        Row {
+                                            anchors.fill: parent
+                                            anchors.margins: HMI.Theme.px(12)
+                                            spacing: HMI.Theme.px(14)
+
+                                            // NUMBER
+                                            Rectangle {
+                                                width: HMI.Theme.px(34)
+                                                height: HMI.Theme.px(34)
+                                                radius: HMI.Theme.px(8)
+                                                color: "#2B2B2B"
+                                                anchors.verticalCenter: parent.verticalCenter
+
+                                                Text {
+                                                    anchors.centerIn: parent
+                                                    text: maneuverNumber
+                                                    color: "white"
+                                                    font.pixelSize: HMI.Theme.px(15)
+                                                    font.bold: true
+                                                }
+                                            }
+
+                                            // ICON
+                                            Rectangle {
+                                                width: HMI.Theme.px(42)
+                                                height: HMI.Theme.px(42)
+                                                radius: HMI.Theme.px(10)
+                                                color: "#2B2B2B"
+                                                anchors.verticalCenter: parent.verticalCenter
+
+                                                Image {
+                                                    anchors.centerIn: parent
+                                                    width: HMI.Theme.px(26)
+                                                    height: HMI.Theme.px(26)
+                                                    source: turnIconSource(turnType)
+                                                    fillMode: Image.PreserveAspectFit
+                                                    smooth: true
+                                                    onStatusChanged: {
+                                                        if (status === Image.Error)
+                                                            console.log("DIRECTION ICON LOAD ERROR:", source)
+                                                    }
+                                                }
+                                            }
+
+                                            // TEXT + DISTANCE
+                                            Column {
+                                                anchors.verticalCenter: parent.verticalCenter
+                                                spacing: HMI.Theme.px(2)
+
+                                                Text {
+                                                    text: directionLabel(turnType)
+                                                    color: "white"
+                                                    font.pixelSize: HMI.Theme.px(16)
+                                                    font.bold: index === 0
+                                                }
+
+                                                Text {
+                                                    text: distance
+                                                    color: "#BDBDBD"
+                                                    font.pixelSize: HMI.Theme.px(13)
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

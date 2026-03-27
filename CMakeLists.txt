@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Qt
-find_package(Qt6 REQUIRED COMPONENTS Quick QuickControls2 Quick3D Multimedia Location Positioning)
+find_package(Qt6 REQUIRED COMPONENTS Quick QuickControls2 Quick3D Multimedia Location Positioning Svg)
 qt_standard_project_setup()
 
 # Executable
@@ -37,6 +37,15 @@ set(OBJECT_ICON_SVGS_REL "")
 foreach(f IN LISTS OBJECT_ICON_SVGS)
     file(RELATIVE_PATH rel "${CMAKE_SOURCE_DIR}" "${f}")
     list(APPEND OBJECT_ICON_SVGS_REL "${rel}")
+endforeach()
+
+# Navigation direction icons: *.svg in src/icons/directions/
+file(GLOB DIRECTION_ICON_SVGS "${CMAKE_SOURCE_DIR}/src/icons/directions/*.svg")
+list(SORT DIRECTION_ICON_SVGS)
+set(DIRECTION_ICON_SVGS_REL "")
+foreach(f IN LISTS DIRECTION_ICON_SVGS)
+    file(RELATIVE_PATH rel "${CMAKE_SOURCE_DIR}" "${f}")
+    list(APPEND DIRECTION_ICON_SVGS_REL "${rel}")
 endforeach()
 
 qt_add_qml_module(appHMI_Mk1
@@ -80,13 +89,15 @@ qt_add_qml_module(appHMI_Mk1
         src/icons/discard.svg
         ${OBJECT_ICON_SVGS_REL}
         ${TRAFFIC_SIGN_PNGS_REL}
+        ${DIRECTION_ICON_SVGS_REL}
+
 )
 
 # Protobuf
 add_compile_definitions(PROTOBUF_USE_UNSAFE_LOGGING=1)
 find_package(Protobuf REQUIRED)
 add_subdirectory(src)
-find_package(absl REQUIRED)
+#find_package(absl REQUIRED)
 file(GLOB PROTO_FILES "${CMAKE_SOURCE_DIR}/src/proto/*.proto")
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
 target_sources(appHMI_Mk1 PRIVATE ${PROTO_SRCS} ${PROTO_HDRS})
@@ -102,12 +113,13 @@ target_link_libraries(appHMI_Mk1
         Qt6::Multimedia
         Qt6::Location
         Qt6::Positioning
+        Qt6::Svg
         protobuf::libprotobuf
-        absl::base
-        absl::strings
-        absl::log
-        absl::status
-        absl::spinlock_wait
+       # absl::base
+       # absl::strings
+        # absl::log
+        #absl::status
+       # absl::spinlock_wait
     PRIVATE HMI_Backend
 )
 
