@@ -28,9 +28,10 @@ public:
 signals:
     // Raw payloads (already deframed by length prefix)
     void controlsRaw(const QByteArray& payload);
-    // Typed message (Controls port: type 0x01 = Navigation, 0x02 = CameraBatch)
+    // Typed message (Controls port: 0x01 Navigation, 0x02 CameraBatch, 0x03 Controls)
     void controlsMessage(const vehicle_msgs::Navigation& msg);
     void cameraBatchReceived(const vehicle_msgs::CameraBatch& batch);
+    void controlsStateReceived(const vehicle_msgs::Controls& msg);
 
     void lanConnectedChanged(bool connected);
 

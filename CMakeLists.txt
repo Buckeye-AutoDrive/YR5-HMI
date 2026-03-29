@@ -78,6 +78,9 @@ qt_add_qml_module(appHMI_Mk1
         src/icons/pause.svg
         src/icons/resume.svg
         src/icons/discard.svg
+        src/icons/right.svg
+        src/icons/left.svg
+        src/icons/straight.svg
         ${OBJECT_ICON_SVGS_REL}
         ${TRAFFIC_SIGN_PNGS_REL}
 )

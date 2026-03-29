@@ -36,3 +36,10 @@ message Navigation {
   repeated Waypoint waypoints = 4;  // empty / partial / full
   int32 safety_states = 5;
 }
+
+message Controls {
+  int32 manual_takeover_flag = 1; // 0: False; 1: True
+  string next_instruction = 2;  // e.g. "STRAIGHT", "LEFT", "RIGHT" (or "LEFT, 12.3 m")
+  float next_distance_m = 3;      // meters; inf when no maneuver / straight-only
+  int32 turn_signal_cmd = 4;      // 0: Off/Straight, 1: Left, 2: Right
+}

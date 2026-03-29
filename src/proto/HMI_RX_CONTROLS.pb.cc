@@ -80,8 +80,24 @@ struct NavigationDefaultTypeInternal {
   };
 };
 PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 NavigationDefaultTypeInternal _Navigation_default_instance_;
+PROTOBUF_CONSTEXPR Controls::Controls(
+    ::_pbi::ConstantInitialized): _impl_{
+    /*decltype(_impl_.next_instruction_)*/{&::_pbi::fixed_address_empty_string, ::_pbi::ConstantInitialized{}}
+  , /*decltype(_impl_.manual_takeover_flag_)*/0
+  , /*decltype(_impl_.next_distance_m_)*/0
+  , /*decltype(_impl_.turn_signal_cmd_)*/0
+  , /*decltype(_impl_._cached_size_)*/{}} {}
+struct ControlsDefaultTypeInternal {
+  PROTOBUF_CONSTEXPR ControlsDefaultTypeInternal()
+      : _instance(::_pbi::ConstantInitialized{}) {}
+  ~ControlsDefaultTypeInternal() {}
+  union {
+    Controls _instance;
+  };
+};
+PROTOBUF_ATTRIBUTE_NO_DESTROY PROTOBUF_CONSTINIT PROTOBUF_ATTRIBUTE_INIT_PRIORITY1 ControlsDefaultTypeInternal _Controls_default_instance_;
 }  // namespace vehicle_msgs
-static ::_pb::Metadata file_level_metadata_HMI_5fRX_5fCONTROLS_2eproto[4];
+static ::_pb::Metadata file_level_metadata_HMI_5fRX_5fCONTROLS_2eproto[5];
 static constexpr ::_pb::EnumDescriptor const** file_level_enum_descriptors_HMI_5fRX_5fCONTROLS_2eproto = nullptr;
 static constexpr ::_pb::ServiceDescriptor const** file_level_service_descriptors_HMI_5fRX_5fCONTROLS_2eproto = nullptr;
 
@@ -121,12 +137,23 @@ const uint32_t TableStruct_HMI_5fRX_5fCONTROLS_2eproto::offsets[] PROTOBUF_SECTI
   PROTOBUF_FIELD_OFFSET(::vehicle_msgs::Navigation, _impl_.heading_deg_),
   PROTOBUF_FIELD_OFFSET(::vehicle_msgs::Navigation, _impl_.waypoints_),
   PROTOBUF_FIELD_OFFSET(::vehicle_msgs::Navigation, _impl_.safety_states_),
+  ~0u,  // no _has_bits_
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::Controls, _internal_metadata_),
+  ~0u,  // no _extensions_
+  ~0u,  // no _oneof_case_
+  ~0u,  // no _weak_field_map_
+  ~0u,  // no _inlined_string_donated_
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::Controls, _impl_.manual_takeover_flag_),
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::Controls, _impl_.next_instruction_),
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::Controls, _impl_.next_distance_m_),
+  PROTOBUF_FIELD_OFFSET(::vehicle_msgs::Controls, _impl_.turn_signal_cmd_),
 };
 static const ::_pbi::MigrationSchema schemas[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, -1, sizeof(::vehicle_msgs::CameraFrame)},
   { 8, -1, -1, sizeof(::vehicle_msgs::CameraBatch)},
   { 16, -1, -1, sizeof(::vehicle_msgs::Waypoint)},
   { 24, -1, -1, sizeof(::vehicle_msgs::Navigation)},
+  { 35, -1, -1, sizeof(::vehicle_msgs::Controls)},
 };
 
 static const ::_pb::Message* const file_default_instances[] = {
@@ -134,6 +161,7 @@ static const ::_pb::Message* const file_default_instances[] = {
   &::vehicle_msgs::_CameraBatch_default_instance_._instance,
   &::vehicle_msgs::_Waypoint_default_instance_._instance,
   &::vehicle_msgs::_Navigation_default_instance_._instance,
+  &::vehicle_msgs::_Controls_default_instance_._instance,
 };
 
 const char descriptor_table_protodef_HMI_5fRX_5fCONTROLS_2eproto[] PROTOBUF_SECTION_VARIABLE(protodesc_cold) =
@@ -145,13 +173,16 @@ const char descriptor_table_protodef_HMI_5fRX_5fCONTROLS_2eproto[] PROTOBUF_SECT
   "\002 \001(\002\"\215\001\n\nNavigation\022\023\n\013current_lat\030\001 \001("
   "\002\022\023\n\013current_lon\030\002 \001(\002\022\023\n\013heading_deg\030\003 "
   "\001(\002\022)\n\twaypoints\030\004 \003(\0132\026.vehicle_msgs.Wa"
-  "ypoint\022\025\n\rsafety_states\030\005 \001(\005b\006proto3"
+  "ypoint\022\025\n\rsafety_states\030\005 \001(\005\"t\n\010Control"
+  "s\022\034\n\024manual_takeover_flag\030\001 \001(\005\022\030\n\020next_"
+  "instruction\030\002 \001(\t\022\027\n\017next_distance_m\030\003 \001"
+  "(\002\022\027\n\017turn_signal_cmd\030\004 \001(\005b\006proto3"
   ;
 static ::_pbi::once_flag descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_once;
 const ::_pbi::DescriptorTable descriptor_table_HMI_5fRX_5fCONTROLS_2eproto = {
-    false, false, 357, descriptor_table_protodef_HMI_5fRX_5fCONTROLS_2eproto,
+    false, false, 475, descriptor_table_protodef_HMI_5fRX_5fCONTROLS_2eproto,
     "HMI_RX_CONTROLS.proto",
-    &descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_once, nullptr, 0, 4,
+    &descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_once, nullptr, 0, 5,
     schemas, file_default_instances, TableStruct_HMI_5fRX_5fCONTROLS_2eproto::offsets,
     file_level_metadata_HMI_5fRX_5fCONTROLS_2eproto, file_level_enum_descriptors_HMI_5fRX_5fCONTROLS_2eproto,
     file_level_service_descriptors_HMI_5fRX_5fCONTROLS_2eproto,
@@ -1188,6 +1219,305 @@ void Navigation::InternalSwap(Navigation* other) {
       file_level_metadata_HMI_5fRX_5fCONTROLS_2eproto[3]);
 }
 
+// ===================================================================
+
+class Controls::_Internal {
+ public:
+};
+
+Controls::Controls(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                         bool is_message_owned)
+  : ::PROTOBUF_NAMESPACE_ID::Message(arena, is_message_owned) {
+  SharedCtor(arena, is_message_owned);
+  // @@protoc_insertion_point(arena_constructor:vehicle_msgs.Controls)
+}
+Controls::Controls(const Controls& from)
+  : ::PROTOBUF_NAMESPACE_ID::Message() {
+  Controls* const _this = this; (void)_this;
+  new (&_impl_) Impl_{
+      decltype(_impl_.next_instruction_){}
+    , decltype(_impl_.manual_takeover_flag_){}
+    , decltype(_impl_.next_distance_m_){}
+    , decltype(_impl_.turn_signal_cmd_){}
+    , /*decltype(_impl_._cached_size_)*/{}};
+
+  _internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+  _impl_.next_instruction_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.next_instruction_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (!from._internal_next_instruction().empty()) {
+    _this->_impl_.next_instruction_.Set(from._internal_next_instruction(), 
+      _this->GetArenaForAllocation());
+  }
+  ::memcpy(&_impl_.manual_takeover_flag_, &from._impl_.manual_takeover_flag_,
+    static_cast<size_t>(reinterpret_cast<char*>(&_impl_.turn_signal_cmd_) -
+    reinterpret_cast<char*>(&_impl_.manual_takeover_flag_)) + sizeof(_impl_.turn_signal_cmd_));
+  // @@protoc_insertion_point(copy_constructor:vehicle_msgs.Controls)
+}
+
+inline void Controls::SharedCtor(
+    ::_pb::Arena* arena, bool is_message_owned) {
+  (void)arena;
+  (void)is_message_owned;
+  new (&_impl_) Impl_{
+      decltype(_impl_.next_instruction_){}
+    , decltype(_impl_.manual_takeover_flag_){0}
+    , decltype(_impl_.next_distance_m_){0}
+    , decltype(_impl_.turn_signal_cmd_){0}
+    , /*decltype(_impl_._cached_size_)*/{}
+  };
+  _impl_.next_instruction_.InitDefault();
+  #ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+    _impl_.next_instruction_.Set("", GetArenaForAllocation());
+  #endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+}
+
+Controls::~Controls() {
+  // @@protoc_insertion_point(destructor:vehicle_msgs.Controls)
+  if (auto *arena = _internal_metadata_.DeleteReturnArena<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>()) {
+  (void)arena;
+    return;
+  }
+  SharedDtor();
+}
+
+inline void Controls::SharedDtor() {
+  GOOGLE_DCHECK(GetArenaForAllocation() == nullptr);
+  _impl_.next_instruction_.Destroy();
+}
+
+void Controls::SetCachedSize(int size) const {
+  _impl_._cached_size_.Set(size);
+}
+
+void Controls::Clear() {
+// @@protoc_insertion_point(message_clear_start:vehicle_msgs.Controls)
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  _impl_.next_instruction_.ClearToEmpty();
+  ::memset(&_impl_.manual_takeover_flag_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&_impl_.turn_signal_cmd_) -
+      reinterpret_cast<char*>(&_impl_.manual_takeover_flag_)) + sizeof(_impl_.turn_signal_cmd_));
+  _internal_metadata_.Clear<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>();
+}
+
+const char* Controls::_InternalParse(const char* ptr, ::_pbi::ParseContext* ctx) {
+#define CHK_(x) if (PROTOBUF_PREDICT_FALSE(!(x))) goto failure
+  while (!ctx->Done(&ptr)) {
+    uint32_t tag;
+    ptr = ::_pbi::ReadTag(ptr, &tag);
+    switch (tag >> 3) {
+      // int32 manual_takeover_flag = 1;
+      case 1:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 8)) {
+          _impl_.manual_takeover_flag_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      // string next_instruction = 2;
+      case 2:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 18)) {
+          auto str = _internal_mutable_next_instruction();
+          ptr = ::_pbi::InlineGreedyStringParser(str, ptr, ctx);
+          CHK_(ptr);
+          CHK_(::_pbi::VerifyUTF8(str, "vehicle_msgs.Controls.next_instruction"));
+        } else
+          goto handle_unusual;
+        continue;
+      // float next_distance_m = 3;
+      case 3:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 29)) {
+          _impl_.next_distance_m_ = ::PROTOBUF_NAMESPACE_ID::internal::UnalignedLoad<float>(ptr);
+          ptr += sizeof(float);
+        } else
+          goto handle_unusual;
+        continue;
+      // int32 turn_signal_cmd = 4;
+      case 4:
+        if (PROTOBUF_PREDICT_TRUE(static_cast<uint8_t>(tag) == 32)) {
+          _impl_.turn_signal_cmd_ = ::PROTOBUF_NAMESPACE_ID::internal::ReadVarint32(&ptr);
+          CHK_(ptr);
+        } else
+          goto handle_unusual;
+        continue;
+      default:
+        goto handle_unusual;
+    }  // switch
+  handle_unusual:
+    if ((tag == 0) || ((tag & 7) == 4)) {
+      CHK_(ptr);
+      ctx->SetLastTag(tag);
+      goto message_done;
+    }
+    ptr = UnknownFieldParse(
+        tag,
+        _internal_metadata_.mutable_unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(),
+        ptr, ctx);
+    CHK_(ptr != nullptr);
+  }  // while
+message_done:
+  return ptr;
+failure:
+  ptr = nullptr;
+  goto message_done;
+#undef CHK_
+}
+
+uint8_t* Controls::_InternalSerialize(
+    uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const {
+  // @@protoc_insertion_point(serialize_to_array_start:vehicle_msgs.Controls)
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  // int32 manual_takeover_flag = 1;
+  if (this->_internal_manual_takeover_flag() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(1, this->_internal_manual_takeover_flag(), target);
+  }
+
+  // string next_instruction = 2;
+  if (!this->_internal_next_instruction().empty()) {
+    ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::VerifyUtf8String(
+      this->_internal_next_instruction().data(), static_cast<int>(this->_internal_next_instruction().length()),
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::SERIALIZE,
+      "vehicle_msgs.Controls.next_instruction");
+    target = stream->WriteStringMaybeAliased(
+        2, this->_internal_next_instruction(), target);
+  }
+
+  // float next_distance_m = 3;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_next_distance_m = this->_internal_next_distance_m();
+  uint32_t raw_next_distance_m;
+  memcpy(&raw_next_distance_m, &tmp_next_distance_m, sizeof(tmp_next_distance_m));
+  if (raw_next_distance_m != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteFloatToArray(3, this->_internal_next_distance_m(), target);
+  }
+
+  // int32 turn_signal_cmd = 4;
+  if (this->_internal_turn_signal_cmd() != 0) {
+    target = stream->EnsureSpace(target);
+    target = ::_pbi::WireFormatLite::WriteInt32ToArray(4, this->_internal_turn_signal_cmd(), target);
+  }
+
+  if (PROTOBUF_PREDICT_FALSE(_internal_metadata_.have_unknown_fields())) {
+    target = ::_pbi::WireFormat::InternalSerializeUnknownFieldsToArray(
+        _internal_metadata_.unknown_fields<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(::PROTOBUF_NAMESPACE_ID::UnknownFieldSet::default_instance), target, stream);
+  }
+  // @@protoc_insertion_point(serialize_to_array_end:vehicle_msgs.Controls)
+  return target;
+}
+
+size_t Controls::ByteSizeLong() const {
+// @@protoc_insertion_point(message_byte_size_start:vehicle_msgs.Controls)
+  size_t total_size = 0;
+
+  uint32_t cached_has_bits = 0;
+  // Prevent compiler warnings about cached_has_bits being unused
+  (void) cached_has_bits;
+
+  // string next_instruction = 2;
+  if (!this->_internal_next_instruction().empty()) {
+    total_size += 1 +
+      ::PROTOBUF_NAMESPACE_ID::internal::WireFormatLite::StringSize(
+        this->_internal_next_instruction());
+  }
+
+  // int32 manual_takeover_flag = 1;
+  if (this->_internal_manual_takeover_flag() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_manual_takeover_flag());
+  }
+
+  // float next_distance_m = 3;
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_next_distance_m = this->_internal_next_distance_m();
+  uint32_t raw_next_distance_m;
+  memcpy(&raw_next_distance_m, &tmp_next_distance_m, sizeof(tmp_next_distance_m));
+  if (raw_next_distance_m != 0) {
+    total_size += 1 + 4;
+  }
+
+  // int32 turn_signal_cmd = 4;
+  if (this->_internal_turn_signal_cmd() != 0) {
+    total_size += ::_pbi::WireFormatLite::Int32SizePlusOne(this->_internal_turn_signal_cmd());
+  }
+
+  return MaybeComputeUnknownFieldsSize(total_size, &_impl_._cached_size_);
+}
+
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData Controls::_class_data_ = {
+    ::PROTOBUF_NAMESPACE_ID::Message::CopyWithSourceCheck,
+    Controls::MergeImpl
+};
+const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*Controls::GetClassData() const { return &_class_data_; }
+
+
+void Controls::MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg) {
+  auto* const _this = static_cast<Controls*>(&to_msg);
+  auto& from = static_cast<const Controls&>(from_msg);
+  // @@protoc_insertion_point(class_specific_merge_from_start:vehicle_msgs.Controls)
+  GOOGLE_DCHECK_NE(&from, _this);
+  uint32_t cached_has_bits = 0;
+  (void) cached_has_bits;
+
+  if (!from._internal_next_instruction().empty()) {
+    _this->_internal_set_next_instruction(from._internal_next_instruction());
+  }
+  if (from._internal_manual_takeover_flag() != 0) {
+    _this->_internal_set_manual_takeover_flag(from._internal_manual_takeover_flag());
+  }
+  static_assert(sizeof(uint32_t) == sizeof(float), "Code assumes uint32_t and float are the same size.");
+  float tmp_next_distance_m = from._internal_next_distance_m();
+  uint32_t raw_next_distance_m;
+  memcpy(&raw_next_distance_m, &tmp_next_distance_m, sizeof(tmp_next_distance_m));
+  if (raw_next_distance_m != 0) {
+    _this->_internal_set_next_distance_m(from._internal_next_distance_m());
+  }
+  if (from._internal_turn_signal_cmd() != 0) {
+    _this->_internal_set_turn_signal_cmd(from._internal_turn_signal_cmd());
+  }
+  _this->_internal_metadata_.MergeFrom<::PROTOBUF_NAMESPACE_ID::UnknownFieldSet>(from._internal_metadata_);
+}
+
+void Controls::CopyFrom(const Controls& from) {
+// @@protoc_insertion_point(class_specific_copy_from_start:vehicle_msgs.Controls)
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool Controls::IsInitialized() const {
+  return true;
+}
+
+void Controls::InternalSwap(Controls* other) {
+  using std::swap;
+  auto* lhs_arena = GetArenaForAllocation();
+  auto* rhs_arena = other->GetArenaForAllocation();
+  _internal_metadata_.InternalSwap(&other->_internal_metadata_);
+  ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr::InternalSwap(
+      &_impl_.next_instruction_, lhs_arena,
+      &other->_impl_.next_instruction_, rhs_arena
+  );
+  ::PROTOBUF_NAMESPACE_ID::internal::memswap<
+      PROTOBUF_FIELD_OFFSET(Controls, _impl_.turn_signal_cmd_)
+      + sizeof(Controls::_impl_.turn_signal_cmd_)
+      - PROTOBUF_FIELD_OFFSET(Controls, _impl_.manual_takeover_flag_)>(
+          reinterpret_cast<char*>(&_impl_.manual_takeover_flag_),
+          reinterpret_cast<char*>(&other->_impl_.manual_takeover_flag_));
+}
+
+::PROTOBUF_NAMESPACE_ID::Metadata Controls::GetMetadata() const {
+  return ::_pbi::AssignDescriptors(
+      &descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_getter, &descriptor_table_HMI_5fRX_5fCONTROLS_2eproto_once,
+      file_level_metadata_HMI_5fRX_5fCONTROLS_2eproto[4]);
+}
+
 // @@protoc_insertion_point(namespace_scope)
 }  // namespace vehicle_msgs
 PROTOBUF_NAMESPACE_OPEN
@@ -1206,6 +1536,10 @@ Arena::CreateMaybeMessage< ::vehicle_msgs::Waypoint >(Arena* arena) {
 template<> PROTOBUF_NOINLINE ::vehicle_msgs::Navigation*
 Arena::CreateMaybeMessage< ::vehicle_msgs::Navigation >(Arena* arena) {
   return Arena::CreateMessageInternal< ::vehicle_msgs::Navigation >(arena);
+}
+template<> PROTOBUF_NOINLINE ::vehicle_msgs::Controls*
+Arena::CreateMaybeMessage< ::vehicle_msgs::Controls >(Arena* arena) {
+  return Arena::CreateMessageInternal< ::vehicle_msgs::Controls >(arena);
 }
 PROTOBUF_NAMESPACE_CLOSE
 

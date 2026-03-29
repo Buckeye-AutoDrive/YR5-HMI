@@ -11,7 +11,7 @@ ApplicationWindow {
     height: 720
     visible: true
     title: "CAR HMI Mk1"
-    visibility: Window.FullScreen
+    // visibility: Window.FullScreen
 
     font.family: HMI.Theme.fontBody
     font.pixelSize: 16
@@ -29,6 +29,8 @@ ApplicationWindow {
     Connections {
         target: avWarnPage
         function onAccepted() {
+            app.userDisengageGraceActive = false
+            disengageGraceTimer.stop()
             avActionsPage.avEngaged = true
             avActionsPage.avTargetEngaged = true
             avActionsPage.avPending = false
@@ -57,43 +59,103 @@ ApplicationWindow {
 
     function recomputeDp() { HMI.Theme.dp = (height / 720) * 1.25; }
 
+    // Disengaged / default UI: safety_states 0, 9, 10 (protobuf3 omits field → 0). All other values → engaged UI.
+    function safetyStateDisengaged(s) { return s === 0 || s === 9 || s === 10 }
+
+    // After HMI disengage: stack/FSM may still report engaged until vehicle processes command.
+    property bool userDisengageGraceActive: false
+
+    function beginUserDisengageGrace() {
+        app.userDisengageGraceActive = true
+        disengageGraceTimer.restart()
+    }
+
+    // Navigation (0x01) fresh +, if we have ever seen Controls (0x03), that stream must also be fresh.
+    function stackTelemetryFresh() {
+        if (!NavigationBackend.navigationStackFresh)
+            return false
+        if (NavigationBackend.controlsEverReceived && !NavigationBackend.controlsStackFresh)
+            return false
+        return true
+    }
+
+    function syncAvFromStackTelemetry() {
+        if (!app.stackTelemetryFresh()) {
+            avActionsPage.applyStackEngagementFromSafety(true)
+            return
+        }
+        const s = NavigationBackend.safetyStates
+        const dis = app.safetyStateDisengaged(s)
+        if (!dis && app.userDisengageGraceActive)
+            return
+        avActionsPage.applyStackEngagementFromSafety(dis)
+    }
+
     Connections {
         target: NavigationBackend
         function onSafetyStatesChanged() {
             if (fsmRow >= 0 && fsmRow < telemetryModel.count)
                 telemetryModel.setProperty(fsmRow, "value", NavigationBackend.fsmStateText)
-
-            // Drive right-panel engagement from safety state: 1–8 = engaged (AVPanel), 0/9/10 = disengaged (DestList)
-            const s = NavigationBackend.safetyStates
-            if (s >= 1 && s <= 8) {
-                avActionsPage.avEngaged = true
-                avActionsPage.avTargetEngaged = true
-                avActionsPage.avPending = false
-            } else if ((s === 0 || s === 2 || s === 9 || s === 10) && avActionsPage.avEngaged) {
-                avActionsPage.avEngaged = false
-                avActionsPage.avTargetEngaged = false
-                avActionsPage.avPending = false
-            }
         }
     }
 
+    // Stack safety_states is authoritative every navigation frame (0x01).
+    Connections {
+        target: NavigationBackend
+        function onUpdated() { app.syncAvFromStackTelemetry() }
+    }
+
+    Connections {
+        target: NavigationBackend
+        function onNavigationStackFreshChanged() { app.syncAvFromStackTelemetry() }
+    }
+
+    Connections {
+        target: NavigationBackend
+        function onControlsStackFreshChanged() { app.syncAvFromStackTelemetry() }
+    }
+
+    Connections {
+        target: NavigationBackend
+        function onControlsEverReceivedChanged() { app.syncAvFromStackTelemetry() }
+    }
+
+    Connections {
+        target: avActionsPage
+        function onUserHmiDisengageCommandSent() { app.beginUserDisengageGrace() }
+        function onUserHmiEngageCommandSent() {
+            app.userDisengageGraceActive = false
+            disengageGraceTimer.stop()
+            app.syncAvFromStackTelemetry()
+        }
+    }
+
+    // HMI disengage sent but FSM may lag — do not let stack re-engage UI until grace elapses (gnssTimeout).
+    Timer {
+        id: disengageGraceTimer
+        interval: Math.max(250, NavigationBackend.gnssTimeout)
+        repeat: false
+        onTriggered: {
+            app.userDisengageGraceActive = false
+            app.syncAvFromStackTelemetry()
+        }
+    }
+
+    // Manual Engage while stack telemetry is stale: re-apply after gnssTimeout.
+    Timer {
+        id: manualEngageWithoutStackTimer
+        interval: Math.max(250, NavigationBackend.gnssTimeout)
+        repeat: true
+        running: avActionsPage.avEngaged && !app.stackTelemetryFresh()
+        onTriggered: app.syncAvFromStackTelemetry()
+    }
 
     Component.onCompleted: {
 
         // your existing init
         app.recomputeDp()
 
-        // Sync engagement from initial safety state (e.g. if HMI reconnects while vehicle is already in 1–8)
-        var s = NavigationBackend.safetyStates
-        if (s >= 1 && s <= 8) {
-            avActionsPage.avEngaged = true
-            avActionsPage.avTargetEngaged = true
-            avActionsPage.avPending = false
-        } else if (s === 0 || s === 9 || s === 10) {
-            avActionsPage.avEngaged = false
-            avActionsPage.avTargetEngaged = false
-            avActionsPage.avPending = false
-        }
+        app.syncAvFromStackTelemetry()
 
         telemetryModel.append({source:"HS CAN", id:"$1E", value: rand.toFixed(2)})
         telemetryModel.append({source:"CE CAN", id:"$C2", value: rand.toFixed(2)})
@@ -331,6 +393,12 @@ ApplicationWindow {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         rows: telemetryModel
+                        onDisengageCommandSent: app.beginUserDisengageGrace()
+                        onEngageCommandSent: {
+                            app.userDisengageGraceActive = false
+                            disengageGraceTimer.stop()
+                            app.syncAvFromStackTelemetry()
+                        }
                         onDisengageRequested: {
                             avActionsPage.avEngaged = false
                             avActionsPage.avTargetEngaged = false

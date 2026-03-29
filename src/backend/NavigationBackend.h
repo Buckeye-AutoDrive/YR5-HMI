@@ -24,6 +24,16 @@ class NavigationBackend : public QObject {
     Q_PROPERTY(bool    canLoggerOn   READ canLoggerOn    NOTIFY canLoggerOnChanged)
     Q_PROPERTY(bool    autoOn        READ autoOn         NOTIFY autoOnChanged)
     Q_PROPERTY(int     gnssTimeout   READ gnssTimeout    WRITE setGnssTimeout NOTIFY gnssTimeoutChanged)
+    /// True while Navigation (TCP 0x01) frames arrive within gnssTimeout ms; false when stream goes silent.
+    Q_PROPERTY(bool    navigationStackFresh READ navigationStackFresh NOTIFY navigationStackFreshChanged)
+    /// After first Controls (0x03) message: same timeout as Navigation; ignored for engagement until ever received.
+    Q_PROPERTY(bool    controlsStackFresh READ controlsStackFresh NOTIFY controlsStackFreshChanged)
+    Q_PROPERTY(bool    controlsEverReceived READ controlsEverReceived NOTIFY controlsEverReceivedChanged)
+
+    // Next maneuver (from vehicle_msgs::Controls on controls stream type 0x03)
+    Q_PROPERTY(QString nextManeuverType READ nextManeuverType NOTIFY nextManeuverChanged)
+    Q_PROPERTY(int     nextManeuverDistanceM READ nextManeuverDistanceM NOTIFY nextManeuverChanged)
+    Q_PROPERTY(bool    nextManeuverDistanceValid READ nextManeuverDistanceValid NOTIFY nextManeuverChanged)
 
 public:
     explicit NavigationBackend(QObject* parent = nullptr);
@@ -42,6 +52,14 @@ public:
     int gnssTimeout() const { return m_gnssTimeout; }
     void setGnssTimeout(int timeout);
 
+    bool navigationStackFresh() const { return m_navigationStackFresh; }
+    bool controlsStackFresh() const { return m_controlsStackFresh; }
+    bool controlsEverReceived() const { return m_controlsEverReceived; }
+
+    QString nextManeuverType() const { return m_nextManeuverType; }
+    int nextManeuverDistanceM() const { return m_nextManeuverDistanceM; }
+    bool nextManeuverDistanceValid() const { return m_nextManeuverDistanceValid; }
+
     Q_INVOKABLE QVariantList waypointPath() const;
 
     // So that main can connect canBatchReceived and settings can apply RX ports
@@ -57,14 +75,23 @@ signals:
     void canLoggerOnChanged();
     void autoOnChanged();
     void gnssTimeoutChanged();
+    void navigationStackFreshChanged();
+    void controlsStackFreshChanged();
+    void controlsEverReceivedChanged();
+    void nextManeuverChanged();
 
 public slots:
     void onControlsMessage(const vehicle_msgs::Navigation& msg);
+    void onControlsState(const vehicle_msgs::Controls& msg);
 
 private slots:
     void onCanLoggerActiveChanged(bool active);
+    void onNavigationStackTimeout();
+    void onControlsStackTimeout();
 
 private:
+    void markNavigationStackFresh();
+    void markControlsStackFresh();
     void setGnssOn(bool v) { if (m_gnssOn==v) return; m_gnssOn=v; emit gnssOnChanged(); }
     void setLanOn(bool v)  { if (m_lanOn==v)  return; m_lanOn=v;  emit lanOnChanged(); }
     void setAutoOn(bool v) { if (m_autoOn==v) return; m_autoOn=v; emit autoOnChanged(); }
@@ -86,4 +113,14 @@ private:
 
     int m_gnssTimeout = 1200;
     QTimer m_gnssTimeoutTimer;
+    QTimer m_navigationStackTimeoutTimer;
+    bool m_navigationStackFresh = false;
+
+    QTimer m_controlsStackTimeoutTimer;
+    bool m_controlsStackFresh = false;
+    bool m_controlsEverReceived = false;
+
+    QString m_nextManeuverType = QStringLiteral("straight");
+    int m_nextManeuverDistanceM = -1;
+    bool m_nextManeuverDistanceValid = false;
 };

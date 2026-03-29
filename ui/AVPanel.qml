@@ -9,6 +9,9 @@ Item {
     property var rows: []   // same data as Data Monitor (telemetryModel from Main)
 
     signal disengageRequested()
+    /// Fired when user taps Disengage (same moment as sendEngageCommand(0)) — before UI delay.
+    signal disengageCommandSent()
+    signal engageCommandSent()
 
     readonly property int m: HMI.Theme.px(2)
     readonly property int gap: HMI.Theme.px(8)
@@ -119,6 +122,7 @@ Item {
                         onClicked: {
                             if (GlobalTx)
                                 GlobalTx.sendEngageCommand(1, "")
+                            root.engageCommandSent()
                         }
                     }
                     ActionButton {
@@ -128,6 +132,7 @@ Item {
                         onClicked: {
                             if (GlobalTx)
                                 GlobalTx.sendEngageCommand(0, "")
+                            root.disengageCommandSent()
                             // Delay panel switch so TCP write flushes before UI changes
                             delaySwitchBack.start()
                         }

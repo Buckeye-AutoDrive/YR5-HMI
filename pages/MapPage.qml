@@ -43,12 +43,28 @@ Item {
     // Perception object icons: same zoom rate as arrow (carSize), but a bit smaller so they stay under the cursor when zoomed out
     property real perceptionIconSize: root.carSize * 0.78
     property real perceptionIconSize3d: Math.max(20, Math.min(44, (24 + (mapView3d.zoomLevel - 16) * 6) * 0.78))
+    // Next maneuver: vehicle_msgs::Controls via NavigationBackend (TCP controls type 0x03)
+    property string nextManeuverType: (typeof NavigationBackend !== "undefined")
+        ? NavigationBackend.nextManeuverType : "straight"
+    property int nextManeuverDistanceM: (typeof NavigationBackend !== "undefined")
+        ? NavigationBackend.nextManeuverDistanceM : -1
+    property bool nextManeuverDistanceValid: (typeof NavigationBackend !== "undefined")
+        ? NavigationBackend.nextManeuverDistanceValid : false
 
     Layout.fillWidth: true
     Layout.fillHeight: true
 
     function activeMap() {
         return root.map3dEnabled ? mapView3d : mapView
+    }
+
+    function nextManeuverIcon() {
+        if (nextManeuverType === "left")
+            return Qt.resolvedUrl("../src/icons/left.svg")
+        if (nextManeuverType === "right")
+            return Qt.resolvedUrl("../src/icons/right.svg")
+        // Default: straight
+        return Qt.resolvedUrl("../src/icons/straight.svg")
     }
 
     function normalizeHeading(deg) {
@@ -167,19 +183,6 @@ Item {
         // keep online providers disabled so it never fetches from net
         PluginParameter { name: "osm.mapping.providersrepository.disabled"; value: true }
         PluginParameter { name: "osm.mapping.highdpi_tiles"; value: true }
-    }
-
-    // Debug: map object count (remove when working)
-    Text {
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.margins: 6
-        z: 20000
-        text: "Map: count=" + (typeof PerceptionBackend !== "undefined" ? PerceptionBackend.mapObjectCount : "?") + " list=" + (root.mapObjectList ? root.mapObjectList.length : 0)
-        font.pixelSize: 12
-        color: "white"
-        style: Text.Outline
-        styleColor: "black"
     }
 
     // ------------------ Map ------------------
@@ -696,6 +699,103 @@ Item {
                     sourceSize.height: 128
                     fillMode: Image.PreserveAspectFit
                 }
+            }
+        }
+    }
+
+    // ---------- Bottom-left: maneuver toggle button + banner ----------
+    Item {
+        id: maneuverUi
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.leftMargin: 8
+        // Lift above OpenStreetMap attribution line at map bottom
+        anchors.bottomMargin: 32
+        z: 12001
+
+        readonly property int toggleSize: 45
+        readonly property int bannerHeight: 70
+        readonly property int bannerWidth: 230
+
+        // Start collapsed: small maneuver button only (tap to expand bubble).
+        property bool bannerVisible: false
+
+        width: bannerVisible ? bannerWidth : toggleSize
+        height: bannerVisible ? bannerHeight : toggleSize
+
+        // Square toggle button (shows current maneuver icon)
+        Rectangle {
+            id: maneuverToggle
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            width: maneuverUi.toggleSize
+            height: maneuverUi.toggleSize
+            radius: 10
+            color: "#0D7E3A"
+            border.color: "#08642E"
+            border.width: 1
+            visible: !maneuverUi.bannerVisible
+
+            Image {
+                anchors.centerIn: parent
+                width: 34
+                height: 34
+                source: root.nextManeuverIcon()
+                sourceSize.width: 34
+                sourceSize.height: 34
+                fillMode: Image.PreserveAspectFit
+            }
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: maneuverUi.bannerVisible = true
+            }
+        }
+
+        // Full banner (same styling as before), toggled by the square button
+        Rectangle {
+            id: nextManeuverBanner
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            width: maneuverUi.bannerWidth
+            height: maneuverUi.bannerHeight
+            radius: 10
+            color: "#0D7E3A"
+            border.color: "#08642E"
+            border.width: 1
+            visible: maneuverUi.bannerVisible
+
+            Row {
+                anchors.fill: parent
+                anchors.leftMargin: 12
+                anchors.rightMargin: 12
+                spacing: 12
+
+                Image {
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 42
+                    height: 42
+                    source: root.nextManeuverIcon()
+                    sourceSize.width: 42
+                    sourceSize.height: 42
+                    fillMode: Image.PreserveAspectFit
+                }
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: root.nextManeuverDistanceValid ? (root.nextManeuverDistanceM + " m") : "N/A"
+                    color: "white"
+                    font.pixelSize: 30
+                    font.weight: Font.DemiBold
+                }
+            }
+
+            // Tap the bubble to collapse back to the button.
+            MouseArea {
+                anchors.fill: parent
+                onClicked: maneuverUi.bannerVisible = false
+                // Prevent map panning while tapping/clicking the bubble.
+                preventStealing: true
             }
         }
     }

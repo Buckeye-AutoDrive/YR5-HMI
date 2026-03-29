@@ -178,6 +178,13 @@ void GlobalReceiver::processFrame(quint16 port, const QByteArray& payload)
                 return;
             }
             emit cameraBatchReceived(batch);
+        } else if (type == 0x03) {
+            vehicle_msgs::Controls ctl;
+            if (!ctl.ParseFromArray(body.constData(), body.size())) {
+                qWarning() << "[GlobalReceiver] Controls: failed to parse Controls message";
+                return;
+            }
+            emit controlsStateReceived(ctl);
         } else {
             qWarning() << "[GlobalReceiver] Controls: unknown message type" << type;
         }

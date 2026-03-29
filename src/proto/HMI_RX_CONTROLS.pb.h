@@ -51,6 +51,9 @@ extern CameraBatchDefaultTypeInternal _CameraBatch_default_instance_;
 class CameraFrame;
 struct CameraFrameDefaultTypeInternal;
 extern CameraFrameDefaultTypeInternal _CameraFrame_default_instance_;
+class Controls;
+struct ControlsDefaultTypeInternal;
+extern ControlsDefaultTypeInternal _Controls_default_instance_;
 class Navigation;
 struct NavigationDefaultTypeInternal;
 extern NavigationDefaultTypeInternal _Navigation_default_instance_;
@@ -61,6 +64,7 @@ extern WaypointDefaultTypeInternal _Waypoint_default_instance_;
 PROTOBUF_NAMESPACE_OPEN
 template<> ::vehicle_msgs::CameraBatch* Arena::CreateMaybeMessage<::vehicle_msgs::CameraBatch>(Arena*);
 template<> ::vehicle_msgs::CameraFrame* Arena::CreateMaybeMessage<::vehicle_msgs::CameraFrame>(Arena*);
+template<> ::vehicle_msgs::Controls* Arena::CreateMaybeMessage<::vehicle_msgs::Controls>(Arena*);
 template<> ::vehicle_msgs::Navigation* Arena::CreateMaybeMessage<::vehicle_msgs::Navigation>(Arena*);
 template<> ::vehicle_msgs::Waypoint* Arena::CreateMaybeMessage<::vehicle_msgs::Waypoint>(Arena*);
 PROTOBUF_NAMESPACE_CLOSE
@@ -763,6 +767,192 @@ class Navigation final :
   union { Impl_ _impl_; };
   friend struct ::TableStruct_HMI_5fRX_5fCONTROLS_2eproto;
 };
+// -------------------------------------------------------------------
+
+class Controls final :
+    public ::PROTOBUF_NAMESPACE_ID::Message /* @@protoc_insertion_point(class_definition:vehicle_msgs.Controls) */ {
+ public:
+  inline Controls() : Controls(nullptr) {}
+  ~Controls() override;
+  explicit PROTOBUF_CONSTEXPR Controls(::PROTOBUF_NAMESPACE_ID::internal::ConstantInitialized);
+
+  Controls(const Controls& from);
+  Controls(Controls&& from) noexcept
+    : Controls() {
+    *this = ::std::move(from);
+  }
+
+  inline Controls& operator=(const Controls& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  inline Controls& operator=(Controls&& from) noexcept {
+    if (this == &from) return *this;
+    if (GetOwningArena() == from.GetOwningArena()
+  #ifdef PROTOBUF_FORCE_COPY_IN_MOVE
+        && GetOwningArena() != nullptr
+  #endif  // !PROTOBUF_FORCE_COPY_IN_MOVE
+    ) {
+      InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* descriptor() {
+    return GetDescriptor();
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Descriptor* GetDescriptor() {
+    return default_instance().GetMetadata().descriptor;
+  }
+  static const ::PROTOBUF_NAMESPACE_ID::Reflection* GetReflection() {
+    return default_instance().GetMetadata().reflection;
+  }
+  static const Controls& default_instance() {
+    return *internal_default_instance();
+  }
+  static inline const Controls* internal_default_instance() {
+    return reinterpret_cast<const Controls*>(
+               &_Controls_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    4;
+
+  friend void swap(Controls& a, Controls& b) {
+    a.Swap(&b);
+  }
+  inline void Swap(Controls* other) {
+    if (other == this) return;
+  #ifdef PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() != nullptr &&
+        GetOwningArena() == other->GetOwningArena()) {
+   #else  // PROTOBUF_FORCE_COPY_IN_SWAP
+    if (GetOwningArena() == other->GetOwningArena()) {
+  #endif  // !PROTOBUF_FORCE_COPY_IN_SWAP
+      InternalSwap(other);
+    } else {
+      ::PROTOBUF_NAMESPACE_ID::internal::GenericSwap(this, other);
+    }
+  }
+  void UnsafeArenaSwap(Controls* other) {
+    if (other == this) return;
+    GOOGLE_DCHECK(GetOwningArena() == other->GetOwningArena());
+    InternalSwap(other);
+  }
+
+  // implements Message ----------------------------------------------
+
+  Controls* New(::PROTOBUF_NAMESPACE_ID::Arena* arena = nullptr) const final {
+    return CreateMaybeMessage<Controls>(arena);
+  }
+  using ::PROTOBUF_NAMESPACE_ID::Message::CopyFrom;
+  void CopyFrom(const Controls& from);
+  using ::PROTOBUF_NAMESPACE_ID::Message::MergeFrom;
+  void MergeFrom( const Controls& from) {
+    Controls::MergeImpl(*this, from);
+  }
+  private:
+  static void MergeImpl(::PROTOBUF_NAMESPACE_ID::Message& to_msg, const ::PROTOBUF_NAMESPACE_ID::Message& from_msg);
+  public:
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  const char* _InternalParse(const char* ptr, ::PROTOBUF_NAMESPACE_ID::internal::ParseContext* ctx) final;
+  uint8_t* _InternalSerialize(
+      uint8_t* target, ::PROTOBUF_NAMESPACE_ID::io::EpsCopyOutputStream* stream) const final;
+  int GetCachedSize() const final { return _impl_._cached_size_.Get(); }
+
+  private:
+  void SharedCtor(::PROTOBUF_NAMESPACE_ID::Arena* arena, bool is_message_owned);
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(Controls* other);
+
+  private:
+  friend class ::PROTOBUF_NAMESPACE_ID::internal::AnyMetadata;
+  static ::PROTOBUF_NAMESPACE_ID::StringPiece FullMessageName() {
+    return "vehicle_msgs.Controls";
+  }
+  protected:
+  explicit Controls(::PROTOBUF_NAMESPACE_ID::Arena* arena,
+                       bool is_message_owned = false);
+  public:
+
+  static const ClassData _class_data_;
+  const ::PROTOBUF_NAMESPACE_ID::Message::ClassData*GetClassData() const final;
+
+  ::PROTOBUF_NAMESPACE_ID::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  enum : int {
+    kNextInstructionFieldNumber = 2,
+    kManualTakeoverFlagFieldNumber = 1,
+    kNextDistanceMFieldNumber = 3,
+    kTurnSignalCmdFieldNumber = 4,
+  };
+  // string next_instruction = 2;
+  void clear_next_instruction();
+  const std::string& next_instruction() const;
+  template <typename ArgT0 = const std::string&, typename... ArgT>
+  void set_next_instruction(ArgT0&& arg0, ArgT... args);
+  std::string* mutable_next_instruction();
+  PROTOBUF_NODISCARD std::string* release_next_instruction();
+  void set_allocated_next_instruction(std::string* next_instruction);
+  private:
+  const std::string& _internal_next_instruction() const;
+  inline PROTOBUF_ALWAYS_INLINE void _internal_set_next_instruction(const std::string& value);
+  std::string* _internal_mutable_next_instruction();
+  public:
+
+  // int32 manual_takeover_flag = 1;
+  void clear_manual_takeover_flag();
+  int32_t manual_takeover_flag() const;
+  void set_manual_takeover_flag(int32_t value);
+  private:
+  int32_t _internal_manual_takeover_flag() const;
+  void _internal_set_manual_takeover_flag(int32_t value);
+  public:
+
+  // float next_distance_m = 3;
+  void clear_next_distance_m();
+  float next_distance_m() const;
+  void set_next_distance_m(float value);
+  private:
+  float _internal_next_distance_m() const;
+  void _internal_set_next_distance_m(float value);
+  public:
+
+  // int32 turn_signal_cmd = 4;
+  void clear_turn_signal_cmd();
+  int32_t turn_signal_cmd() const;
+  void set_turn_signal_cmd(int32_t value);
+  private:
+  int32_t _internal_turn_signal_cmd() const;
+  void _internal_set_turn_signal_cmd(int32_t value);
+  public:
+
+  // @@protoc_insertion_point(class_scope:vehicle_msgs.Controls)
+ private:
+  class _Internal;
+
+  template <typename T> friend class ::PROTOBUF_NAMESPACE_ID::Arena::InternalHelper;
+  typedef void InternalArenaConstructable_;
+  typedef void DestructorSkippable_;
+  struct Impl_ {
+    ::PROTOBUF_NAMESPACE_ID::internal::ArenaStringPtr next_instruction_;
+    int32_t manual_takeover_flag_;
+    float next_distance_m_;
+    int32_t turn_signal_cmd_;
+    mutable ::PROTOBUF_NAMESPACE_ID::internal::CachedSize _cached_size_;
+  };
+  union { Impl_ _impl_; };
+  friend struct ::TableStruct_HMI_5fRX_5fCONTROLS_2eproto;
+};
 // ===================================================================
 
 
@@ -1106,9 +1296,125 @@ inline void Navigation::set_safety_states(int32_t value) {
   // @@protoc_insertion_point(field_set:vehicle_msgs.Navigation.safety_states)
 }
 
+// -------------------------------------------------------------------
+
+// Controls
+
+// int32 manual_takeover_flag = 1;
+inline void Controls::clear_manual_takeover_flag() {
+  _impl_.manual_takeover_flag_ = 0;
+}
+inline int32_t Controls::_internal_manual_takeover_flag() const {
+  return _impl_.manual_takeover_flag_;
+}
+inline int32_t Controls::manual_takeover_flag() const {
+  // @@protoc_insertion_point(field_get:vehicle_msgs.Controls.manual_takeover_flag)
+  return _internal_manual_takeover_flag();
+}
+inline void Controls::_internal_set_manual_takeover_flag(int32_t value) {
+  
+  _impl_.manual_takeover_flag_ = value;
+}
+inline void Controls::set_manual_takeover_flag(int32_t value) {
+  _internal_set_manual_takeover_flag(value);
+  // @@protoc_insertion_point(field_set:vehicle_msgs.Controls.manual_takeover_flag)
+}
+
+// string next_instruction = 2;
+inline void Controls::clear_next_instruction() {
+  _impl_.next_instruction_.ClearToEmpty();
+}
+inline const std::string& Controls::next_instruction() const {
+  // @@protoc_insertion_point(field_get:vehicle_msgs.Controls.next_instruction)
+  return _internal_next_instruction();
+}
+template <typename ArgT0, typename... ArgT>
+inline PROTOBUF_ALWAYS_INLINE
+void Controls::set_next_instruction(ArgT0&& arg0, ArgT... args) {
+ 
+ _impl_.next_instruction_.Set(static_cast<ArgT0 &&>(arg0), args..., GetArenaForAllocation());
+  // @@protoc_insertion_point(field_set:vehicle_msgs.Controls.next_instruction)
+}
+inline std::string* Controls::mutable_next_instruction() {
+  std::string* _s = _internal_mutable_next_instruction();
+  // @@protoc_insertion_point(field_mutable:vehicle_msgs.Controls.next_instruction)
+  return _s;
+}
+inline const std::string& Controls::_internal_next_instruction() const {
+  return _impl_.next_instruction_.Get();
+}
+inline void Controls::_internal_set_next_instruction(const std::string& value) {
+  
+  _impl_.next_instruction_.Set(value, GetArenaForAllocation());
+}
+inline std::string* Controls::_internal_mutable_next_instruction() {
+  
+  return _impl_.next_instruction_.Mutable(GetArenaForAllocation());
+}
+inline std::string* Controls::release_next_instruction() {
+  // @@protoc_insertion_point(field_release:vehicle_msgs.Controls.next_instruction)
+  return _impl_.next_instruction_.Release();
+}
+inline void Controls::set_allocated_next_instruction(std::string* next_instruction) {
+  if (next_instruction != nullptr) {
+    
+  } else {
+    
+  }
+  _impl_.next_instruction_.SetAllocated(next_instruction, GetArenaForAllocation());
+#ifdef PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  if (_impl_.next_instruction_.IsDefault()) {
+    _impl_.next_instruction_.Set("", GetArenaForAllocation());
+  }
+#endif // PROTOBUF_FORCE_COPY_DEFAULT_STRING
+  // @@protoc_insertion_point(field_set_allocated:vehicle_msgs.Controls.next_instruction)
+}
+
+// float next_distance_m = 3;
+inline void Controls::clear_next_distance_m() {
+  _impl_.next_distance_m_ = 0;
+}
+inline float Controls::_internal_next_distance_m() const {
+  return _impl_.next_distance_m_;
+}
+inline float Controls::next_distance_m() const {
+  // @@protoc_insertion_point(field_get:vehicle_msgs.Controls.next_distance_m)
+  return _internal_next_distance_m();
+}
+inline void Controls::_internal_set_next_distance_m(float value) {
+  
+  _impl_.next_distance_m_ = value;
+}
+inline void Controls::set_next_distance_m(float value) {
+  _internal_set_next_distance_m(value);
+  // @@protoc_insertion_point(field_set:vehicle_msgs.Controls.next_distance_m)
+}
+
+// int32 turn_signal_cmd = 4;
+inline void Controls::clear_turn_signal_cmd() {
+  _impl_.turn_signal_cmd_ = 0;
+}
+inline int32_t Controls::_internal_turn_signal_cmd() const {
+  return _impl_.turn_signal_cmd_;
+}
+inline int32_t Controls::turn_signal_cmd() const {
+  // @@protoc_insertion_point(field_get:vehicle_msgs.Controls.turn_signal_cmd)
+  return _internal_turn_signal_cmd();
+}
+inline void Controls::_internal_set_turn_signal_cmd(int32_t value) {
+  
+  _impl_.turn_signal_cmd_ = value;
+}
+inline void Controls::set_turn_signal_cmd(int32_t value) {
+  _internal_set_turn_signal_cmd(value);
+  // @@protoc_insertion_point(field_set:vehicle_msgs.Controls.turn_signal_cmd)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
