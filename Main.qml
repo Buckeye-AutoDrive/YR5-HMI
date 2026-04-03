@@ -11,7 +11,7 @@ ApplicationWindow {
     height: 720
     visible: true
     title: "CAR HMI Mk1"
-    // visibility: Window.FullScreen
+    visibility: Window.FullScreen
 
     font.family: HMI.Theme.fontBody
     font.pixelSize: 16
@@ -60,7 +60,7 @@ ApplicationWindow {
     function recomputeDp() { HMI.Theme.dp = (height / 720) * 1.25; }
 
     // Disengaged / default UI: safety_states 0, 9, 10 (protobuf3 omits field → 0). All other values → engaged UI.
-    function safetyStateDisengaged(s) { return s === 0 || s === 9 || s === 10 }
+    function safetyStateDisengaged(s) { return s === 0 || s === 2 || s === 9 || s === 10 }
 
     // After HMI disengage: stack/FSM may still report engaged until vehicle processes command.
     property bool userDisengageGraceActive: false
