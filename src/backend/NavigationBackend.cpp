@@ -147,7 +147,7 @@ void NavigationBackend::onControlsMessage(const vehicle_msgs::Navigation& msg)
 
     // Auto / autonomy icon: on for any stack state except disengaged defaults (0, 9, 10).
     // Matches Main.qml right-panel engagement (not only state 8 "AV ACTIVE").
-    const bool autonomyIndicated = (m_safetyStates != 0 && m_safetyStates != 9 && m_safetyStates != 10);
+    const bool autonomyIndicated = (m_safetyStates != 0 && m_safetyStates != 2 && m_safetyStates != 9 && m_safetyStates != 10);
     setAutoOn(autonomyIndicated);
 
     // Notify pose/UI update (10 Hz etc.)
