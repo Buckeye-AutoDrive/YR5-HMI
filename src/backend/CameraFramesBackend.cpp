@@ -15,6 +15,8 @@ CameraImageProvider::CameraImageProvider(CameraFramesBackend* backend)
 
 QImage CameraImageProvider::requestImage(const QString& id, QSize* size, const QSize& requestedSize)
 {
+    qWarning() << "=== CAMERA PROVIDER HIT ===" << id;
+
     QImage img(640, 360, QImage::Format_RGB32);
     img.fill(Qt::red);
 
@@ -23,8 +25,6 @@ QImage CameraImageProvider::requestImage(const QString& id, QSize* size, const Q
 
     if (requestedSize.isValid())
         img = img.scaled(requestedSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
-    qWarning() << "=== CAMERA PROVIDER HIT ===" << id;
 
     return img;
 }
