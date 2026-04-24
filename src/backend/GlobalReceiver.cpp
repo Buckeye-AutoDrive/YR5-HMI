@@ -162,10 +162,8 @@ void GlobalReceiver::processFrame(quint16 port, const QByteArray& payload)
     case StreamKind::Controls: {
         emit controlsRaw(payload);
         if (payload.size() < 1) return;
-
         const quint8 type = static_cast<quint8>(payload[0]);
         const QByteArray body = payload.mid(1);
-
         if (type == 0x01) {
             vehicle_msgs::Navigation nav;
             if (!nav.ParseFromArray(body.constData(), body.size())) {
@@ -173,29 +171,13 @@ void GlobalReceiver::processFrame(quint16 port, const QByteArray& payload)
                 return;
             }
             emit controlsMessage(nav);
-
         } else if (type == 0x02) {
             vehicle_msgs::CameraBatch batch;
             if (!batch.ParseFromArray(body.constData(), body.size())) {
                 qWarning() << "[GlobalReceiver] Controls: failed to parse CameraBatch message";
-                qWarning() << "[GlobalReceiver] CameraBatch body size =" << body.size();
                 return;
             }
-
-            qInfo() << "[GlobalReceiver] CameraBatch parsed:"
-                    << "frames =" << batch.frames_size()
-                    << "timestamp =" << batch.timestamp()
-                    << "body bytes =" << body.size();
-
-            for (int i = 0; i < batch.frames_size(); ++i) {
-                const auto& f = batch.frames(i);
-                qInfo() << "[GlobalReceiver]   frame" << i
-                        << "camera_id =" << QString::fromStdString(f.camera_id())
-                        << "jpeg bytes =" << static_cast<qint64>(f.jpeg_data().size());
-            }
-
             emit cameraBatchReceived(batch);
-
         } else if (type == 0x03) {
             vehicle_msgs::Controls ctl;
             if (!ctl.ParseFromArray(body.constData(), body.size())) {
@@ -203,14 +185,11 @@ void GlobalReceiver::processFrame(quint16 port, const QByteArray& payload)
                 return;
             }
             emit controlsStateReceived(ctl);
-
         } else {
-            qWarning() << "[GlobalReceiver] Controls: unknown message type" << type
-                       << "payload bytes =" << payload.size();
+            qWarning() << "[GlobalReceiver] Controls: unknown message type" << type;
         }
         break;
     }
-
     case StreamKind::Logger: {
         can_stream::CanBatch batch;
         if (!batch.ParseFromArray(payload.constData(), payload.size())) {
@@ -222,7 +201,6 @@ void GlobalReceiver::processFrame(quint16 port, const QByteArray& payload)
         emit canBatchReceived(batch);
         break;
     }
-
     case StreamKind::Perception: {
         hmi::perception::v1::PerceptionFrame frame;
         if (!frame.ParseFromArray(payload.constData(), payload.size())) {
@@ -233,7 +211,6 @@ void GlobalReceiver::processFrame(quint16 port, const QByteArray& payload)
         emit perceptionFrameReceived(frame);
         break;
     }
-
     default:
         break;
     }

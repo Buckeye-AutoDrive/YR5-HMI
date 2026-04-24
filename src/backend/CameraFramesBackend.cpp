@@ -2,8 +2,6 @@
 #include "../proto/HMI_RX_CONTROLS.pb.h"
 #include <QQmlEngine>
 #include <QByteArray>
-#include <QUrl>
-#include <QDebug>
 
 // --- CameraImageProvider (same module as backend) ---
 
@@ -15,17 +13,20 @@ CameraImageProvider::CameraImageProvider(CameraFramesBackend* backend)
 
 QImage CameraImageProvider::requestImage(const QString& id, QSize* size, const QSize& requestedSize)
 {
-    qWarning() << "=== CAMERA PROVIDER HIT ===" << id;
+    // URL may be "cam0?v=123" -> use path only
+    QString cameraId = id;
+    const int q = cameraId.indexOf(QLatin1Char('?'));
+    if (q >= 0)
+        cameraId = cameraId.left(q);
 
-    QImage img(640, 360, QImage::Format_RGB32);
-    img.fill(Qt::red);
+    if (!m_backend)
+        return QImage();
 
+    QImage img = m_backend->frameImage(cameraId);
     if (size)
         *size = img.size();
-
-    if (requestedSize.isValid())
+    if (!img.isNull() && requestedSize.isValid())
         img = img.scaled(requestedSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-
     return img;
 }
 
@@ -46,80 +47,38 @@ void CameraFramesBackend::addImageProviderTo(QQmlEngine* engine)
 {
     if (!engine || m_imageProvider)
         return;
-
     m_engine = engine;
     m_imageProvider = std::make_unique<CameraImageProvider>(this);
     engine->addImageProvider(QStringLiteral("camera"), m_imageProvider.get());
-
-    qWarning() << "[CameraFramesBackend] image provider registered as image://camera/";
 }
 
 QImage CameraFramesBackend::frameImage(const QString& cameraId) const
 {
     QMutexLocker lock(&m_mutex);
-
-    qWarning() << "[CameraFramesBackend] frameImage lookup for" << cameraId
-               << "available keys =" << m_frames.keys();
-
     auto it = m_frames.constFind(cameraId);
-    if (it == m_frames.constEnd()) {
-        qWarning() << "[CameraFramesBackend] no stored frame for" << cameraId;
+    if (it == m_frames.constEnd())
         return QImage();
-    }
-
     return it.value().copy();
 }
 
 void CameraFramesBackend::onCameraBatch(const vehicle_msgs::CameraBatch& batch)
 {
-    qInfo() << "[CameraFramesBackend] batch received:"
-            << "frames =" << batch.frames_size()
-            << "timestamp =" << batch.timestamp();
-
     QMutexLocker lock(&m_mutex);
-
     for (int i = 0; i < batch.frames_size(); ++i) {
         const auto& frame = batch.frames(i);
-        const QString cameraId = QString::fromStdString(frame.camera_id());
+        const std::string& cameraId = frame.camera_id();
         const std::string& jpegData = frame.jpeg_data();
-
-        qInfo() << "[CameraFramesBackend] frame" << i
-                << "cameraId =" << cameraId
-                << "jpeg bytes =" << static_cast<qint64>(jpegData.size());
-
-        if (cameraId.isEmpty() || jpegData.empty()) {
-            qWarning() << "[CameraFramesBackend] skipping empty cameraId or jpegData";
+        if (cameraId.empty() || jpegData.empty())
             continue;
-        }
-
-        QByteArray bytes(jpegData.data(), static_cast<int>(jpegData.size()));
-
-        QImage img = QImage::fromData(bytes, "JPEG");
-        if (img.isNull()) {
-            qWarning() << "[CameraFramesBackend] JPEG decode with explicit format failed for"
-                       << cameraId << "- trying auto-detect";
-            img = QImage::fromData(bytes);
-        }
-
-        if (img.isNull()) {
-            qWarning() << "[CameraFramesBackend] image decode failed for"
-                       << cameraId
-                       << "bytes =" << bytes.size();
-            continue;
-        }
-
-        qInfo() << "[CameraFramesBackend] decoded"
-                << cameraId
-                << "size =" << img.size()
-                << "format =" << img.format();
-
-        m_frames.insert(cameraId, img);
-        qInfo() << "[CameraFramesBackend] stored frame for" << cameraId;
+        QImage img = QImage::fromData(
+            QByteArray::fromRawData(jpegData.data(), static_cast<int>(jpegData.size())),
+            "JPEG"
+        );
+        if (!img.isNull())
+            m_frames.insert(QString::fromStdString(cameraId), img);
     }
-
     lock.unlock();
 
     ++m_frameVersion;
     emit frameVersionChanged();
-    qInfo() << "[CameraFramesBackend] frameVersion =" << m_frameVersion;
 }
