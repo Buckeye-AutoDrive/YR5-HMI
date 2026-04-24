@@ -5,6 +5,7 @@
 #include <QBuffer>
 #include <QImageReader>
 #include <QDebug>
+#include <QUrl>
 
 // --- CameraImageProvider (same module as backend) ---
 
@@ -16,14 +17,27 @@ CameraImageProvider::CameraImageProvider(CameraFramesBackend* backend)
 
 QImage CameraImageProvider::requestImage(const QString& id, QSize* size, const QSize& requestedSize)
 {
-    // URL may be "cam0?v=123" -> use path only
     QString cameraId = id;
+
+    // Decode any %-escaped characters first
+    cameraId = QUrl::fromPercentEncoding(cameraId.toUtf8());
+
+    // Remove query if present
     const int q = cameraId.indexOf(QLatin1Char('?'));
     if (q >= 0)
         cameraId = cameraId.left(q);
 
-    if (!m_backend)
+    // Remove leading slash if present
+    while (cameraId.startsWith(QLatin1Char('/')))
+        cameraId.remove(0, 1);
+
+    qInfo() << "[CameraImageProvider] request id =" << id
+            << "normalized =" << cameraId;
+
+    if (!m_backend) {
+        qWarning() << "[CameraImageProvider] backend is null";
         return QImage();
+    }
 
     QImage img = m_backend->frameImage(cameraId);
 
@@ -35,6 +49,9 @@ QImage CameraImageProvider::requestImage(const QString& id, QSize* size, const Q
 
     if (img.isNull()) {
         qWarning() << "[CameraImageProvider] requestImage failed for" << cameraId;
+    } else {
+        qInfo() << "[CameraImageProvider] served" << cameraId
+                << "size =" << img.size();
     }
 
     return img;
