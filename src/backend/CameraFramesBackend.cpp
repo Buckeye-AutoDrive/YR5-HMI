@@ -15,41 +15,16 @@ CameraImageProvider::CameraImageProvider(CameraFramesBackend* backend)
 
 QImage CameraImageProvider::requestImage(const QString& id, QSize* size, const QSize& requestedSize)
 {
-    QString cameraId = id;
-
-    cameraId = QUrl::fromPercentEncoding(cameraId.toUtf8());
-
-    const int q = cameraId.indexOf(QLatin1Char('?'));
-    if (q >= 0)
-        cameraId = cameraId.left(q);
-
-    while (cameraId.startsWith(QLatin1Char('/')))
-        cameraId.remove(0, 1);
-
-    cameraId = cameraId.trimmed();
-
-    qWarning() << "[CameraImageProvider] request id =" << id
-               << "normalized =" << cameraId;
-
-    if (!m_backend) {
-        qWarning() << "[CameraImageProvider] backend is null";
-        return QImage();
-    }
-
-    QImage img = m_backend->frameImage(cameraId);
+    QImage img(640, 360, QImage::Format_RGB32);
+    img.fill(Qt::red);
 
     if (size)
         *size = img.size();
 
-    if (!img.isNull() && requestedSize.isValid())
+    if (requestedSize.isValid())
         img = img.scaled(requestedSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-    if (img.isNull()) {
-        qWarning() << "[CameraImageProvider] requestImage failed for" << cameraId;
-    } else {
-        qWarning() << "[CameraImageProvider] served" << cameraId
-                   << "size =" << img.size();
-    }
+    qWarning() << "=== CAMERA PROVIDER HIT ===" << id;
 
     return img;
 }
