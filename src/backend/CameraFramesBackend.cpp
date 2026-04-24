@@ -17,23 +17,19 @@ QImage CameraImageProvider::requestImage(const QString& id, QSize* size, const Q
 {
     QString cameraId = id;
 
-    // Decode percent-encoding first, just in case
     cameraId = QUrl::fromPercentEncoding(cameraId.toUtf8());
 
-    // Strip query
     const int q = cameraId.indexOf(QLatin1Char('?'));
     if (q >= 0)
         cameraId = cameraId.left(q);
 
-    // Strip leading slashes
     while (cameraId.startsWith(QLatin1Char('/')))
         cameraId.remove(0, 1);
 
-    // Trim whitespace
     cameraId = cameraId.trimmed();
 
-    qInfo() << "[CameraImageProvider] request id =" << id
-            << "normalized =" << cameraId;
+    qWarning() << "[CameraImageProvider] request id =" << id
+               << "normalized =" << cameraId;
 
     if (!m_backend) {
         qWarning() << "[CameraImageProvider] backend is null";
@@ -51,8 +47,8 @@ QImage CameraImageProvider::requestImage(const QString& id, QSize* size, const Q
     if (img.isNull()) {
         qWarning() << "[CameraImageProvider] requestImage failed for" << cameraId;
     } else {
-        qInfo() << "[CameraImageProvider] served" << cameraId
-                << "size =" << img.size();
+        qWarning() << "[CameraImageProvider] served" << cameraId
+                   << "size =" << img.size();
     }
 
     return img;
@@ -80,15 +76,15 @@ void CameraFramesBackend::addImageProviderTo(QQmlEngine* engine)
     m_imageProvider = std::make_unique<CameraImageProvider>(this);
     engine->addImageProvider(QStringLiteral("camera"), m_imageProvider.get());
 
-    qInfo() << "[CameraFramesBackend] image provider registered as image://camera/";
+    qWarning() << "[CameraFramesBackend] image provider registered as image://camera/";
 }
 
 QImage CameraFramesBackend::frameImage(const QString& cameraId) const
 {
     QMutexLocker lock(&m_mutex);
 
-    qInfo() << "[CameraFramesBackend] frameImage lookup for" << cameraId
-            << "available keys =" << m_frames.keys();
+    qWarning() << "[CameraFramesBackend] frameImage lookup for" << cameraId
+               << "available keys =" << m_frames.keys();
 
     auto it = m_frames.constFind(cameraId);
     if (it == m_frames.constEnd()) {
