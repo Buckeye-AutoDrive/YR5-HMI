@@ -2,10 +2,8 @@
 #include "../proto/HMI_RX_CONTROLS.pb.h"
 #include <QQmlEngine>
 #include <QByteArray>
-#include <QBuffer>
-#include <QImageReader>
-#include <QDebug>
 #include <QUrl>
+#include <QDebug>
 
 // --- CameraImageProvider (same module as backend) ---
 
@@ -19,17 +17,20 @@ QImage CameraImageProvider::requestImage(const QString& id, QSize* size, const Q
 {
     QString cameraId = id;
 
-    // Decode any %-escaped characters first
+    // Decode percent-encoding first, just in case
     cameraId = QUrl::fromPercentEncoding(cameraId.toUtf8());
 
-    // Remove query if present
+    // Strip query
     const int q = cameraId.indexOf(QLatin1Char('?'));
     if (q >= 0)
         cameraId = cameraId.left(q);
 
-    // Remove leading slash if present
+    // Strip leading slashes
     while (cameraId.startsWith(QLatin1Char('/')))
         cameraId.remove(0, 1);
+
+    // Trim whitespace
+    cameraId = cameraId.trimmed();
 
     qInfo() << "[CameraImageProvider] request id =" << id
             << "normalized =" << cameraId;
@@ -85,11 +86,16 @@ void CameraFramesBackend::addImageProviderTo(QQmlEngine* engine)
 QImage CameraFramesBackend::frameImage(const QString& cameraId) const
 {
     QMutexLocker lock(&m_mutex);
+
+    qInfo() << "[CameraFramesBackend] frameImage lookup for" << cameraId
+            << "available keys =" << m_frames.keys();
+
     auto it = m_frames.constFind(cameraId);
     if (it == m_frames.constEnd()) {
         qWarning() << "[CameraFramesBackend] no stored frame for" << cameraId;
         return QImage();
     }
+
     return it.value().copy();
 }
 
@@ -115,7 +121,6 @@ void CameraFramesBackend::onCameraBatch(const vehicle_msgs::CameraBatch& batch)
             continue;
         }
 
-        // Make a real QByteArray copy instead of fromRawData()
         QByteArray bytes(jpegData.data(), static_cast<int>(jpegData.size()));
 
         QImage img = QImage::fromData(bytes, "JPEG");
