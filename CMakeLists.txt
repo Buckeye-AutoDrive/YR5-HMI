@@ -48,6 +48,7 @@ qt_add_qml_module(appHMI_Mk1
         ui/Theme.qml
         ui/SideNav.qml
         ui/DataTable.qml
+        ui/IntelLogsTable.qml
         ui/DestList.qml
         ui/AVPanel.qml
         pages/MapPage.qml

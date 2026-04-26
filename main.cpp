@@ -15,6 +15,7 @@
 #include "src/backend/TerminalBackend.h"
 #include "src/backend/CameraFramesBackend.h"
 #include "src/backend/LogBackupBackend.h"
+#include "src/backend/IntelLogsBackend.h"
 
 static void loadAppFonts()
 {
@@ -90,6 +91,9 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty("CameraFramesBackend", cameraFramesBackend);
     QObject::connect(navBackend->globalReceiver(), &GlobalReceiver::cameraBatchReceived,
                      cameraFramesBackend, &CameraFramesBackend::onCameraBatch);
+
+    auto* intelLogsBackend = new IntelLogsBackend(&engine);
+    engine.rootContext()->setContextProperty("IntelLogsBackend", intelLogsBackend);
 
     // Cross-platform maps directory:
     // On Linux you used /home/hmi/HMI/maps/. On Windows, use a local "maps" folder next to the exe.
