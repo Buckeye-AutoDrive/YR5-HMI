@@ -2,6 +2,9 @@
 #include "../proto/HMI_RX_CONTROLS.pb.h"
 #include <QQmlEngine>
 #include <QByteArray>
+#include <QUrl>
+#include <QDebug>
+#include <QPainter>
 
 // --- CameraImageProvider (same module as backend) ---
 
@@ -13,20 +16,69 @@ CameraImageProvider::CameraImageProvider(CameraFramesBackend* backend)
 
 QImage CameraImageProvider::requestImage(const QString& id, QSize* size, const QSize& requestedSize)
 {
-    // URL may be "cam0?v=123" -> use path only
     QString cameraId = id;
+
+    // Decode percent-encoding first, just in case
+    cameraId = QUrl::fromPercentEncoding(cameraId.toUtf8());
+
+    // Strip query
     const int q = cameraId.indexOf(QLatin1Char('?'));
     if (q >= 0)
         cameraId = cameraId.left(q);
 
-    if (!m_backend)
-        return QImage();
+    // Strip leading slashes
+    while (cameraId.startsWith(QLatin1Char('/')))
+        cameraId.remove(0, 1);
+
+    // Trim whitespace
+    cameraId = cameraId.trimmed();
+
+    qWarning() << "[CameraImageProvider] request id =" << id
+               << "normalized =" << cameraId
+               << "requestedSize =" << requestedSize;
+
+    if (!m_backend) {
+        qWarning() << "[CameraImageProvider] backend is null";
+        // Never return null; returning null triggers QML "Failed to get image from provider".
+        const QSize fallback = requestedSize.isValid() ? requestedSize : QSize(640, 360);
+        QImage ph(fallback, QImage::Format_ARGB32_Premultiplied);
+        ph.fill(QColor(16, 16, 16));
+        if (size) *size = ph.size();
+        return ph;
+    }
 
     QImage img = m_backend->frameImage(cameraId);
+
     if (size)
         *size = img.size();
+
     if (!img.isNull() && requestedSize.isValid())
         img = img.scaled(requestedSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+
+    if (img.isNull()) {
+        qWarning() << "[CameraImageProvider] requestImage failed for" << cameraId;
+        // Never return null; provide a deterministic placeholder instead.
+        const QSize fallback = requestedSize.isValid() ? requestedSize : QSize(640, 360);
+        QImage ph(fallback, QImage::Format_ARGB32_Premultiplied);
+        ph.fill(QColor(16, 16, 16));
+        QPainter p(&ph);
+        p.setRenderHint(QPainter::Antialiasing, true);
+        p.setPen(QColor(220, 220, 220));
+        QFont f = p.font();
+        f.setPixelSize(qMax(14, fallback.height() / 14));
+        f.setBold(true);
+        p.setFont(f);
+        p.drawText(ph.rect().adjusted(16, 16, -16, -16),
+                   Qt::AlignCenter,
+                   QStringLiteral("NO CAMERA FRAME\n%1").arg(cameraId));
+        p.end();
+        if (size) *size = ph.size();
+        return ph;
+    } else {
+        qWarning() << "[CameraImageProvider] served" << cameraId
+                   << "size =" << img.size();
+    }
+
     return img;
 }
 
@@ -47,38 +99,80 @@ void CameraFramesBackend::addImageProviderTo(QQmlEngine* engine)
 {
     if (!engine || m_imageProvider)
         return;
+
     m_engine = engine;
     m_imageProvider = std::make_unique<CameraImageProvider>(this);
     engine->addImageProvider(QStringLiteral("camera"), m_imageProvider.get());
+
+    qInfo() << "[CameraFramesBackend] image provider registered as image://camera/";
 }
 
 QImage CameraFramesBackend::frameImage(const QString& cameraId) const
 {
     QMutexLocker lock(&m_mutex);
+
+    qInfo() << "[CameraFramesBackend] frameImage lookup for" << cameraId
+            << "available keys =" << m_frames.keys();
+
     auto it = m_frames.constFind(cameraId);
-    if (it == m_frames.constEnd())
+    if (it == m_frames.constEnd()) {
+        qWarning() << "[CameraFramesBackend] no stored frame for" << cameraId;
         return QImage();
+    }
+
     return it.value().copy();
 }
 
 void CameraFramesBackend::onCameraBatch(const vehicle_msgs::CameraBatch& batch)
 {
+    qInfo() << "[CameraFramesBackend] batch received:"
+            << "frames =" << batch.frames_size()
+            << "timestamp =" << batch.timestamp();
+
     QMutexLocker lock(&m_mutex);
+
     for (int i = 0; i < batch.frames_size(); ++i) {
         const auto& frame = batch.frames(i);
-        const std::string& cameraId = frame.camera_id();
+        const QString cameraId = QString::fromStdString(frame.camera_id());
         const std::string& jpegData = frame.jpeg_data();
-        if (cameraId.empty() || jpegData.empty())
+
+        qInfo() << "[CameraFramesBackend] frame" << i
+                << "cameraId =" << cameraId
+                << "jpeg bytes =" << static_cast<qint64>(jpegData.size());
+
+        if (cameraId.isEmpty() || jpegData.empty()) {
+            qWarning() << "[CameraFramesBackend] skipping empty cameraId or jpegData";
             continue;
-        QImage img = QImage::fromData(
-            QByteArray::fromRawData(jpegData.data(), static_cast<int>(jpegData.size())),
-            "JPEG"
-        );
-        if (!img.isNull())
-            m_frames.insert(QString::fromStdString(cameraId), img);
+        }
+
+        QByteArray bytes(jpegData.data(), static_cast<int>(jpegData.size()));
+
+        QImage img = QImage::fromData(bytes, "JPEG");
+        if (img.isNull()) {
+            qWarning() << "[CameraFramesBackend] JPEG decode with explicit format failed for"
+                       << cameraId << "- trying auto-detect";
+            img = QImage::fromData(bytes);
+        }
+
+        if (img.isNull()) {
+            qWarning() << "[CameraFramesBackend] image decode failed for"
+                       << cameraId
+                       << "bytes =" << bytes.size();
+            continue;
+        }
+
+        qInfo() << "[CameraFramesBackend] decoded"
+                << cameraId
+                << "size =" << img.size()
+                << "format =" << img.format();
+
+        m_frames.insert(cameraId, img);
+        qInfo() << "[CameraFramesBackend] stored frame for" << cameraId;
     }
+
     lock.unlock();
 
     ++m_frameVersion;
     emit frameVersionChanged();
+    qInfo() << "[CameraFramesBackend] frameVersion =" << m_frameVersion;
 }

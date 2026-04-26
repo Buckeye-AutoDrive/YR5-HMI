@@ -13,6 +13,7 @@ add_library(HMI_Backend
     backend/InternetBackend.cpp
     backend/TerminalBackend.cpp
     backend/CameraFramesBackend.cpp
+    backend/IntelLogsBackend.cpp
     backend/LogBackupBackend.cpp
     proto/HMI_RX_CONTROLS.pb.cc
     proto/HMI_RX_PERCEPTION.pb.cc
