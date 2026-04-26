@@ -165,10 +165,10 @@ Item {
         //     }
         // }
 
-        HMI.DataTable {
+        HMI.IntelLogsTable {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            rows: root.rows
+            model: IntelLogsBackend ? IntelLogsBackend.model : null
         }
     }
 }
