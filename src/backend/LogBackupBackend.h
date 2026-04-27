@@ -26,6 +26,8 @@ public:
     void setSettingsBackend(SettingsBackend* settings) { m_settings = settings; }
 
     Q_INVOKABLE void startBackup();
+    // Upload the contents of localDirPath to base/logs/<remoteSubdir>/...
+    Q_INVOKABLE void startBackupFolder(const QString& localDirPath, const QString& remoteSubdir);
 
 signals:
     void backupInProgressChanged();
@@ -38,6 +40,7 @@ private slots:
 
 private:
     void processNext();
+    void startBackupImpl(const QString& localRootPath, const QString& remoteRootPath);
     static QStringList collectFilesRecursive(const QString& dirPath, const QString& prefix);
     static QStringList collectDirsForFiles(const QStringList& relativePaths);
     static QByteArray basicAuthHeader(const QString& user, const QString& pass);
@@ -54,6 +57,7 @@ private:
     QStringList m_pendingFiles;
     QString m_logsRootPath;
     QString m_baseUrl;
+    QString m_remoteRootPath; // e.g. "logs" or "logs/Intel"
     QString m_username;
     QString m_password;
     int m_nextDirIndex = 0;

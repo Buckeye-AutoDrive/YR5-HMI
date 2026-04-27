@@ -81,7 +81,47 @@ void LogBackupBackend::startBackup()
         return;
     }
 
-    m_logsRootPath = m_logger->logsRootPath();
+    startBackupImpl(m_logger->logsRootPath(), QStringLiteral("logs"));
+}
+
+void LogBackupBackend::startBackupFolder(const QString& localDirPath, const QString& remoteSubdir)
+{
+    if (m_backupInProgress || !m_settings) {
+        m_lastBackupMessage = m_backupInProgress ? tr("Backup already in progress.")
+                                                 : tr("Settings not available.");
+        emit lastBackupMessageChanged();
+        emit backupFinished(false, m_lastBackupMessage);
+        return;
+    }
+
+    const QString localRoot = QDir(localDirPath).canonicalPath();
+    if (localRoot.isEmpty() || !QDir(localRoot).exists()) {
+        m_lastBackupMessage = tr("Logs directory not found.");
+        emit lastBackupMessageChanged();
+        emit backupFinished(false, m_lastBackupMessage);
+        return;
+    }
+
+    QString sub = remoteSubdir.trimmed();
+    while (sub.startsWith(QLatin1Char('/')))
+        sub.remove(0, 1);
+    while (sub.endsWith(QLatin1Char('/')))
+        sub.chop(1);
+    if (sub.isEmpty()) {
+        m_lastBackupMessage = tr("Remote folder is invalid.");
+        emit lastBackupMessageChanged();
+        emit backupFinished(false, m_lastBackupMessage);
+        return;
+    }
+
+    startBackupImpl(localRoot, QStringLiteral("logs/") + sub);
+}
+
+void LogBackupBackend::startBackupImpl(const QString& localRootPath, const QString& remoteRootPath)
+{
+    m_logsRootPath = localRootPath;
+    m_remoteRootPath = remoteRootPath;
+
     if (m_logsRootPath.isEmpty() || !QDir(m_logsRootPath).exists()) {
         m_lastBackupMessage = tr("Logs directory not found.");
         emit lastBackupMessageChanged();
@@ -105,7 +145,6 @@ void LogBackupBackend::startBackup()
         emit backupFinished(false, m_lastBackupMessage);
         return;
     }
-    // Use the base URL exactly as provided (e.g. .../AutoDrive/HMI). We upload to base/logs/, base/logs/CAN/, etc.
     m_baseUrl = base;
 
     m_username = m_settings->webdavUsername();
@@ -120,10 +159,10 @@ void LogBackupBackend::startBackup()
     }
 
     QStringList relDirs = collectDirsForFiles(m_pendingFiles);
-    m_pendingDirs = QStringList(QStringLiteral("logs"));
+    m_pendingDirs = QStringList(m_remoteRootPath);
     for (const QString& d : relDirs) {
         if (!d.isEmpty())
-            m_pendingDirs.append(QStringLiteral("logs/") + d);
+            m_pendingDirs.append(m_remoteRootPath + QLatin1Char('/') + d);
     }
     m_nextDirIndex = 0;
     m_nextFileIndex = 0;
@@ -197,7 +236,7 @@ void LogBackupBackend::processNext()
     if (m_nextFileIndex < m_pendingFiles.size()) {
         const QString relPath = m_pendingFiles.at(m_nextFileIndex);
         m_nextFileIndex++;
-        const QString remotePath = QStringLiteral("logs/") + relPath;
+        const QString remotePath = m_remoteRootPath + QLatin1Char('/') + relPath;
         const QString localPath = QDir(m_logsRootPath).absoluteFilePath(relPath);
         QFile file(localPath);
         if (!file.open(QIODevice::ReadOnly)) {

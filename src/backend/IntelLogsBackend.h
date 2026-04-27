@@ -3,8 +3,8 @@
 #include <QAbstractListModel>
 #include <QObject>
 #include <QUdpSocket>
-#include <QTimer>
 #include <QDateTime>
+#include <QStringList>
 
 class IntelLogsModel final : public QAbstractListModel
 {
@@ -24,6 +24,7 @@ public:
 
     void appendLog(QString message, const QDateTime& ts);
     void clear();
+    QString dumpText() const;
 
 private:
     struct Row {
@@ -38,17 +39,34 @@ class IntelLogsBackend final : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QObject* model READ model CONSTANT)
+    Q_PROPERTY(QStringList logFileNames READ logFileNames NOTIFY logFileNamesChanged)
+    Q_PROPERTY(QString logsDir READ logsDir NOTIFY logsDirChanged)
 
 public:
     explicit IntelLogsBackend(QObject* parent = nullptr);
 
     QObject* model() { return &m_model; }
+    QStringList logFileNames() const { return m_logFileNames; }
+    QString logsDir() const { return m_logsDir; }
+
+    Q_INVOKABLE void clearLogs();
+    Q_INVOKABLE QString saveLogs();
+    Q_INVOKABLE void refreshLogList();
 
 private slots:
     void onReadyRead();
 
+signals:
+    void logFileNamesChanged();
+    void logsDirChanged();
+
 private:
+    QString resolveLogsDir() const;
+    QString currentLogPath() const;
+
     IntelLogsModel m_model;
     QUdpSocket m_sock;
+    QString m_logsDir;
+    QStringList m_logFileNames;
 };
 
