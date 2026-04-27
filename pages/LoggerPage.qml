@@ -325,6 +325,105 @@ Item {
                     }
                 }
             }
+
+            // ——— Intel Logs ———
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: HMI.Theme.px(320)
+                radius: HMI.Theme.px(18)
+                color: HMI.Theme.center
+                border.color: HMI.Theme.outline
+                border.width: 1
+                clip: true
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: HMI.Theme.px(16)
+                    spacing: HMI.Theme.px(12)
+
+                    Label {
+                        text: "Intel Logs"
+                        color: HMI.Theme.text
+                        font.pixelSize: HMI.Theme.px(24)
+                        font.bold: true
+                        Layout.fillWidth: true
+                    }
+
+                    // Saved Intel log files (src/logs/intel)
+                    ListView {
+                        id: intelSavedLogsList
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        Layout.minimumHeight: HMI.Theme.px(120)
+                        clip: true
+                        model: IntelLogsBackend ? IntelLogsBackend.logFileNames : []
+                        spacing: HMI.Theme.px(4)
+                        boundsBehavior: Flickable.DragAndOvershootBounds
+                        flickDeceleration: 3000
+                        maximumFlickVelocity: 2500
+                        ScrollBar.vertical: ScrollBar { policy: ScrollBar.AlwaysOff }
+
+                        delegate: Rectangle {
+                            width: intelSavedLogsList.width - HMI.Theme.px(2)
+                            height: HMI.Theme.px(36)
+                            radius: HMI.Theme.px(8)
+                            color: HMI.Theme.surface
+                            border.color: HMI.Theme.outline
+                            border.width: 1
+
+                            Text {
+                                anchors.fill: parent
+                                anchors.margins: HMI.Theme.px(8)
+                                text: modelData
+                                color: HMI.Theme.text
+                                font.pixelSize: HMI.Theme.px(14)
+                                font.family: "monospace"
+                                verticalAlignment: Text.AlignVCenter
+                                elide: Text.ElideRight
+                            }
+                        }
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: HMI.Theme.px(10)
+
+                        Item { Layout.fillWidth: true } // spacer
+
+                        RecordControlButton {
+                            iconSource: "../src/icons/discard.svg"
+                            label: "Clear"
+                            highlighted: false
+                            enabled: IntelLogsBackend !== undefined && IntelLogsBackend
+                            onClicked: if (IntelLogsBackend) IntelLogsBackend.clearLogs()
+                        }
+                        RecordControlButton {
+                            iconSource: "../src/icons/save.svg"
+                            label: "Save"
+                            highlighted: false
+                            enabled: IntelLogsBackend !== undefined && IntelLogsBackend
+                            onClicked: {
+                                if (IntelLogsBackend) {
+                                    IntelLogsBackend.saveLogs()
+                                    IntelLogsBackend.refreshLogList()
+                                }
+                            }
+                        }
+                        RecordControlButton {
+                            iconSource: "../src/icons/save.svg"
+                            label: "Backup"
+                            highlighted: false
+                            enabled: (IntelLogsBackend !== undefined && IntelLogsBackend) && (typeof LogBackupBackend !== "undefined")
+                            onClicked: {
+                                if (!IntelLogsBackend || typeof LogBackupBackend === "undefined") return
+                                IntelLogsBackend.saveLogs()
+                                IntelLogsBackend.refreshLogList()
+                                LogBackupBackend.startBackupFolder(IntelLogsBackend.logsDir, "Intel")
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
