@@ -59,8 +59,8 @@ ApplicationWindow {
 
     function recomputeDp() { HMI.Theme.dp = (height / 720) * 1.25; }
 
-    // Disengaged / default UI: safety_states 0, 9, 10 (protobuf3 omits field → 0). All other values → engaged UI.
-    function safetyStateDisengaged(s) { return s === 0 || s === 9 || s === 10 }
+    // Disengaged / default UI: safety_states 0, 1, 2, 9, 10 (protobuf3 omits field → 0). States 3–8 → engaged UI.
+    function safetyStateDisengaged(s) { return s === 0 || s === 1 || s === 2 || s === 9 || s === 10 }
 
     // After HMI disengage: stack/FSM may still report engaged until vehicle processes command.
     property bool userDisengageGraceActive: false
