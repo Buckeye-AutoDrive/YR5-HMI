@@ -12,26 +12,33 @@ Item {
         id: routeModel
 
         // DYO Challenge
-        ListElement { kind: "section"; title: "DYO Challenge" }
+        ListElement { kind: "section"; title: "Dynamic Challenge" }
         ListElement { kind: "point";  point: "A"}
         ListElement { kind: "point";  point: "B"}
         ListElement { kind: "point";  point: "C"}
         ListElement { kind: "point";  point: "D"}
-
-        // Intersection Challenge
-        ListElement { kind: "section"; title: "Intersection Challenge" }
+        ListElement { kind: "point";  point: "E"}
+        ListElement { kind: "point";  point: "F"}
+        ListElement { kind: "point";  point: "G"}
+        ListElement { kind: "point";  point: "H"}
+        ListElement { kind: "point";  point: "J"}
         ListElement { kind: "point";  point: "K"}
-        ListElement { kind: "point";  point: "i6"}
-        ListElement { kind: "point";  point: "i7"}
-        ListElement { kind: "point";  point: "i1"}
-        ListElement { kind: "point";  point: "i2"}
-        ListElement { kind: "point";  point: "u1"}
-        ListElement { kind: "point";  point: "i10"}
+        ListElement { kind: "point";  point: "L"}
+        ListElement { kind: "point";  point: "M"}
+        ListElement { kind: "point";  point: "N"}
+        ListElement { kind: "point";  point: "O"}
+        ListElement { kind: "point";  point: "P"}
+        ListElement { kind: "point";  point: "Q"}
+        ListElement { kind: "point";  point: "R"}
+        ListElement { kind: "point";  point: "S"}
+        ListElement { kind: "point";  point: "T"}
+        ListElement { kind: "point";  point: "U"}
+        ListElement { kind: "point";  point: "V"}
+        ListElement { kind: "point";  point: "W"}
+        ListElement { kind: "point";  point: "X"}
+        ListElement { kind: "point";  point: "Y"}
+        ListElement { kind: "point";  point: "Z"}
 
-        // Construction Challenge
-        ListElement { kind: "section"; title: "Construction Challenge" }
-        ListElement { kind: "point";  point: "A"}
-        ListElement { kind: "point";  point: "D"}
     }
 
     // Flatten into rows:
